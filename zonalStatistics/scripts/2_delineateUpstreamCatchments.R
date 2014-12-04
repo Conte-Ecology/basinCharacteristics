@@ -18,6 +18,11 @@ baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistic
 # Read user-defined inputs
 source( file.path(baseDirectory, "scripts", "INPUTS.txt") )
 
+#Check the existence of the delineated catchments file, stopping the script if it exists.
+if( file.exists( file.path(baseDirectory, 'versions', outputName, paste0(outputName, '_delineatedCatchments.RData') ) ) ){
+  stop("Delineated Catchments file already exists. If this is the desired file there is no need to run this script.")
+}
+
 # Read the catchment attributes
 catchmentData <- read.dbf(file.path(baseDirectory, 'gisFiles/vectors', paste0(catchmentsFileName, '.dbf')) )
 
@@ -67,6 +72,6 @@ for ( i in 1:length(features)){
 close(progressBar)
 
 # Save catchments
-save(delineatedCatchments, file = file.path(baseDirectory, 'versions', outputName, paste0(outputName, '_delineatedCatchmentsLATEST.RData') ) )
+save(delineatedCatchments, file = file.path(baseDirectory, 'versions', outputName, paste0(outputName, '_delineatedCatchments.RData') ) )
 
 
