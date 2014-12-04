@@ -32,7 +32,7 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 ## Output Rasters
 
-In total four rasters in total are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
+In total two rasters in total are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
 
 #### Open Water 
 Raster name: fwsOpenWater <br>
