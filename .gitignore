@@ -1,0 +1,21 @@
+# Folders
+# -------
+
+# Universal
+gisFiles/
+
+# Repo specific
+outputChunks/
+
+# zonaSltatistics repo
+zonalStatistics/versions/
+
+# impoundments repo
+impoundments/outputFiles
+impoundments/products
+
+# Files
+# -----
+
+# zonalStatistics repo
+NortheastHRD_delineatedCatchments.RData

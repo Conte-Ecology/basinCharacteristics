@@ -1,0 +1,8 @@
+states = c("MA", "CT", "RI", "ME", "NH", "VT", "NY")
+stateNames = c("Massachusetts", "Connecticut", "Rhode_Island", "Maine", "New_Hampshire", "Vermont", "New_York")
+nhdplusRanges = c("01", "02", "04", "05")
+wetlandsFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/fwsWetlands/rawData"
+nhdplusFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/nhdPlus/med/SpatialData/NHDplusV2"
+state_boundaries = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/political/states/States.shp"
+outputName = "NENYstates"
+upstreamLimitKM = 25

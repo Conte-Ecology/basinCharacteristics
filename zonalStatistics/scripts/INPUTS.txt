@@ -1,0 +1,14 @@
+# Name of the run
+outputName = "NortheastHRD"
+
+# Catchments shapefile name
+catchmentsFileName = "NortheastHRD_Catchments"
+
+# Zone field
+zoneField = "FEATUREID"
+
+# Statistics to calculate
+statType = "MEAN"
+
+# Rasters to run
+rasterList = c("ALL")
