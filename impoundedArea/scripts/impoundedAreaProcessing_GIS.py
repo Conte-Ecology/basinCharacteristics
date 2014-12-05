@@ -54,7 +54,7 @@ df = arcpy.mapping.ListDataFrames(mxd)[0]
 # Define the projection to use (that of the wetlands)
 projection_definition = wetlandsFolder + "/" + states[0] + "_wetlands.gdb/" + states[0] + "_Wetlands"
 
-# Project
+# Reproject the flowlines
 arcpy.Project_management(flowlinesFile, working_db + "/flowlines_prj",  projection_definition)
 
 
@@ -152,13 +152,15 @@ for j in range(len(states)):
 	# Set processing extent for rasterization
 	arcpy.env.extent = working_raster + "/rangeRaster"
 
+	# Convert the state polygons to rasters
 	arcpy.PolygonToRaster_conversion("openOnNetwork_" + states[j], 
 										"rasterVal", 
 										working_raster + "/openOn_" + states[j],
 										"MAXIMUM_COMBINED_AREA", 
 										"NONE", 
 										30)
-	
+										
+	# Convert the state polygons to rasters
 	arcpy.PolygonToRaster_conversion("openOffNetwork_" + states[j], 
 										"rasterVal", 
 										working_raster + "/openOff_" + states[j],
@@ -244,10 +246,13 @@ for j in range(len(states)):
 # List 4 categories
 categories = ["openOn", "openOff", "allOn", "allOff"]
 
+# Loop through the 4 categories mosaicking rasters
 for k in range(len(categories)): 
-
+	
+	# Create the list of files to mosaic starting with the blank raster
 	mosaicList = [working_raster + "/rangeRaster"]
 	
+	# Add the states to the list
 	for s in range(len(stateNames)): 
 		mosaicList.append(working_raster + "/" + categories[k] + "_" + states[s])
 	del s
@@ -255,6 +260,7 @@ for k in range(len(categories)):
 	# Set processing extent for rasterization
 	arcpy.env.extent = working_raster + "/rangeRaster"
 		
+	# Mosaic the state rasters together
 	arcpy.MosaicToNewRaster_management(mosaicList,
 										output_folder, 
 										categories[k] + "Net",

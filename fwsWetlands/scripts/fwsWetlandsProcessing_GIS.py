@@ -6,7 +6,7 @@ import arcpy
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/fwsWetlands"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV"]
 stateNames = ["Massachusetts", "Connecticut", "Rhode_Island", "Maine", "New_Hampshire", "VT", "New_York", "Delaware", "Maryland", "New_Jersey", "Pennsylvania", "Virginia", "West_Virginia"]
-wetlandsFolder = "C:/KPONEIL/SourceData/fwsWetlands"
+wetlandsFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/fwsWetlands/rawData/fwsWetlands"
 outputName = "Northeast"
 
 
@@ -32,10 +32,6 @@ if not arcpy.Exists(working_directory): arcpy.CreateFolder_management(main_direc
 working_db = working_directory + "/processingFiles.gdb"
 if not arcpy.Exists(working_db): arcpy.CreateFileGDB_management (working_directory, "processingFiles", "CURRENT")
 
-## Set the run raster folder. Create one if it doesn't exist.
-#working_raster = working_directory + "/rasters"
-#if not arcpy.Exists(working_raster): arcpy.CreateFolder_management(working_directory, "rasters")
-
 # Set the output folder. Create one if it doesn't exist.
 output_folder = working_directory + "/outputFiles"
 if not arcpy.Exists(output_folder): arcpy.CreateFolder_management(working_directory, "outputFiles")
@@ -51,6 +47,7 @@ df = arcpy.mapping.ListDataFrames(mxd)[0]
 # ===================
 # Create Range Raster
 # ===================
+# Generates a blank raster of the entire range. This raster will serve as the template to which the state rasters will be mosaicked.
 
 # List the states
 statePolyList = []
@@ -154,8 +151,10 @@ for j in range(len(states)):
 # Open Water
 # ----------
 
+# Create list of rasters to be mosaicked
 openList = [working_db + "/rangeRaster"]
 	
+# Loop through states adding rasters to the list
 for s in range(len(stateNames)): 
 	openList.append(working_db + "/open_" + states[s])
 del s
@@ -163,6 +162,7 @@ del s
 # Set processing extent for rasterization
 arcpy.env.extent = working_db + "/rangeRaster"
 	
+# Mosaic rasters
 arcpy.MosaicToNewRaster_management(openList,
 									output_folder, 
 									"fwsOpenWater",
@@ -176,21 +176,24 @@ arcpy.MosaicToNewRaster_management(openList,
 # Wetlands
 # --------
 
+# Create list of rasters to be mosaicked
 wetList = [working_db + "/rangeRaster"]
 	
+# Loop through states adding rasters to the list
 for s in range(len(stateNames)): 
 	wetList.append(working_db + "/wet_" + states[s])
 del s
 	
 # Set processing extent for rasterization
 arcpy.env.extent = working_db + "/rangeRaster"
-	
+
+# Mosaic rasters
 arcpy.MosaicToNewRaster_management(wetList,
 									output_folder, 
 									"fwsWetlands",
 									working_db + "/rangeRaster",
 									"8_BIT_UNSIGNED", 
-									30, 
-									1, 
+									30,
+									1,
 									"MAXIMUM",
 									"FIRST")

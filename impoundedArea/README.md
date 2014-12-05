@@ -60,6 +60,8 @@ Description: This layer represents the FWS wetlands defined as "all water bodies
 
 - There is an inconsistency in the VT Wetlands layers. While all of the other state boundary polygons are named by the full state name, the Vermont state outline is abbreviated. This is reflected in the default names list. File names should be checked when adding new states.
 
+- The layers for Maryland (MD) and the District of Columbia (DC) overlap. DC is not included and only MD is used.
+
 ## Possible Future Work
 - Classification definitions can be changed with relatively minimal effort. 
 - The data sources (wetlands and flowlines) can also be changed with a bit more work.
