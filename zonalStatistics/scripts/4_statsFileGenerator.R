@@ -15,11 +15,15 @@ outputVariables <- c('ALL')
 # ========================
 source( file.path(baseDirectory, "scripts", "INPUTS.txt") )
 
+# Set the directory where the tables are located
 rTablesDirectory <- file.path(baseDirectory, "versions", outputName, "rTables")                            
+
+
 
 # Local
 # -----
 
+# Create list of variables to compile
 if ( all(outputVariables %in% "ALL" == TRUE) ){
   localStatFiles <- list.files(path = rTablesDirectory, pattern = "local_")  
   
@@ -31,7 +35,7 @@ if ( all(outputVariables %in% "ALL" == TRUE) ){
   }
 }
 
-
+# Loop through files. Pull data and join together for output.
 for ( L in 1:length(localStatFiles) ){
   
   localTemp <- read.csv(file.path(rTablesDirectory, localStatFiles[L]) )
@@ -49,6 +53,7 @@ for ( L in 1:length(localStatFiles) ){
 # Upstream
 # --------
 
+# Create list of variables to compile
 if ( all(outputVariables %in% "ALL" == TRUE) ){
   upstreamStatFiles <- list.files(path = rTablesDirectory, pattern = "upstream_")
 }else{
@@ -59,7 +64,7 @@ if ( all(outputVariables %in% "ALL" == TRUE) ){
   }
 }
 
-
+# Loop through files. Pull data and join together for output.
 for ( U in 1:length(upstreamStatFiles) ){
   
   upstreamTemp <- read.csv(file.path(rTablesDirectory, upstreamStatFiles[U]) )

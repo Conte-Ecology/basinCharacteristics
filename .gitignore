@@ -17,5 +17,5 @@ impoundments/products
 # Files
 # -----
 
-# zonalStatistics repo
-NortheastHRD_delineatedCatchments.RData
+# Universal
+*.RData

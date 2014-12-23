@@ -2,7 +2,7 @@
 outputName = "NortheastHRD"
 
 # Catchments shapefile name
-catchmentsFileName = "NortheastHRD_Catchments"
+catchmentsFileName = "NortheastHRD_AllCatchments"
 
 # Zone field
 zoneField = "FEATUREID"

@@ -22,7 +22,7 @@ This folder is set up to run zonal statistics on the rasters produced in other s
  - "statType" is the statistic to calculate (e.g. `MEAN`)
  - "rasterList" is a list of the rasters to run (e.g. `c("forest", "agricuture", "fwswetlends")` ). If all rasters in the `raster` directory are to be run, set this variable to `c("ALL")`
 
-2. `1_zonalStatisticsProcessing_GIS.py` - This script calculates statistics on the raster dataset for each of the catchments in the polygon shapefile. The primary tool used is "Zonal Statistics" in ArcGIS. If the "ZonalStatisticsAsTable" tool runs slowly, close other programs that may be using excessive memory/CPU processing power. This script outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics/versions/NortheastHRD/gisTables/forest_MEAN.dbf`). Example output:
+2. `1_zonalStatisticsProcessing_GIS.py` - This script calculates statistics on the raster dataset for each of the catchments in the polygon shapefile. The primary tool used is "Zonal Statistics" in ArcGIS. If the "ZonalStatisticsAsTable" tool runs slowly, make sure that the zone field has been indexed. Also try closing other programs that may be using excessive memory/CPU processing power. This script outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics/versions/NortheastHRD/gisTables/forest_MEAN.dbf`). Example output:
 
   | FEATUREID | COUNT  |    AREA    |    MEAN    |
   |  :-----:  | ------ | ---------- | ---------- |
