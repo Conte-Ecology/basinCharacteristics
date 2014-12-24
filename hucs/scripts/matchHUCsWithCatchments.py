@@ -1,5 +1,5 @@
 # -----------------
-# Enter user inputs
+# Specify inputs
 # -----------------
 
 # Define directories
