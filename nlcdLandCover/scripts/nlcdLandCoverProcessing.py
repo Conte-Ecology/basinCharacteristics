@@ -2,29 +2,26 @@ import arcpy
 from arcpy.sa import *
 from arcpy import env
 
-catchmentsFile = "F:/KPONEIL/SourceData/streamStructure/northeastHRD/NENYHRD_AllCatchments.shp"
-
 # -----------------
 # Enter user inputs
 # -----------------
 
-# Define directories
-baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover"
-catchmentsFolder = "F:/KPONEIL/SourceData/streamStructure/northeastHRD"
-rasterFolder = "F:/KPONEIL/SourceData/landCover/nlcd/raw/nlcd_2006_landcover_2011_edition_2014_03_31"
+# Define working directory
+baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover"
 
-outRasterFolder = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover/gisFiles"
+# Define catchments file
+catchmentsFilePath = "F:/KPONEIL/SourceData/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
 
-# Name of catchments file
-catchmentsFileName = "NortheastHRD_AllCatchments.shp"
-rasterFileName = "nlcd_2006_landcover_2011_edition_2014_03_31.img"
+# Define NLCD Land Use raster
+rasterFilePath = "F:/KPONEIL/SourceData/landCover/nlcd/raw/nlcd_2006_landcover_2011_edition_2014_03_31/nlcd_2006_landcover_2011_edition_2014_03_31.img"
 
-
+# Define reclassification table
+reclassTable = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover/reclassTable.csv"
 
 # Create a version ID for saving
 version = "NortheastHRD"
 
-# Do you want to keep the intermediate GIS files ( "YES" or "NO" ) 
+# Do you want to keep the intermediate processing files ( "YES" or "NO" )
 keepFiles = "YES"
 
 #      ***** DO NOT CHANGE SCRIPT BELOW THIS POINT ****
@@ -32,10 +29,6 @@ keepFiles = "YES"
 # ---------------
 # Folder creation
 # ---------------
-
-# Defines the path to the catchments file
-catchmentsFilePath = catchmentsFolder + "/" + catchmentsFileName
-rasterFilePath = rasterFolder + "/" + rasterFileName
 
 # Create GIS files folder
 gisFilesDir = baseDirectory + "/gisFiles"
@@ -49,43 +42,97 @@ if not arcpy.Exists(versionDir): arcpy.CreateFolder_management(gisFilesDir, vers
 geoDatabase = versionDir + "/workingFiles.gdb"
 if not arcpy.Exists(geoDatabase): arcpy.CreateFileGDB_management(versionDir, "workingFiles.gdb")
 
-# Create tables folder
-tablesDir = versionDir + "/tables"
-if not arcpy.Exists(tablesDir): arcpy.CreateFolder_management(versionDir, "tables")
+# Create output folder
+outputDir = versionDir + "/outputFiles"
+if not arcpy.Exists(outputDir): arcpy.CreateFolder_management(versionDir, "outputFiles")
 
 
+# -----------------------------------	
+# Prepare raster for reclassification
+# -----------------------------------
 
-# Define the projection to use (that of the wetlands)
-projection_definition = catchmentsFilePath
+# Create regional outline
+outline = arcpy.Dissolve_management(catchmentsFilePath, 
+										geoDatabase + "/outline",
+										"#", 
+										"#", 
+										"SINGLE_PART", 
+										"DISSOLVE_LINES")
 
-# Name the spatial reference of the catchment
-catchSpatialRef = arcpy.Describe( catchmentsFilePath ).spatialReference.name
+# Buffer outline
+boundary = arcpy.Buffer_analysis(outline, 
+									geoDatabase + "/boundary", 
+									"1 Kilometers", 
+									"#", 
+									"#", 
+									"ALL")
+
+# Reproject the boundary to match the NLCD raster
+boundaryProj = arcpy.Project_management(boundary, 
+										geoDatabase + "/boundaryProj", 
+										rasterFilePath)
+
+# Trim the raster to the boundary	
+arcpy.env.extent = rasterFilePath
+rangeRaster = ExtractByMask(rasterFilePath, boundaryProj)	
+
+# Get spatial references
+catchSpatialRef  = arcpy.Describe(catchmentsFilePath).spatialReference.name
+rasterSpatialRef = arcpy.Describe(rasterFilePath).spatialreference.name
+
+# Reproject if necessary
+if rasterSpatialRef != catchSpatialRef:	
+	projectedRaster = arcpy.ProjectRaster_management(rangeRaster, 
+														geoDatabase + "/rangeRasterPrj",
+														catchmentsFilePath)
+else: projectedRaster = rangeRaster
+
+
+# -------------------------
+# Create individual rasters
+# -------------------------
 
 # Set directory
 arcpy.env.workspace = geoDatabase
 
-
-reclassTable = "F:/KPONEIL/SourceData/landCover/nlcd/reclassTableNLCD.csv"
-
+# List of column names
 fieldList = arcpy.ListFields(reclassTable)
 
-
+# Category position and count
 fieldCount = range(2, len(fieldList))
 
+# Loop through categories and reclassify raster
+for i in fieldCount:
 
+	# Category name
+	category = fieldList[i]
 
+	# Reclassify the raster according to the table provided
+	recRaster = ReclassByTable(projectedRaster, 
+								reclassTable,
+								"Value",
+								"Value", 
+								str(category.name), 
+								"NODATA")
 
-for category in fieldList
+	# Save the new raster
+	recRaster.save(outputDir + "/" + str(category.name))
 
-category = fieldList[2]
+	# Delete the temporary object
+	del(recRaster)
 
-
-
-
-recRaster = ReclassByTable(rasterFilePath, reclassTable,"Value","Value", str(category.name), "NODATA")
-
-
-recRaster.save(outRasterFolder + "/" + category)
-
-
+# If specified, delete processing files
+if keepFiles == "NO":
+	arcpy.Delete_management(geoDatabase)
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 

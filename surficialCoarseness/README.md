@@ -15,10 +15,10 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `soilsFolder`
 
-Open the script `fwsWetlandsProcessing_GIS`
+Open the script `soils_surficialCoarseness`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `fwsWetlands` folder (current parent working directory)
+ - "baseDirectory" is the path to the `surficialCoarseness` folder (current parent working directory)
  - "states" is the list of state abbreviations included in the desired range
  - "soilsFolder" is the source folder of the wetlands datasets by state
  - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
