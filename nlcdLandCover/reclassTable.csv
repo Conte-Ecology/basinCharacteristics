@@ -1,4 +1,4 @@
-Class,Value,forest,forest_decid,forest_evgrn,forest_mixed,undev_forest,herbacious,agriculture,developed,devel_opn,devel_low,devel_med,devel_hi,wetland,water
+Class,Value,forest,forest_decid,forest_evgrn,forest_mixed,undev_forest,herbaceous,agriculture,developed,devel_opn,devel_low,devel_med,devel_hi,wetland,water
 Open Water,11,0,0,0,0,0,0,0,0,0,0,0,0,0,1
 Perennial Ice/Snow,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 "Developed, Open Space",21,0,0,0,0,-9999,0,0,1,1,0,0,0,0,0
