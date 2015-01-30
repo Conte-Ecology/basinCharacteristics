@@ -60,9 +60,9 @@ if not arcpy.Exists(gisVersion_directory): arcpy.CreateFolder_management(gisVers
 working_directory = gisVersion_directory + "/" + outputName
 if not arcpy.Exists(working_directory): arcpy.CreateFolder_management(gisVersion_directory, outputName)
 
-# Run-specific shapefiles
-working_directory_shapefiles = working_directory + "/shapefiles"
-if not arcpy.Exists(working_directory_shapefiles): arcpy.CreateFolder_management(working_directory, "shapefiles")
+# Run-specific files
+working_directory_processingFiles = working_directory + "/processingFiles"
+if not arcpy.Exists(working_directory_processingFiles): arcpy.CreateFolder_management(working_directory, "processingFiles")
 
 # Run-specific output folder.
 outputVersion_directory = version_directory + "/" + outputName
@@ -92,8 +92,19 @@ df = arcpy.mapping.ListDataFrames(mxd)[0]
 # Add Catchments shapefile to map
 # ===============================
 addLayer = arcpy.mapping.Layer(vector_directory + "/" + catchmentsFileName)
-	
+
 arcpy.mapping.AddLayer(df, addLayer, "AUTO_ARRANGE")
+
+
+# If the zonal shapefile has not been rasterized, then do so.
+	# This particular catchment file is derived from a 30m DEM and the coordinate system is in meters, so 30 works here.
+if not arcpy.Exists(working_directory_processingFiles + "/catRaster"):
+
+	arcpy.FeatureToRaster_conversion(vector_directory + "/" + catchmentsFileName, 
+										zoneField, 
+										working_directory_processingFiles + "/catRaster", 
+										30)
+
 
 # ============================
 # Indexing Rasters
@@ -108,6 +119,21 @@ if rasterList == ["ALL"]:
 arcpy.env.workspace = working_directory
 projectedRasters = [x.encode('UTF8') for x in arcpy.ListRasters()]
 
+
+
+
+
+# RESAMPLE RASTERS....
+
+
+for j in raster_count:
+	out_file = "C:/KPONEIL/USGS/GIS/DATA/BrookTroutRange/Zonal Stats Layers/" + out_raster[j]
+	arcpy.Resample_management(in_value_raster[j],out_file,0.00035088407,"NEAREST")
+
+	
+#Method will depend on type... not sure how to automate this easily(???)
+# ... how about listing rasters with continuous data. 
+# Default method will be "NEAREST", but pick a different one for any rasters that are continuous datasets (climate, elevation, etc.)
 
 
 # =========================================
@@ -180,7 +206,7 @@ for raster in rasterList: # raster loop
 				
 	# Select catchments					
 	arcpy.FeatureClassToFeatureClass_conversion(attributeJoin, 
-													working_directory_shapefiles, 
+													working_directory_processingFiles, 
 													raster + "MissingCatchments.shp", 
 													qry)
 
@@ -190,23 +216,23 @@ for raster in rasterList: # raster loop
 	del attributeJoin
 		
 	# Get the centroids of the missing catchments
-	arcpy.FeatureToPoint_management(working_directory_shapefiles + "/" + raster + "MissingCatchments.shp", 
-										working_directory_shapefiles + "/" + raster + "MissingCentroids", 
+	arcpy.FeatureToPoint_management(working_directory_processingFiles + "/" + raster + "MissingCatchments.shp", 
+										working_directory_processingFiles + "/" + raster + "MissingCentroids", 
 										"INSIDE")
 					
 	# Extract the raster values at centroids (need Spatial Analyst enabled)
-	ExtractValuesToPoints (working_directory_shapefiles + "/" + raster + "MissingCentroids.shp", 
+	ExtractValuesToPoints (working_directory_processingFiles + "/" + raster + "MissingCentroids.shp", 
 									working_directory + "/" + raster, 
-									working_directory_shapefiles + "/" + raster + "MissingValues.shp", 
+									working_directory_processingFiles + "/" + raster + "MissingValues.shp", 
 									"INTERPOLATE",
 									"VALUE_ONLY")
 
 	# Add a new field for the raster value to match the zonal statistics output table
-	arcpy.AddField_management(working_directory_shapefiles + "/" + raster + "MissingValues.shp", statType, "DOUBLE")
-	arcpy.CalculateField_management (working_directory_shapefiles + "/" + raster + "MissingValues.shp", statType, "!RASTERVALU!", "PYTHON_9.3")							
+	arcpy.AddField_management(working_directory_processingFiles + "/" + raster + "MissingValues.shp", statType, "DOUBLE")
+	arcpy.CalculateField_management (working_directory_processingFiles + "/" + raster + "MissingValues.shp", statType, "!RASTERVALU!", "PYTHON_9.3")							
 									
 	# Export the missing values table
-	arcpy.TableToTable_conversion(working_directory_shapefiles + "/" + raster + "MissingValues.shp",
+	arcpy.TableToTable_conversion(working_directory_processingFiles + "/" + raster + "MissingValues.shp",
 									gisTables_directory,
 									raster + "_" + statType + "_" + "MissingValues.dbf")
 
