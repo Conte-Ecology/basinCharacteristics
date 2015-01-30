@@ -76,26 +76,37 @@ for (j in 1:length(rasterList)){
 # Drainage Area
 # =============
 
-# Local
-# -----
-# Output filepath
+# Define file paths
+# -----------------
+
+# Input file
+rawFile <- file.path(baseDirectory, 'gisFiles/vectors', paste0(catchmentsFileName, '.dbf'))
+
+# Output filepath (local)
 areaFileLocal <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("local_AreaSqKM.csv"))
 
-# If the area file doesn't exist, write it
-if ( !file.exists(areaFileLocal) ){
-
-  # Read the catchment attributes
-  localArea <- read.dbf(file.path(baseDirectory, 'gisFiles/vectors', paste0(catchmentsFileName, '.dbf')) )[,c(zoneField, "AreaSqKM")]
-  
-  # Save file
-  write.csv(localArea, file = areaFileLocal, row.names = F)
-}
-
-# Upstream
-# --------
 # Output filepath
 areaFileUpstream <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("upstream_AreaSqKM.csv"))
 
+# Local
+# -----
+
+if(!file.exists(rawFile)) {stop("Missing input file: The resulting file from the '1_zonalStatisticsProcessing_GIS' script does not exist.")
+
+# If the area file doesn't exist, write it. Else load it.
+if ( !file.exists(areaFileLocal) ){
+
+  # Read the catchment attributes
+  localArea <- read.dbf(rawFile)[,c(zoneField, "AreaSqKM")]
+  
+  # Save file
+  write.csv(localArea, file = areaFileLocal, row.names = F)
+} else {localArea <- read.csv(areaFileLocal)}
+
+# Upstream
+# --------
+
+# If the area file doesn't exist, write it. Else load it.
 if ( !file.exists(areaFileUpstream) ){
   
   # Read local catchment area file
@@ -107,7 +118,6 @@ if ( !file.exists(areaFileUpstream) ){
   # Create the output dataframe
   upstreamArea <- data.frame(matrix(nrow = length(featureList), ncol = 2))
   names(upstreamArea) <- c(zoneField, "AreaSqKM")
-  
   
   # Loop through all features calculating upstream area
   for ( k in seq_along(featureList) ){
@@ -126,7 +136,7 @@ if ( !file.exists(areaFileUpstream) ){
   
   # Save file
   write.csv(upstreamArea, file = areaFileUpstream, row.names = F)
-} else(print("Local area file does not exist. Please create this file before running this section."))
+} else{upstreamArea <- read.csv(areaFileUpstream)}
 
 
 
@@ -134,11 +144,6 @@ if ( !file.exists(areaFileUpstream) ){
 # ===========================
 # Process upstream statistics
 # ===========================
-
-
-# If areas weren't calculated in this run then load them
-if( !exists("localArea") )   {localArea    <- read.csv(areaFileLocal)}
-if( !exists("upstreamArea") ){upstreamArea <- read.csv(areaFileUpstream)}
 
 # Join area to dataframe
 zonalData <- left_join(zonalData, localArea, by = zoneField)
@@ -176,7 +181,7 @@ for ( m in seq_along(featureList)){
   # Progress bar update
   setTkProgressBar(progressBar, m, label=paste( round(m/length(featureList)*100, 2), "% done"))
 } 
-
+close(progressBar)
 
 # Output upstream statistics tables
 # ---------------------------------

@@ -1,13 +1,15 @@
 # Catchment Stats Generator
 
 library(dplyr)
+library(reshape2)
 
 # ======
 # Inputs 
 # ======
 baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics'
 
-# Specify variables to output. "ALL" will include all of the variables prsent in the folder.
+# Specify variables to output. "ALL" will include all of the variables prsent in the folder. 
+#   If this object isn't created, the "rasterList" from the "INPUTS.txt" file will be used to define the variables to process.
 outputVariables <- c('ALL')
 
 # ========================
@@ -18,6 +20,7 @@ source( file.path(baseDirectory, "scripts", "INPUTS.txt") )
 # Set the directory where the tables are located
 rTablesDirectory <- file.path(baseDirectory, "versions", outputName, "rTables")                            
 
+if(!exists("outputVariables")){outputVariables <- rasterList}
 
 
 # Local
@@ -79,5 +82,25 @@ for ( U in 1:length(upstreamStatFiles) ){
   if( U == 1) {UpstreamStats <- upstreamTemp} else(UpstreamStats <- left_join(UpstreamStats, upstreamTemp, by = zoneField) )
 }
 
+
 # Save output
-save(LocalStats, UpstreamStats, file = file.path(baseDirectory, "versions", outputName, "completedStats", "zonalStats.RData") )
+save(LocalStats, UpstreamStats, file = file.path(baseDirectory, "versions", outputName, "completedStats", paste0("zonalStats", Sys.Date(),".RData") ))
+
+
+# Format for Database
+# ===================
+
+locLong <- melt(LocalStats,'FEATUREID')
+locLong$zone <- "local"
+
+upLong <- melt(UpstreamStats,'FEATUREID')
+upLong$zone <- "upstream"
+
+dbStats <- rbind(locLong, upLong)
+
+dbStats$value <- dbStats$value*100
+
+save(dbStats, file = file.path(baseDirectory, "versions", outputName, "completedStats", paste0("zonalStatsForDB_", Sys.Date(),".RData") ))
+
+
+

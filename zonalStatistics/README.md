@@ -43,7 +43,7 @@ This folder is set up to run zonal statistics on the rasters produced in other s
 
 
 
-4. `3_calculateUpstreamStatistics.R` - The primary function of this script is to use the output from the zonal statistics step with the `_delineatedCatchments` to generate values for upstream statistics in each catchment. For each individual catchment, the average of the values of all catchments in the upstream network are averaged (weighted by drainage area). The script also converts the stats output from the zonal statistics step (`.dbf` tables) to `.csv` files for uniformity. The script outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv`). Example output:
+4. `3_calculateUpstreamStatistics.R` - The primary function of this script is to use the output from the zonal statistics step with the `_delineatedCatchments` object to generate values for upstream statistics in each catchment. The variables listed in the `INPUTS.txt` file will be processed. For each individual catchment, the average of the values of all catchments in the upstream network are averaged (weighted by drainage area). The script also converts the stats output from the zonal statistics step (`.dbf` tables) to `.csv` files for uniformity. The script outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv`). Example output:
 
   | FEATUREID |    COUNT     |
   |  :-----:  | ------------ |

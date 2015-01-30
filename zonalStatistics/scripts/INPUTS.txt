@@ -11,4 +11,4 @@ zoneField = "FEATUREID"
 statType = "MEAN"
 
 # Rasters to run
-rasterList = c("ALL")
+rasterList = c("agriculture", "devel_hi", "devel_low", "devel_med", "devel_opn", "developed", "forest_decid", "forest_evgrn", "forest_mixed", "herbaceous", "undev_forest", "water", "wetland")
