@@ -9,7 +9,7 @@ library(reshape2)
 baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics'
 
 # Specify variables to output. "ALL" will include all of the variables prsent in the folder. 
-#   If this object isn't created, the "rasterList" from the "INPUTS.txt" file will be used to define the variables to process.
+#   If this object isn't created, list of rasters from the "INPUTS.txt" file will be used to define the variables to process.
 outputVariables <- c('ALL')
 
 # ========================
@@ -20,7 +20,7 @@ source( file.path(baseDirectory, "scripts", "INPUTS.txt") )
 # Set the directory where the tables are located
 rTablesDirectory <- file.path(baseDirectory, "versions", outputName, "rTables")                            
 
-if(!exists("outputVariables")){outputVariables <- rasterList}
+if(!exists("outputVariables")){outputVariables <- c(discreteRasters, continuousRasters)}
 
 
 # Local

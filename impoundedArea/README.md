@@ -5,10 +5,11 @@ This script produces a spatial dataset of on- and off- stream network water bodi
 
 
 ## Data Sources
-| Layer           | Source                                                 | Link                                                                         |
-|:-----:          | ------                                                 | ----                                                                         |
-| Wetlands Layer  | U.S. Fish & Wildlife National Wetlands Inventory       | http://www.fws.gov/wetlands/Data/Data-Download.html                          |
-| Flowlines       | UMass Landscape Ecology Lab                            | http://www.umass.edu/landeco/research/dsl/products/dsl_products.html#settings|
+| Layer            | Source                                                 | Link                                                                          |
+|:-----:           | ------                                                 | ----                                                                          |
+| Wetlands Layer   | U.S. Fish & Wildlife National Wetlands Inventory       | http://www.fws.gov/wetlands/Data/Data-Download.html                           |
+| Flowlines        | UMass Landscape Ecology Lab                            | http://www.umass.edu/landeco/research/dsl/products/dsl_products.html#settings |
+| State Boundaries | National Atlas of the United States                    | http://dds.cr.usgs.gov/pub/data/nationalatlas/statesp010g.shp_nt00938.tar.gz  |
 
 ## Steps to Run:
 
@@ -17,16 +18,18 @@ The folder structure is set up within the scripts. In general, the existing stru
 1. Open the script `impoundedAreaProcessing_GIS`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `impoundedArea` folder
- - The order of states in the "states" and "stateNames" variables should match. These should be checked against actual file names (see note on Vermont layers)
+ - "baseDirectory" is the path to the `impoundedArea` folder(current parent working directory) on GitHub
+ - "states" is the list of state abbreviations that identify the layers to use from the FWS data
+ - "stateNames" is the list of state names to match the FWS layers used. These names should match the names in the "STATE" column of the state boundaries shapefile.
  - "wetlandsFolder" is the source folder of the wetlands datasets by state
  - "flowlinesFile" is the source file of the flowlines vector data
+ - "statesFile" is the filepath to the state boundary shapefile
  - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
 
- 
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
-   - Creates an empty raster of the entire specified range
+   - Ensures constistency of projections
+   - Creates an empty raster of the entire specified range based on the State Boundaries shapefile
    - Loops through the state polygons, intersecting them with the flowlines, and creating state rasters of the 4 categories described below
    - Mosaicks all of the state raster and the full range empty raster
 
@@ -34,7 +37,7 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 ## Output Rasters
 
-In total four rasters in total are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
+In total four rasters are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
 
 #### Open Water On Stream Network
 Raster name: openOnNet <br>
@@ -58,9 +61,7 @@ Description: This layer represents the FWS wetlands defined as "all water bodies
 
 - The range to run over is specified by state
 
-- There is an inconsistency in the VT Wetlands layers. While all of the other state boundary polygons are named by the full state name, the Vermont state outline is abbreviated. This is reflected in the default names list. File names should be checked when adding new states.
-
-- The layers for Maryland (MD) and the District of Columbia (DC) overlap. DC is not included and only MD is used.
+- The layers for Maryland (MD) and the District of Columbia (DC) overlap in the FWS data, but not in the state boundary layer. DC is not included in "states" (only MD is used). In the state boundaries layer, "District of Columbia" must be specified if including Maryland.
 
 ## Possible Future Work
 - Classification definitions can be changed with relatively minimal effort. 

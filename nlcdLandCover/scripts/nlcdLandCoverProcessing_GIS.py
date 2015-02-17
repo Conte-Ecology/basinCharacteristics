@@ -2,38 +2,30 @@ import arcpy
 from arcpy.sa import *
 from arcpy import env
 
-# -----------------
-# Enter user inputs
-# -----------------
-
-# Define working directory
+# ==============
+# Specify inputs
+# ==============
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover"
-
-# Define catchments file
-catchmentsFilePath = "F:/KPONEIL/SourceData/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
-
-# Define NLCD Land Use raster
-rasterFilePath = "F:/KPONEIL/SourceData/landCover/nlcd/raw/nlcd_2006_landcover_2011_edition_2014_03_31/nlcd_2006_landcover_2011_edition_2014_03_31.img"
-
-# Define reclassification table
-reclassTable = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover/reclassTable.csv"
-
-# Create a version ID for saving
+catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+rasterFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_landcover_2011_edition_2014_03_31/nlcd_2006_landcover_2011_edition_2014_03_31.img"
+reclassTable = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover/scripts/reclassTable.csv"
 version = "NortheastHRD"
-
-# Do you want to keep the intermediate processing files ( "YES" or "NO" )
 keepFiles = "YES"
 
-#      ***** DO NOT CHANGE SCRIPT BELOW THIS POINT ****
 
-# ---------------
-# Folder creation
-# ---------------
+# ===========
+# Folder prep
+# ===========
 
+# Create general folders if they don't exist
+# ------------------------------------------
 # Create GIS files folder
 gisFilesDir = baseDirectory + "/gisFiles"
 if not arcpy.Exists(gisFilesDir): arcpy.CreateFolder_management(baseDirectory, "gisFiles")
 
+
+# Create run specific folders if they don't exist
+# -----------------------------------------------
 # Create version folder
 versionDir = gisFilesDir + "/" + version
 if not arcpy.Exists(versionDir): arcpy.CreateFolder_management(gisFilesDir, version)
@@ -47,9 +39,12 @@ outputDir = versionDir + "/outputFiles"
 if not arcpy.Exists(outputDir): arcpy.CreateFolder_management(versionDir, "outputFiles")
 
 
-# -----------------------------------	
-# Prepare raster for reclassification
-# -----------------------------------
+# =====================
+# Raster pre-processing
+# =====================
+
+# Trim the raster to processing boundary
+# --------------------------------------
 
 # Create regional outline
 outline = arcpy.Dissolve_management(catchmentsFilePath, 
@@ -76,6 +71,9 @@ boundaryProj = arcpy.Project_management(boundary,
 arcpy.env.extent = rasterFilePath
 rangeRaster = ExtractByMask(rasterFilePath, boundaryProj)	
 
+# Reproject the raster
+# --------------------
+
 # Get spatial references
 catchSpatialRef  = arcpy.Describe(catchmentsFilePath).spatialReference.name
 rasterSpatialRef = arcpy.Describe(rasterFilePath).spatialreference.name
@@ -87,10 +85,9 @@ if rasterSpatialRef != catchSpatialRef:
 														catchmentsFilePath)
 else: projectedRaster = rangeRaster
 
-
-# -------------------------
-# Create individual rasters
-# -------------------------
+# ==========================
+# Create categorical rasters
+# ==========================
 
 # Set directory
 arcpy.env.workspace = geoDatabase
@@ -104,10 +101,13 @@ fieldCount = range(2, len(fieldList))
 # Loop through categories and reclassify raster
 for i in fieldCount:
 
+	print(i)
+	
 	# Category name
 	category = fieldList[i]
 
-	# Reclassify the raster according to the table provided
+	# Reclassify the raster
+	# ---------------------
 	recRaster = ReclassByTable(projectedRaster, 
 								reclassTable,
 								"Value",
@@ -115,24 +115,28 @@ for i in fieldCount:
 								str(category.name), 
 								"NODATA")
 
-	# Save the new raster
-	recRaster.save(outputDir + "/" + str(category.name))
+	# Remove cells specified as -9999
+	# -------------------------------
+	# Count number of unique values
+	uniqueValues = arcpy.GetRasterProperties_management(recRaster, "UNIQUEVALUECOUNT")
 
+	# If there are more than 2 unique values (1 & 0), then the others get removed
+	if int(uniqueValues.getOutput(0)) > 2:
+		
+		# There should only be 2 unique values (1 and 0). Any more indicate that other cells need to be removed
+		outCon = Con(recRaster, recRaster, "", "VALUE = 0 OR VALUE = 1")
+		outCon.save(outputDir + "/"+ str(category.name))
+		
+		# Delete the temporary object
+		del(outCon)
+	
+	else: recRaster.save(outputDir + "/" + str(category.name))
+	
 	# Delete the temporary object
+	# ---------------------------
 	del(recRaster)
 
 # If specified, delete processing files
 if keepFiles == "NO":
 	arcpy.Delete_management(geoDatabase)
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 

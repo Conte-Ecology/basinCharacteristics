@@ -15,129 +15,91 @@ library(lazyeval)
 baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics'
 
 
-# ========================
-# Read user-defined inputs
-# ========================
+# ==========
+# Load files
+# ==========
+
+# User inputs
+# -----------
 source( file.path(baseDirectory, "scripts", "INPUTS.txt") )
 
-# ===========
-# Load data
-# ===========
+rasterList <- c(discreteRasters, continuousRasters)
 
-# Tables
-# ------
-if ( all(rasterList %in% "ALL" == TRUE) ){
-  
-  # List raster files by looking at output folder
-  rasterFiles <- list.files(path=paste0(baseDirectory, '/versions/', outputName, '/gisTables'), pattern = paste0("\\", statType, ".dbf$"))    #promt user for dir containing raster files
-  
-  # List raster names
-  rasterList <- c(colsplit(rasterFiles, paste0("_", statType), names = c('raster', 'ext'))$raster)
-}
 
 # Delineated catchments
 # ---------------------
 load(file.path(baseDirectory, "versions", outputName, paste0(outputName, "_delineatedCatchments.RData")))
 
-
 # ========================
 # Process local statistics
 # ========================
 
-# Loop through rasters, grabbing files.
+# Loop through layers, reading files.
 for (j in 1:length(rasterList)){
-
-  # File path to table
-  tableFilePath <- file.path(baseDirectory,"versions", outputName, "gisTables", paste0(rasterList[j], "_", statType, ".dbf"))
-  
-  # Open table
-  gisStat <-read.dbf(tableFilePath)[,c(zoneField, statType)]
-  
-  # Replace "-9999"s with "NA"
-  gisStat[which(gisStat[,statType] == -9999), statType] <- NA
 
   # Output filepath
   outputTable <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("local_", rasterList[j], "_", statType, ".csv"))
   
-  # save this as a file
-  write.csv(gisStat, file = outputTable, row.names = F)
+  if ( !file.exists(outputTable) ){
   
-  # Storing output
-  # --------------
-  # Rename
-  names(gisStat) <- c(zoneField, rasterList[j])
+    # File path to table
+    tableFilePath <- file.path(baseDirectory,"versions", outputName, "gisTables", paste0(rasterList[j], "_", statType, ".dbf"))
+    
+    # Open table
+    gisStat <-read.dbf(tableFilePath)[,c(zoneField, statType, "AREA")]
+    gisStat$AREA <- gisStat$AREA*0.000001 # convert to square kilometers
+    names(gisStat)[3] <- "dataAreaSqKM"
+    
+    # Replace all "-9999" values with "NA"
+    gisStat[which(gisStat[,statType] == -9999), statType] <- NA
+ 
+    # save this as a file
+    write.csv(gisStat, file = outputTable, row.names = F)
+  } else { gisStat <- read.csv(outputTable) }
   
-  # Store for upstream averaging
-  if ( j == 1 ) { zonalData <- gisStat } else( zonalData <- left_join(zonalData, gisStat, by = zoneField))
+  # Prep dataframes for upstream averaging
+  # --------------------------------------
+  # Data
+  dat <- gisStat[,c(zoneField, statType)]
+  names(dat)[2] <- rasterList[j]
+  if ( j == 1 ) { zonalData <- dat } else( zonalData <- left_join(zonalData, dat, by = zoneField))
+
+  # Areas
+  wt <- gisStat[,c(zoneField, "dataAreaSqKM")]
+  names(wt)[2] <- rasterList[j]
+  if ( j == 1 ) { zonalAreas <- wt } else( zonalAreas <- left_join(zonalAreas, wt, by = zoneField))
 }
 
 
 # =============
 # Drainage Area
 # =============
+# The areas based on the vectors are saved as the areas, though the raster areas are used to define the percentage of area with data. 
+#   These areas match up with the data layers which
 
-# Define file paths
-# -----------------
-
+# Vector
+# ------
 # Input file
-rawFile <- file.path(baseDirectory, 'gisFiles/vectors', paste0(catchmentsFileName, '.dbf'))
+vectorFile <- file.path(baseDirectory, 'gisFiles/vectors', paste0(catchmentsFileName, '.dbf'))
 
 # Output filepath (local)
 areaFileLocal <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("local_AreaSqKM.csv"))
-
-# Output filepath
-areaFileUpstream <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("upstream_AreaSqKM.csv"))
-
-# Local
-# -----
-
-if(!file.exists(rawFile)) {stop("Missing input file: The resulting file from the '1_zonalStatisticsProcessing_GIS' script does not exist.")
 
 # If the area file doesn't exist, write it. Else load it.
 if ( !file.exists(areaFileLocal) ){
 
   # Read the catchment attributes
-  localArea <- read.dbf(rawFile)[,c(zoneField, "AreaSqKM")]
+  vectorArea <- read.dbf(vectorFile)[,c(zoneField, "AreaSqKM")]
   
   # Save file
-  write.csv(localArea, file = areaFileLocal, row.names = F)
-} else {localArea <- read.csv(areaFileLocal)}
+  write.csv(vectorArea, file = areaFileLocal, row.names = F)
+} else {vectorArea <- read.csv(areaFileLocal)}
 
-# Upstream
-# --------
 
-# If the area file doesn't exist, write it. Else load it.
-if ( !file.exists(areaFileUpstream) ){
-  
-  # Read local catchment area file
-  area <- read.csv(areaFileLocal)
-  
-  # List the features to loop through
-  featureList <- area[,zoneField]
-  
-  # Create the output dataframe
-  upstreamArea <- data.frame(matrix(nrow = length(featureList), ncol = 2))
-  names(upstreamArea) <- c(zoneField, "AreaSqKM")
-  
-  # Loop through all features calculating upstream area
-  for ( k in seq_along(featureList) ){
-  
-    # Get the upstream features
-    features <- delineatedCatchments[[which(names(delineatedCatchments) == featureList[k])]]
-    
-    # Calculate area
-    DA <- sum(filter(area, FEATUREID %in% features)$AreaSqKM, na.rm = T) 
-    
-    # Store result
-    upstreamArea[k,] <- c(featureList[k], DA)
-    
-    print(k)
-  }
-  
-  # Save file
-  write.csv(upstreamArea, file = areaFileUpstream, row.names = F)
-} else{upstreamArea <- read.csv(areaFileUpstream)}
-
+# Raster
+# ------
+localArea <- read.dbf(file.path(baseDirectory,"versions", outputName, "gisTables/catRasterAreas.dbf"))[,c(zoneField, "AREASQKM")]
+names(localArea)[2] <- "AreaSqKM"
 
 
 
@@ -145,62 +107,128 @@ if ( !file.exists(areaFileUpstream) ){
 # Process upstream statistics
 # ===========================
 
-# Join area to dataframe
-zonalData <- left_join(zonalData, localArea, by = zoneField)
-
 # Define features to compute
 featureList <- zonalData[,zoneField]
 
+# Define storage dataframes
+# -------------------------
 
-# Define storage dataframe
-UpstreamStats <- data.frame(matrix(NA, nrow = length(featureList), ncol = length(rasterList) + 1))
-names(UpstreamStats) <- c(zoneField, rasterList)
+# Upstream stats
+upstreamStats <- data.frame(matrix(NA, nrow = length(featureList), ncol = length(rasterList) + 1))
+names(upstreamStats) <- c(zoneField, rasterList)
 
-# Progress bar
+# Areas with data
+pcntUpstreamWithData <- data.frame(matrix(NA, nrow = length(featureList), ncol = length(rasterList) + 1))
+names(pcntUpstreamWithData) <- c(zoneField, rasterList)
+
+# Upstream area (from vector)
+areaFileUpstream <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("upstream_AreaSqKM.csv"))
+
+# If Upstream area file doesn't exist, calculate it based on the vectors
+if ( !file.exists(areaFileUpstream) ){
+  upstreamArea <- data.frame(matrix(NA, nrow = length(featureList), ncol = 2))
+  names(upstreamArea) <- c(zoneField, "AreaSqKM")
+}
+
+
+# Catchments loop
+# ---------------
 progressBar <- tkProgressBar(title = "progress bar", min = 0, max = length(featureList), width = 300)
-
-# Loop through all catchments
 for ( m in seq_along(featureList)){  
 
   # Get features in current basin
   features <- delineatedCatchments[[which(names(delineatedCatchments) == featureList[m])]]
   
-  #Pull DA from table:
-  TotDASqKM <- filter_(upstreamArea, interp(~col == featureList[m], col = as.name(zoneField)))$AreaSqKM
+  # Sum the areas of the individual catchments in the basin (raster version)
+  TotDASqKM <- sum(filter_(localArea, interp(~col %in% features, col = as.name(zoneField)))$AreaSqKM)
   
-  # Get current catchment stats
-  catchStats <- filter_(zonalData, interp(~col %in% features, col = as.name(zoneField)))%>%
-                  mutate(Weight = AreaSqKM/TotDASqKM)
+  # Get individual catchment stats for current basin
+  catchStats <- filter_(zonalData, interp(~col %in% features, col = as.name(zoneField)))#%>%
+  
+  # Get individual catchment areas with data for current basin
+  catchAreas <- filter_(zonalAreas, interp(~col %in% features, col = as.name(zoneField)))#%>%
 
-  # Catchment ID
-  UpstreamStats[m,1] <- featureList[m]
+  # Calculate the weights of each element in the dataframe (creates a matching dataframe)
+  weights <- sweep(catchAreas, 2, colSums(catchAreas), `/`)
+   
+  # Sum the weighted stats to get final values
+  outStats <- colSums(catchStats*weights, na.rm = T)
   
-  # Area-weighted averages
-  UpstreamStats[m,2:ncol(UpstreamStats)] <- sapply(rasterList,function(x){weighted.mean(catchStats[,x], catchStats$Weight, na.rm = TRUE)})
+  # Get the percentage of catchment area with data
+  outAreas <- colSums(catchAreas)/TotDASqKM
+  
+  # Account for the rare case of catchments area = 0 (product of rasterizing catchments polygons)
+  if (TotDASqKM == 0) {
+    outStats[2:length(outStats)] <- NA
+    outAreas[2:length(outAreas)] <- 0
+  }
+  
+  # Upstream stats
+  upstreamStats[m,1]                     <- featureList[m]
+  upstreamStats[m,2:ncol(upstreamStats)] <- outStats[-1]
+  
+  # Area with data
+  pcntUpstreamWithData[m,1]                     <- featureList[m]
+  pcntUpstreamWithData[m,2:ncol(upstreamStats)] <- outAreas[-1]
+  
+  
+  # Total drainage area
+  # -------------------
+  # This is calculated based on the vector file
+  if ( !file.exists(areaFileUpstream) ){
+    upstreamArea[m,1] <- featureList[m]
+    upstreamArea[m,2] <- sum(filter_(vectorArea, interp(~col %in% features, col = as.name(zoneField)))$AreaSqKM, na.rm = T)
+  }
   
   # Progress bar update
   setTkProgressBar(progressBar, m, label=paste( round(m/length(featureList)*100, 2), "% done"))
-} 
+}
 close(progressBar)
 
 # Output upstream statistics tables
 # ---------------------------------
 
-# Loop through variables
-for ( n in 2:(ncol(UpstreamStats))){
+# Loop through variables writing tables with upstream data and the percent of the area with data
+for ( n in 2:(ncol(upstreamStats))){
   
   # Name
-  colName <- names(UpstreamStats)[n]
+  colName <- names(upstreamStats)[n]
   
   # Output dataframe
-  upStat <- UpstreamStats[,c(zoneField, colName)]
+  upStat <- upstreamStats[,c(zoneField, colName)]
+  names(upStat)[2] <- statType
+  
+  upPcnt <- pcntUpstreamWithData[,c(zoneField, colName)]
+  upPcnt <- upPcnt[2]*100
+  names(upPcnt)[2] <- "percentUpstreamWithData"
+  
+  #
+  ##
+  ###
+  test <- left_join(upStat, upPcnt, by = zoneField)
+  ###
+  ##
+  #
   
   # Output filepath
-  outputTable <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("upstream_", colName, "_", statType, ".csv"))
+  outputUpstream  <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("upstream_", colName, "_", statType, ".csv"))
+  percentUpstream <- file.path(baseDirectory, "versions", outputName, "rTables", paste0("pcntData_", colName, "_", statType, ".csv"))
   
-  # save this as a file
-  write.csv(upStat, file = outputTable, row.names = F)
+  # Store outputs as CSVs
+  write.csv(upStat, file = outputUpstream,  row.names = F)
+  write.csv(upPcnt, file = percentUpstream, row.names = F)
 }
+
+
+
+
+# Save area file
+if ( !file.exists(areaFileUpstream) ){
+  write.csv(upstreamArea, file = areaFileUpstream, row.names = F)
+}
+
+
+
 
 
 

@@ -5,34 +5,36 @@ This script produces a spatial dataset "Open Water" and "Wetland" land coverage,
 
 
 ## Data Sources
-| Layer           | Source                                                 | Link                                               |
-|:-----:          | ------                                                 | ----                                               |
-| Wetlands Layer  | U.S. Fish & Wildlife National Wetlands Inventory       | http://www.fws.gov/wetlands/Data/Data-Download.html|
+| Layer            | Source                                                 | Link                                                                         |
+|:-----:           | ------                                                 | ----                                                                         |
+| Wetlands Layer   | U.S. Fish & Wildlife National Wetlands Inventory       | http://www.fws.gov/wetlands/Data/Data-Download.html                          |
+| State Boundaries | National Atlas of the United States                    | http://dds.cr.usgs.gov/pub/data/nationalatlas/statesp010g.shp_nt00938.tar.gz |
 
 ## Steps to Run:
 
-The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
+The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded (unzip the state boundaries layer)
 
 1. Open the script `fwsWetlandsProcessing_GIS`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `fwsWetlands` folder (current parent working directory)
- - The order of states in the "states" and "stateNames" variables should match. These should be checked against actual file names (see note on Vermont layers)
+ - "baseDirectory" is the path to the `fwsWetlands` folder (current parent working directory) on GitHub
+ - "states" is the list of state abbreviations that identify the layers to use from the FWS data
+ - "stateNames" is the list of state names to match the FWS layers used. These names should match the names in the "STATE" column of the state boundaries shapefile.
  - "wetlandsFolder" is the source folder of the wetlands datasets by state
+ - "statesFile" is the filepath to the state boundary shapefile
  - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
-
  
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
-   - Creates an empty raster of the entire specified range
+   - Ensures constistency of projections
+   - Creates an empty raster of the entire specified range based on the State Boundaries shapefile
    - Loops through the state polygons, creating state rasters of the categories described below
    - Mosaicks all of the state raster and the full range empty raster
 
 
-
 ## Output Rasters
 
-In total two rasters in total are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
+In total two rasters are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
 
 #### Open Water 
 Raster name: fwsOpenWater <br>
@@ -45,11 +47,9 @@ Description: This layer represents the FWS wetlands defined as "open water" (whe
 
 ## Notes
 
-- The range to run over is specified by state
+- The states included specify the final ranger
 
-- There is an inconsistency in the VT Wetlands layers. While all of the other state boundary polygons are named by the full state name, the Vermont state outline is abbreviated. This is reflected in the default names list. File names should be checked when adding new states.
-
-- The layers for Maryland (MD) and the District of Columbia (DC) overlap. DC is not included and only MD is used.
+- The layers for Maryland (MD) and the District of Columbia (DC) overlap in the FWS data, but not in the state boundary layer. DC is not included in "states" (only MD is used). In the state boundaries layer, "District of Columbia" must be specified if including Maryland.
 
 ## Possible Future Work
 - Classification definitions can be changed with relatively minimal effort. 

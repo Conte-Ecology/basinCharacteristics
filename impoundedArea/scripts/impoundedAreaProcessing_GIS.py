@@ -1,16 +1,17 @@
 import arcpy
+from arcpy import env
+from arcpy.sa import *
 
 # ==============
 # Specify inputs
 # ==============
-
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/impoundedArea"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV"]
-stateNames = ["Massachusetts", "Connecticut", "Rhode_Island", "Maine", "New_Hampshire", "VT", "New_York", "Delaware", "Maryland", "New_Jersey", "Pennsylvania", "Virginia", "West_Virginia"]
-wetlandsFolder = "C:/KPONEIL/SourceData/fwsWetlands"
-flowlinesFile = "F:/KPONEIL/SourceData/topography/Topography_UMASS/datainNortheast.gdb/allstreams"
+stateNames = ["District of Columbia", "Massachusetts", "Connecticut", "Rhode Island", "Maine", "New Hampshire", "Vermont", "New York", "Delaware", "Maryland", "New Jersey", "Pennsylvania", "Virginia", "West Virginia"]
+wetlandsFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/fwsWetlands/rawData"
+flowlinesFile = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/umass/northeastStreams.gdb/allstreams"
+statesFile = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/political/states/States.shp"
 outputName = "Northeast"
-
 
 # ===========
 # Folder prep
@@ -62,43 +63,45 @@ arcpy.Project_management(flowlinesFile, working_db + "/flowlines_prj",  projecti
 # ===================
 # Create Range Raster
 # ===================
+# Generates a blank raster of the entire range. This raster will serve as the template to which the state rasters will be mosaicked.
 
-# List the states
-statePolyList = []
+spatial_ref = arcpy.Describe(wetlandsFolder + "/" + states[1] + "_wetlands.gdb/" + states[1] + "_Wetlands").spatialReference
 
-for i in range(len(stateNames)): 
-	statePolyList.append(wetlandsFolder + "/" + states[i] + "_wetlands.gdb/" + stateNames[i])
+# Project the states file to match the wetlands			
+arcpy.Project_management(statesFile, working_db + "/statesFilePrj", spatial_ref)
 
-# Merge state boundaries
-arcpy.Merge_management(statePolyList, working_db + "/WaterbodyStates")
+arcpy.Sort_management(working_db + "/statesFilePrj",
+						working_db + "/statesSort",
+						[["AREA", "DESCENDING"]])
 
-# Create regional outline
-arcpy.Dissolve_management(working_db + "/WaterbodyStates", working_db + "/WaterbodyRange","#", "#", "SINGLE_PART", "DISSOLVE_LINES")	
+arcpy.DeleteIdentical_management(working_db + "/statesSort", "STATE")
+
+arcpy.management.MakeFeatureLayer(working_db + "/statesSort", "selectStates")
+for sN in stateNames:
+    query = """ "STATE" = '""" + sN +"""'"""
+    arcpy.management.SelectLayerByAttribute("selectStates", "ADD_TO_SELECTION", query)																			
+	
+arcpy.FeatureClassToGeodatabase_conversion("selectStates", working_db)
+
+arcpy.Dissolve_management(working_db + "/selectStates", working_db + "/WaterbodyRange","#", "#", "SINGLE_PART", "DISSOLVE_LINES")
 
 # Calculate the field that determines the raster value
 arcpy.AddField_management("WaterbodyRange", "rasterVal", "SHORT")
 arcpy.CalculateField_management ("WaterbodyRange", "rasterVal", 0, "PYTHON_9.3")	
 
+
 # Create template for the final raster
-arcpy.PolygonToRaster_conversion(working_db + "/WaterbodyRange", 
+arcpy.PolygonToRaster_conversion("WaterbodyRange", 
 										"rasterVal", 
 										working_raster + "/rangeRaster", 
 										"MAXIMUM_COMBINED_AREA", 
 										"NONE", 
 										30)
 
-
-
 # Clip flowlines to outline
 # -------------------------
 arcpy.Clip_analysis(working_db + "/flowlines_prj", working_db + "/WaterbodyRange", working_db + "/flowlinesClip")
 
-
-# Remove some layers from the map
-# -------------------------------
-arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "WaterbodyStates", df)[0] )
-arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "flowlines_prj", df)[0] )
-arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "WaterbodyRange", df)[0] )
 
 
 
@@ -240,9 +243,6 @@ for j in range(len(states)):
 # Mosaicking Rasters
 # ==================
 
-# Open Water
-# ----------
-
 # List 4 categories
 categories = ["openOn", "openOff", "allOn", "allOff"]
 
@@ -253,7 +253,7 @@ for k in range(len(categories)):
 	mosaicList = [working_raster + "/rangeRaster"]
 	
 	# Add the states to the list
-	for s in range(len(stateNames)): 
+	for s in range(len(states)): 
 		mosaicList.append(working_raster + "/" + categories[k] + "_" + states[s])
 	del s
 	
@@ -262,12 +262,17 @@ for k in range(len(categories)):
 		
 	# Mosaic the state rasters together
 	arcpy.MosaicToNewRaster_management(mosaicList,
-										output_folder, 
-										categories[k] + "Net",
+										working_raster, 
+										categories[k] + "Ext",
 										working_raster + "/rangeRaster",
 										"8_BIT_UNSIGNED", 
 										30, 
 										1, 
 										"MAXIMUM",
 										"FIRST")
-	del mosaicList
+	
+
+	outExtract = ExtractByMask(working_raster + "/" + categories[k] + "Ext", "WaterbodyRange")
+	outExtract.save(output_folder + "/" + categories[k] + "Net")
+
+#arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "outExtract", df)[0] )	

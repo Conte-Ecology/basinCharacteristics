@@ -23,7 +23,8 @@ outputName          = lines[1] .replace('outputName', '')         .replace('=', 
 catchmentsFileName  = lines[4] .replace('catchmentsFileName' , '').replace('=', '').replace('\n','').replace('"','').replace(' ','') + ".shp"
 zoneField           = lines[7] .replace('zoneField' , '')         .replace('=', '').replace('\n','').replace('"','').replace(' ','')
 statType            = lines[10].replace('statType' , '')          .replace('=', '').replace('\n','').replace('"','').replace(' ','')
-rasterList          = lines[13].replace('rasterList', '')         .replace('=', '').replace('c(','').replace(')','').replace('\n','').replace('"','').replace(' ','').split(",")
+discreteRasters     = lines[13].replace('discreteRasters', '')    .replace('=', '').replace('c(','').replace(')','').replace('\n','').replace('"','').replace(' ','').split(",")
+continuousRasters   = lines[14].replace('continuousRasters', '')  .replace('=', '').replace('c(','').replace(')','').replace('\n','').replace('"','').replace(' ','').split(",")
 
 
 # ===========
@@ -87,17 +88,17 @@ mxd = arcpy.mapping.MapDocument("CURRENT")
 df = arcpy.mapping.ListDataFrames(mxd)[0]
 
 
-
-# ===============================
 # Add Catchments shapefile to map
-# ===============================
+# -------------------------------
 addLayer = arcpy.mapping.Layer(vector_directory + "/" + catchmentsFileName)
-
 arcpy.mapping.AddLayer(df, addLayer, "AUTO_ARRANGE")
 
 
+# ======================================================
+# Reproject & Resample Rasters to match catchment raster
+# ======================================================
 # If the zonal shapefile has not been rasterized, then do so.
-	# This particular catchment file is derived from a 30m DEM and the coordinate system is in meters, so 30 works here.
+	# This particular catchment file is derived from a 30m DEM and the coordinate system is in meters, so 30 works here for the cell size.
 if not arcpy.Exists(working_directory_processingFiles + "/catRaster"):
 
 	arcpy.FeatureToRaster_conversion(vector_directory + "/" + catchmentsFileName, 
@@ -105,51 +106,38 @@ if not arcpy.Exists(working_directory_processingFiles + "/catRaster"):
 										working_directory_processingFiles + "/catRaster", 
 										30)
 
-
-# ============================
-# Indexing Rasters
-# ============================
-
-if rasterList == ["ALL"]: 
-
-	arcpy.env.workspace = raster_directory
-	rasterList = [x.encode('UTF8') for x in arcpy.ListRasters()]
-
+	# Generate the attribute field
+	arcpy.BuildRasterAttributeTable_management(working_directory_processingFiles + "/catRaster", "NONE")
 	
+	# Add zoneField
+	arcpy.AddField_management(working_directory_processingFiles + "/catRaster", zoneField, "LONG")
+	arcpy.CalculateField_management (working_directory_processingFiles + "/catRaster", zoneField, "!VALUE!", "PYTHON_9.3")
+	
+	cellSize = int(arcpy.GetRasterProperties_management(working_directory_processingFiles + "/catRaster", "CELLSIZEX").getOutput(0))
+	
+	# Add zoneField
+	arcpy.AddField_management(working_directory_processingFiles + "/catRaster", "AreaSqKM", "DOUBLE")
+	arcpy.CalculateField_management("catRaster", "AreaSqKM", "[COUNT]*900/1000000", "VB", "#")
+	
+	arcpy.TableToTable_conversion("catRaster", gisTables_directory, "catRasterAreas.dbf")
+	
+	
+# Define template raster (derived from catchments)
+zonalRaster = working_directory_processingFiles + "/catRaster"	
+cellX = int(arcpy.GetRasterProperties_management(zonalRaster, "CELLSIZEX").getOutput(0))
+
+# Master list of rasters
+rasterList = discreteRasters + continuousRasters
+
+# List rasters that have already been projected
 arcpy.env.workspace = working_directory
 projectedRasters = [x.encode('UTF8') for x in arcpy.ListRasters()]
 
-
-
-
-
-# RESAMPLE RASTERS....
-
-
-for j in raster_count:
-	out_file = "C:/KPONEIL/USGS/GIS/DATA/BrookTroutRange/Zonal Stats Layers/" + out_raster[j]
-	arcpy.Resample_management(in_value_raster[j],out_file,0.00035088407,"NEAREST")
-
-	
-#Method will depend on type... not sure how to automate this easily(???)
-# ... how about listing rasters with continuous data. 
-# Default method will be "NEAREST", but pick a different one for any rasters that are continuous datasets (climate, elevation, etc.)
-
-
-# =========================================
-# Reproject Rasters to Catchment Projection
-# =========================================
-
+# Check if any of the rasters need to be projected/resmapled
 if (set(rasterList) <= set(projectedRasters)) == False:
 
 	# List rasters that need to be projected
 	rastersToProject = [x for x in rasterList if x not in projectedRasters]
-
-	# Define the projection to use (that of the wetlands)
-	projection_definition = vector_directory + "/" + catchmentsFileName
-
-	# Name the spatial reference of the catchment
-	catchSpatialRef = arcpy.Describe( vector_directory + "/" + catchmentsFileName ).spatialReference.name
 
 	# Set directory
 	arcpy.env.workspace = raster_directory
@@ -157,16 +145,22 @@ if (set(rasterList) <= set(projectedRasters)) == False:
 	# Copy each file with a .csv extension to a dBASE file
 	for raster in rastersToProject:
 		
-		# Get spatial reference of raster
-		rasterSpatialRef  = arcpy.Describe( raster_directory + "/" + raster ).spatialreference.name
-		
-		# Reproject the raster if needed
-		if rasterSpatialRef != catchSpatialRef:
-			arcpy.ProjectRaster_management (raster_directory + "/" + raster, 
-												working_directory + "/" + raster,  
-												projection_definition)
-		else: arcpy.CopyRaster_management(raster_directory + "/" + raster, 
-											working_directory + "/" + raster)
+		# Project and resample discrete (categorical) rasters with appropriate resampling method
+		if (raster in discreteRasters):
+			arcpy.ProjectRaster_management(raster_directory + "/" + raster, 
+											working_directory + "/" + raster,  
+											zonalRaster,
+											"NEAREST",
+											cellX,
+											"#","#","#")
+		# Project and resample continuous rasters with appropriate resampling method		
+		if (raster in continuousRasters):
+			arcpy.ProjectRaster_management(raster_directory + "/" + raster, 
+											working_directory + "/" + raster,  
+											zonalRaster,
+											"BILINEAR",
+											cellX,
+											"#","#","#")
 
 
 # ====================
@@ -178,70 +172,47 @@ for raster in rasterList: # raster loop
 	# -------------------------
 	# Run zonal statistics tool
 	# -------------------------
-	
 	#Name layers:
 	outTable = gisTables_directory + "/" + raster + "_" + statType + ".dbf"
 
-	#Produce zonal statistics
-	ZonalStatisticsAsTable(vector_directory + "/" + catchmentsFileName,
-									zoneField,
-									working_directory + "/" + raster,
-									outTable,
-									"DATA",
-									statType)
-						
-	# --------------------
-	# Fill in missing data 
-	# --------------------
-	# Calculate raster values at centroid of catchment.
-		
-	# Join the output table to the catchments shapefile								
-	attributeJoin = arcpy.AddJoin_management (catchmentsFileName, 
-								zoneField, 
-								outTable, 
-								zoneField)
+	# Run zonal statistics over each layer using the rasterized catchments file
+	ZonalStatisticsAsTable(zonalRaster,
+								zoneField,
+								working_directory + "/" + raster,
+								outTable,
+								"DATA",
+								statType)	
 
+	# Calculate catchments with missing data
+	# --------------------------------------
+	# Join the output file to the catchments file
+	attributeJoin = arcpy.AddJoin_management (catchmentsFileName, 
+												zoneField, 
+												outTable, 
+												zoneField)
+	
 	# Define the query
 	qry = raster +   "_"  + statType +  "."  + zoneField + ' IS NULL'
-				
-	# Select catchments					
-	arcpy.FeatureClassToFeatureClass_conversion(attributeJoin, 
-													working_directory_processingFiles, 
-													raster + "MissingCatchments.shp", 
-													qry)
-
-	# Remove the join
+	
+	arcpy.SelectLayerByAttribute_management (attributeJoin, "NEW_SELECTION", qry)
+	
+	missingVals = arcpy.TableToTable_conversion(catchmentsFileName,
+												gisTables_directory,
+												raster + "_" + statType + "_" + "MissingValues.dbf")
+	
+	# Remove the join & clear the selection
 	arcpy.RemoveJoin_management(catchmentsFileName)
-		
-	del attributeJoin
-		
-	# Get the centroids of the missing catchments
-	arcpy.FeatureToPoint_management(working_directory_processingFiles + "/" + raster + "MissingCatchments.shp", 
-										working_directory_processingFiles + "/" + raster + "MissingCentroids", 
-										"INSIDE")
-					
-	# Extract the raster values at centroids (need Spatial Analyst enabled)
-	ExtractValuesToPoints (working_directory_processingFiles + "/" + raster + "MissingCentroids.shp", 
-									working_directory + "/" + raster, 
-									working_directory_processingFiles + "/" + raster + "MissingValues.shp", 
-									"INTERPOLATE",
-									"VALUE_ONLY")
-
+	arcpy.SelectLayerByAttribute_management(catchmentsFileName, "CLEAR_SELECTION")
+	
 	# Add a new field for the raster value to match the zonal statistics output table
-	arcpy.AddField_management(working_directory_processingFiles + "/" + raster + "MissingValues.shp", statType, "DOUBLE")
-	arcpy.CalculateField_management (working_directory_processingFiles + "/" + raster + "MissingValues.shp", statType, "!RASTERVALU!", "PYTHON_9.3")							
-									
-	# Export the missing values table
-	arcpy.TableToTable_conversion(working_directory_processingFiles + "/" + raster + "MissingValues.shp",
-									gisTables_directory,
-									raster + "_" + statType + "_" + "MissingValues.dbf")
+	arcpy.AddField_management(missingVals, "AREA", "DOUBLE")
+	arcpy.AddField_management(missingVals, statType, "DOUBLE")
+
+	arcpy.CalculateField_management (missingVals, statType, 0, "PYTHON_9.3")
+	arcpy.CalculateField_management (missingVals, statType, -9999, "PYTHON_9.3")							
+			
 
 	# Append the missing values to the existing table
-	arcpy.Append_management(gisTables_directory + "/" + raster + "_" + statType + "_" + "MissingValues.dbf", 
+	arcpy.Append_management(missingVals, 
 								outTable, 
 								"NO_TEST")
-
-	# Remove the layers to save space
-	arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, raster + "MissingCatchments", df)[0] )
-	arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, raster + "MissingCentroids", df)[0] )
-	arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, raster + "MissingValues", df)[0] )
