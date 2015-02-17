@@ -1,5 +1,5 @@
-Impounded Area
-==============
+Land Cover Categories
+=====================
 
 This script produces the categorical rasters for specified land use types based on the National Land Cover Dataset.
 
@@ -24,20 +24,20 @@ The folder structure is set up within the scripts. In general, the existing stru
     1. A value of 1 means to include this class
     2. A value of 0 means to exclude this class
     3. A value of -9999 means this class will be converted to NA 
+    4. Reclassification Table Example: 
+    | Class                        | Value  | forest | developed | devel_opn |
+    | -----                        | -----  | ------ | --------- | --------- |
+    | Open Water                   |  11    |	0      | 0         | 0         |
+    | Perennial Ice/Snow           |	12    |	0	     | 0         | 0         |
+    | Developed, Open Space        |	21    |	0      | 1         | 1         |
+    | Developed, Low Intensity     |	22    |	0      | 1         | 0         |
+    | Developed, Medium Intensity  |	23    |	0      | 1         | 0         |
+    | Developed, High Intensity    |	24    |	0      | 1         | 0         |
+    | Barren Land (Rock/Sand/Clay) |	31    |	0      | 0         | 0         |
+
  - "version" is the name that will be associated with this particular run of the tool (e.g. `NortheastHRD` for all High Resolution Catchments)
  - "keepFiles" specifies whether or not to keep the intermediate GIS files. Enter "NO" to delete or "YES" to keep.
  
-Reclassification Table Example:
- 
-| Class                        | Value  | forest | developed | devel_opn |
-| -----                        | -----  | ------ | --------- | --------- |
-| Open Water                   |	11    |	0      | 0         | 0         |
-| Perennial Ice/Snow           |	12    |	0	     | 0         | 0         |
-| Developed, Open Space        |	21    |	0      | 1         | 1         |
-| Developed, Low Intensity     |	22    |	0      | 1         | 0         |
-| Developed, Medium Intensity  |	23    |	0      | 1         | 0         |
-| Developed, High Intensity    |	24    |	0      | 1         | 0         |
-| Barren Land (Rock/Sand/Clay) |	31    |	0      | 0         | 0         |
  
  
 3. Run the script in ArcPython. It does the following:
