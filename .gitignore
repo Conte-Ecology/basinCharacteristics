@@ -9,6 +9,7 @@ outputChunks/
 
 # zonaSltatistics repo
 zonalStatistics/versions/
+missingData/
 
 # impoundments repo
 impoundments/outputFiles

@@ -133,7 +133,7 @@ rasterList = discreteRasters + continuousRasters
 arcpy.env.workspace = working_directory
 projectedRasters = [x.encode('UTF8') for x in arcpy.ListRasters()]
 
-# Check if any of the rasters need to be projected/resmapled
+# Check if any of the rasters need to be projected/resampled
 if (set(rasterList) <= set(projectedRasters)) == False:
 
 	# List rasters that need to be projected
@@ -144,6 +144,8 @@ if (set(rasterList) <= set(projectedRasters)) == False:
 
 	# Copy each file with a .csv extension to a dBASE file
 	for raster in rastersToProject:
+		
+		arcpy.env.snapRaster = zonalRaster
 		
 		# Project and resample discrete (categorical) rasters with appropriate resampling method
 		if (raster in discreteRasters):
@@ -204,11 +206,11 @@ for raster in rasterList: # raster loop
 	arcpy.RemoveJoin_management(catchmentsFileName)
 	arcpy.SelectLayerByAttribute_management(catchmentsFileName, "CLEAR_SELECTION")
 	
-	# Add a new field for the raster value to match the zonal statistics output table
+	# Add a new field for the table to match the zonal statistics output table
 	arcpy.AddField_management(missingVals, "AREA", "DOUBLE")
 	arcpy.AddField_management(missingVals, statType, "DOUBLE")
 
-	arcpy.CalculateField_management (missingVals, statType, 0, "PYTHON_9.3")
+	arcpy.CalculateField_management (missingVals, "AREA", 0, "PYTHON_9.3")
 	arcpy.CalculateField_management (missingVals, statType, -9999, "PYTHON_9.3")							
 			
 

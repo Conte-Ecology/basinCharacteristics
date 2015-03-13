@@ -12,13 +12,11 @@ baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdImperv
 # Define catchments file
 catchmentsFilePath = "F:/KPONEIL/SourceData/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
 
-# Define NLCD Land Use raster
-rasterFilePath = "F:/KPONEIL/SourceData/landCover/nlcd/raw/nlcd_2006_landcover_2011_edition_2014_03_31/nlcd_2006_landcover_2011_edition_2014_03_31.img"
-
-"//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_impervious_2011_edition_2014_10_10/nlcd_2006_impervious_2011_edition_2014_10_10"
+# Define NLCD Impervious raster
+rasterFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_impervious_2011_edition_2014_10_10/nlcd_2006_impervious_2011_edition_2014_10_10.img"
 
 # Define reclassification table
-reclassTable = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover/reclassTable.csv"
+#reclassTable = baseDirectory + "/reclassTable.csv"
 
 # Create a version ID for saving
 version = "NortheastHRD"
@@ -49,89 +47,69 @@ outputDir = versionDir + "/outputFiles"
 if not arcpy.Exists(outputDir): arcpy.CreateFolder_management(versionDir, "outputFiles")
 
 
-# -----------------------------------	
-# Prepare raster for reclassification
-# -----------------------------------
+# --------------------------
+# Prepare the boundary layer
+# --------------------------
 
 # Create regional outline
-outline = arcpy.Dissolve_management(catchmentsFilePath, 
-										geoDatabase + "/outline",
-										"#", 
-										"#", 
-										"SINGLE_PART", 
-										"DISSOLVE_LINES")
+if not arcpy.Exists(geoDatabase + "/outline"):
+	outline = arcpy.Dissolve_management(catchmentsFilePath, 
+											geoDatabase + "/outline",
+											"#", 
+											"#", 
+											"SINGLE_PART", 
+											"DISSOLVE_LINES")
+else: outline = geoDatabase + "/outline"
 
 # Buffer outline
-boundary = arcpy.Buffer_analysis(outline, 
-									geoDatabase + "/boundary", 
-									"1 Kilometers", 
-									"#", 
-									"#", 
-									"ALL")
+if not arcpy.Exists(geoDatabase + "/boundary"):
+	boundary = arcpy.Buffer_analysis(outline, 
+										geoDatabase + "/boundary", 
+										"1 Kilometers", 
+										"#", 
+										"#", 
+										"ALL")
+else: boundary = geoDatabase + "/boundary"
 
 # Reproject the boundary to match the NLCD raster
-boundaryProj = arcpy.Project_management(boundary, 
-										geoDatabase + "/boundaryProj", 
-										rasterFilePath)
+if not arcpy.Exists(geoDatabase + "/boundaryProj"):
+	boundaryProj = arcpy.Project_management(boundary, 
+											geoDatabase + "/boundaryProj", 
+											rasterFilePath)
+else: boundaryProj = geoDatabase + "/boundaryProj"
+
+# ------------------
+# Process the raster
+# ------------------
 
 # Trim the raster to the boundary	
-arcpy.env.extent = rasterFilePath
-rangeRaster = ExtractByMask(rasterFilePath, boundaryProj)	
+if not arcpy.Exists(geoDatabase + "/extractedRaster"):
+	arcpy.env.extent = rasterFilePath
+	rangeRaster = ExtractByMask(rasterFilePath, boundaryProj)
+	rangeRaster.save(geoDatabase + "/extractedRaster")
+else: rangeRaster = geoDatabase + "/extractedRaster"
 
 # Get spatial references
 catchSpatialRef  = arcpy.Describe(catchmentsFilePath).spatialReference.name
-rasterSpatialRef = arcpy.Describe(rasterFilePath).spatialreference.name
+rasterSpatialRef = arcpy.Describe(rangeRaster).spatialreference.name
 
 # Reproject if necessary
-if rasterSpatialRef != catchSpatialRef:	
-	projectedRaster = arcpy.ProjectRaster_management(rangeRaster, 
-														geoDatabase + "/rangeRasterPrj",
-														catchmentsFilePath)
-else: projectedRaster = rangeRaster
+if not arcpy.Exists(geoDatabase + "/rangeRasterPrj"):
+	if rasterSpatialRef != catchSpatialRef:	
+		projectedRaster = arcpy.ProjectRaster_management(rangeRaster, 
+															geoDatabase + "/rangeRasterPrj",
+															catchmentsFilePath)
+	else: projectedRaster = rangeRaster
+else: projectedRaster = geoDatabase + "/rangeRasterPrj"
 
-
+# Remove cells without data
 # -------------------------
-# Create individual rasters
-# -------------------------
+# Count number of unique values
+uniqueValues = arcpy.GetRasterProperties_management(projectedRaster, "UNIQUEVALUECOUNT")
 
-# Set directory
-arcpy.env.workspace = geoDatabase
+# All values should be between 0 and 100. Values outside of this range indicates that the cells need to be removed. (NLCD indicates missing data with a value of 127)
 
-## List of column names
-#fieldList = arcpy.ListFields(reclassTable)
+outCon = Con(projectedRaster, projectedRaster, "", "VALUE >= 0 AND VALUE <= 100")
 
-## Category position and count
-#fieldCount = range(2, len(fieldList))
 
-## Loop through categories and reclassify raster
-#for i in fieldCount:
-
-# Category name
-category = fieldList[i]
-
-# Reclassify the raster according to the table provided
-recRaster = ReclassByTable(projectedRaster, 
-							reclassTable,
-							"Value",
-							"Value", 
-							str(category.name), 
-							"NODATA")
-
-# Save the new raster
-recRaster.save(outputDir + "/" + str(category.name))
-
-# If specified, delete processing files
-if keepFiles == "NO":
-	arcpy.Delete_management(geoDatabase)
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
+outCon.save(outputDir + "/impervious")
