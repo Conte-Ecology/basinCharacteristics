@@ -48,11 +48,11 @@ if not arcpy.Exists(raster_directory): arcpy.CreateFolder_management(gisFiles_di
 
 # Vector directory
 vector_directory = gisFiles_directory + "/vectors"
-if not arcpy.Exists(vector_directory): arcpy.CreateFolder_management(vector_directory, "vectors")
+if not arcpy.Exists(vector_directory): arcpy.CreateFolder_management(gisFiles_directory, "vectors")
 
 # GIS files versions directory
 gisVersion_directory = gisFiles_directory + "/versions"
-if not arcpy.Exists(gisVersion_directory): arcpy.CreateFolder_management(gisVersion_directory, "versions")
+if not arcpy.Exists(gisVersion_directory): arcpy.CreateFolder_management(gisFiles_directory, "versions")
 
 
 #  Run-specific folders
@@ -144,6 +144,8 @@ if (set(rasterList) <= set(projectedRasters)) == False:
 
 	# Copy each file with a .csv extension to a dBASE file
 	for raster in rastersToProject:
+		
+		arcpy.env.snapRaster = zonalRaster
 		
 		# Project and resample discrete (categorical) rasters with appropriate resampling method
 		if (raster in discreteRasters):
