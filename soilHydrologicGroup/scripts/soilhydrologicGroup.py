@@ -132,14 +132,6 @@ for i in range(len(states)):
 	# -------------------------------------------
 	# Calculate the texture field in the Mapunit polygon
 	arcpy.CalculateField_management ("MUPOLYGON_" + states[i], "hydro_grp", "!hydgrp!", "PYTHON_9.3")	
-
-	#
-	##
-	### In Progress.....
-	##
-	#
-	
-	grpListNames
 	
 	for j in range(len(grpList)):
 	
@@ -185,7 +177,7 @@ for k in range(len(grpList)):
 	mosaicList = [rasterFolder + "/rangeRaster"]
 		
 	for s in range(len(states)): 
-		mosaicList.append(rasterFolder + "/hydgrp_" + grpListNames[j] + "_" + states[i])
+		mosaicList.append(rasterFolder + "/hydgrp_" + grpListNames[k] + "_" + states[s])
 	del s
 		
 	# Set processing extent for rasterization
@@ -193,7 +185,7 @@ for k in range(len(grpList)):
 		
 	arcpy.MosaicToNewRaster_management(mosaicList,
 										outputFolder, 
-										"surfCoarse",
+										"hydrogroup_" + grpListNames[k],
 										rasterFolder + "/rangeRaster",
 										"8_BIT_UNSIGNED", 
 										30, 

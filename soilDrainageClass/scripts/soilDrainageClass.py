@@ -8,7 +8,7 @@ from arcpy.sa import *
 
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/soilDrainageClass"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC"]
-soilsFolder = "F:/KPONEIL/SourceData/geology/SSURGO"
+soilsFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nrcsSSURGO/spatial"
 outputName = "Northeast"
 
 # ===========
@@ -53,6 +53,7 @@ df = arcpy.mapping.ListDataFrames(mxd)[0]
 # ========================
 # Create the state rasters
 # ========================
+# Loop through states
 for i in range(len(states)): 
 
 	# Copy the Mapunit polygon to the current directory for editing
@@ -66,7 +67,7 @@ for i in range(len(states)):
 	# Add table to map
 	addTable = arcpy.mapping.TableView(soilsFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/component")
 		
-	#Export tables to new tables so the original tables don't get accidentally altered
+	# Export raw tables to new tables
 	arcpy.TableToTable_conversion(addTable, tableDB, "component_" + states[i])
 		
 	# Join tables to polygon
@@ -82,13 +83,8 @@ for i in range(len(states)):
 											"MAXIMUM_COMBINED_AREA", 
 											"NONE", 
 											30)
-											
-	## Calculate the field that determines the raster value
-	#arcpy.AddField_management(rasterFolder + "/TempDC_" + states[i], "DrainClass", "TEXT")	
-	#arcpy.CalculateField_management (rasterFolder + "/TempDC_" + states[i], "DrainClass", "!component_" + states[i] + ".dra!", "PYTHON_9.3")											
-											
-			
-	# Execute Reclassify
+												
+	# Reclassify the raster by Drainage Class
 	outReclassify = Reclassify(rasterFolder + "/TempDC_" + states[i], 
 								"component_" + states[i] + ".dra", 
 								"'Excessively drained' 1; 'Somewhat excessively drained' 2; 'Well drained' 3; 'Moderately well drained' 4; 'Somewhat poorly drained' 5; 'Poorly drained' 6; 'Very poorly drained' 7", 
@@ -114,7 +110,7 @@ del s
 
 # Run the mosaic tool over all state rasters
 arcpy.MosaicToNewRaster_management(mosaicList,
-									rasterFolder, 
+									outputFolder, 
 									"drainageclass",
 									"#",
 									"8_BIT_UNSIGNED", 
