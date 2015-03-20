@@ -8,7 +8,7 @@ from arcpy.sa import *
 
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/soilDrainageClass"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC"]
-soilsFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nrcsSSURGO/spatial"
+sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nrcsSSURGO/spatial"
 outputName = "Northeast"
 
 # ===========
@@ -57,7 +57,7 @@ df = arcpy.mapping.ListDataFrames(mxd)[0]
 for i in range(len(states)): 
 
 	# Copy the Mapunit polygon to the current directory for editing
-	arcpy.FeatureClassToFeatureClass_conversion(soilsFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/MUPOLYGON", 
+	arcpy.FeatureClassToFeatureClass_conversion(sourceFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/MUPOLYGON", 
 													vectorDB, 
 													"MUPOLYGON_" + states[i])
 
@@ -65,7 +65,7 @@ for i in range(len(states)):
 	# Join "component" table to the polygon
 	# -------------------------------------
 	# Add table to map
-	addTable = arcpy.mapping.TableView(soilsFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/component")
+	addTable = arcpy.mapping.TableView(sourceFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/component")
 		
 	# Export raw tables to new tables
 	arcpy.TableToTable_conversion(addTable, tableDB, "component_" + states[i])

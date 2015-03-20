@@ -1,28 +1,25 @@
-PRISM Climate Data
-==================
+Topography
+==========
 
-IN PROGRESS...
-
-This script produces impervious surface raster based on the National Land Cover Dataset.
+This script produces rasters representing the atmospheric deposition of various compounds.
 
 
 ## Data Sources
-| Layer                                                      | Source              | Link                                         |
-|:-----:                                                     | ------              | ----                                         |
-| PRISM 30-Year Normal (1981 - 2010) of monthly precipition  | PRISM Climate Group | http://www.prism.oregonstate.edu/normals/    |
-| PRISM 30-Year Normal (1981 - 2010) of min & max temperature| PRISM Climate Group | http://www.prism.oregonstate.edu/normals/    |
-| Catchments                                                 | Conte Ecology Group | NA                                           |
+|    Layer           | Source                                  | Link                                                       |
+|   :-----:          | ------                                  | ----                                                       |
+| Deposition Rasters | National Atmospheric Deposition Program | http://nadp.sws.uiuc.edu/ntn/annualmapsByYear.aspx#2011    |
+| Catchments         | Conte Ecology Group                     | NA                                                         |
 
 ## Steps to Run:
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be unzipped, but otherwise kept in the same format as it is downloaded.
 
-1. Open the script `nlcdImperviousProcessing_GIS`
+1. Open the script `atmosphericDeposition`
 
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `nlcdLandCover` folder
  - "catchmentsFilePath" is the file path to the catchments polygons shapefile. (See "Notes" section")
- - "rasterFilePath" is the file path to the raw NLCD Land Use raster (.img format)
+ - "rasterFilePath" is the file path to the raw NADP atmospheric deposition raster (.tif format)
  - "version" is the name that will be associated with this particular run of the tool (e.g. `NortheastHRD` for all High Resolution Catchments)
 
 3. Run the script in ArcPython. It does the following:
@@ -33,10 +30,11 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 ## Output Rasters
 
-One raster named "impervious".
+Two rasters are created. The "dep_no3_2011" and "dep_so4_2011" rasters represent the wet atmospheric deposition of the nitrate ion (NO3) and the sulfate ion (SO4) in 2011, respectively.
 
 ## Notes
 
 - Typically, the "catchmentsFilePath" variable specifies a shapefile of hydrologic catchments defining the range over which the "Zonal Statistics" tool will be applied. It is possible to enter another polygon shapefile, such as state or town boundaries, as this variable. The primary purpose of this file is to trim the original raster, which represents the continental US, to a manageable size.
 
 ## Possible Future Work
+- Additional deposition layers are available and can be added with relative ease

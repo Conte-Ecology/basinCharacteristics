@@ -7,13 +7,13 @@ from arcpy import env
 # -----------------
 
 # Define working directory
-baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdImpervious"
+baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/atmosphericDeposition"
 
 # Define catchments file
 catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
 
 # Define NLCD Impervious raster
-rasterFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_impervious_2011_edition_2014_10_10/nlcd_2006_impervious_2011_edition_2014_10_10.img"
+sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/deposition/nadp/spatial"
 
 # Create a version ID for saving
 version = "NortheastHRD"
@@ -40,6 +40,7 @@ if not arcpy.Exists(geoDatabase): arcpy.CreateFileGDB_management(versionDir, "wo
 outputDir = versionDir + "/outputFiles"
 if not arcpy.Exists(outputDir): arcpy.CreateFolder_management(versionDir, "outputFiles")
 
+rasterList = ["dep_no3_2011", "dep_so4_2011"]
 
 # --------------------------
 # Prepare the boundary layer
@@ -65,55 +66,27 @@ if not arcpy.Exists(geoDatabase + "/boundary"):
 										"ALL")
 else: boundary = geoDatabase + "/boundary"
 
-# Reproject the boundary to match the NLCD raster
+# Reproject the boundary to match the covariate raster
 if not arcpy.Exists(geoDatabase + "/boundaryProj"):
 	boundaryProj = arcpy.Project_management(boundary, 
 											geoDatabase + "/boundaryProj", 
-											rasterFilePath)
+											sourceFolder + "/" + rasterList[0] + ".tif")
 else: boundaryProj = geoDatabase + "/boundaryProj"
 
-# ------------------
-# Process the raster
-# ------------------
+# -------------------
+# Process the rasters
+# -------------------
 
-# Trim the raster to the boundary	
-if not arcpy.Exists(geoDatabase + "/extractedRaster"):
+for r in range(len(rasterList)):
+
+	# Trim raster to boundary
+	# -----------------------
+	# Define the raster file path
+	rasterFilePath = sourceFolder + "/" + rasterList[r] + ".tif"
+
+	# Trim the raster to the boundary	
 	arcpy.env.extent = rasterFilePath
-	trimmedRaster = ExtractByMask(rasterFilePath, boundaryProj)
-	trimmedRaster.save(geoDatabase + "/extractedRaster")
-else: trimmedRaster = geoDatabase + "/extractedRaster"
-
-# Remove cells without data
-# -------------------------
-# All values should be between 0 and 100. Values outside of this range indicates that the cells need to be removed. (NLCD indicates missing data in this layer with a value of 127)
-outCon = Con(trimmedRaster, trimmedRaster, "", "VALUE >= 0 AND VALUE <= 100")
-outCon.save(outputDir + "/impervious")
-
-
-
-
-
-
-
-# Get spatial references
-catchSpatialRef  = arcpy.Describe(catchmentsFilePath).spatialReference.name
-rasterSpatialRef = arcpy.Describe(trimmedRaster).spatialreference.name
-
-
-# Remove reprojection for consistency's sake
-
-
-# Reproject if necessary
-if not arcpy.Exists(geoDatabase + "/rangeRasterPrj"):
-	if rasterSpatialRef != catchSpatialRef:	
-		projectedRaster = arcpy.ProjectRaster_management(rangeRaster, 
-															geoDatabase + "/rangeRasterPrj",
-															catchmentsFilePath)
-	else: projectedRaster = rangeRaster
-else: projectedRaster = geoDatabase + "/rangeRasterPrj"
-
-# Remove cells without data
-# -------------------------
-# All values should be between 0 and 100. Values outside of this range indicates that the cells need to be removed. (NLCD indicates missing data in this layer with a value of 127)
-outCon = Con(projectedRaster, projectedRaster, "", "VALUE >= 0 AND VALUE <= 100")
-outCon.save(outputDir + "/impervious")
+	extractedRaster  = ExtractByMask(rasterFilePath, boundaryProj)
+	
+	# Save the trimmed raster
+	extractedRaster.save(outputDir + "/" + rasterList[r])

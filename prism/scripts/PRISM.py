@@ -11,9 +11,11 @@ baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/prism"
 
 # Define catchments file
 catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+catchmentsFilePath = "F:/KPONEIL/SourceData/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
 
 # Define NLCD Impervious raster
-prismFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/climate/prism/spatial"
+sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/climate/prism/spatial"
+sourceFolder = "F:/KPONEIL/SourceData/climate/prism/spatial"
 
 # Create a version ID for saving
 version = "NortheastHRD"
@@ -81,36 +83,27 @@ if not arcpy.Exists(geoDatabase + "/boundary"):
 										"ALL")
 else: boundary = geoDatabase + "/boundary"
 
-# Reproject the boundary to match the NLCD raster
+# Reproject the boundary to match the covariate raster
 if not arcpy.Exists(geoDatabase + "/boundaryProj"):
 	boundaryProj = arcpy.Project_management(boundary, 
 											geoDatabase + "/boundaryProj", 
-											rasterFolder + "/" + rasterList[0][0])
+											sourceFolder + "/" + rasterList[0][0])
 else: boundaryProj = geoDatabase + "/boundaryProj"
 
 # ------------------
 # Process the raster
 # ------------------
 
+#
+##
+### Extract by Mask has a datum conflict
+##
+#
+
 for r in range(len(rasterList)):
 
 	# Trim the raster to the boundary	
-	rasterFilePath = rasterFolder + "/" + rasterList[r][0]
+	rasterFilePath = sourceFolder + "/" + rasterList[r][0]
 	arcpy.env.extent = rasterFilePath
 	extractedRaster = ExtractByMask(rasterFilePath, boundaryProj)
-	extractedRaster.save(geoDatabase + "/" + rasterList[r][1] + "_x")
-
-
-	# Get spatial references
-	catchSpatialRef  = arcpy.Describe(catchmentsFilePath).spatialReference.name
-	rasterSpatialRef = arcpy.Describe(rasterFilePath).spatialreference.name
-
-	# Reproject if necessary
-	if not arcpy.Exists(outputDir + "/" + rasterList[r][1]):
-		if rasterSpatialRef != catchSpatialRef:	
-			arcpy.ProjectRaster_management(geoDatabase + "/" + rasterList[r][1] + "_x", 
-												outputDir + "/" + rasterList[r][1],
-												catchmentsFilePath)
-		else: arcpy.CopyRaster_management(geoDatabase + "/" + rasterList[r][1] + "_x",
-											   outputDir + "/" + rasterList[r][1],
-											   "#","#","#","#","8_BIT_SIGNED")
+	extractedRaster.save(outputDir + "/" + rasterList[r][1])

@@ -6,29 +6,17 @@ import arcpy
 
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/soilHydrologicGroup"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC"]
-soilsFolder = "F:/KPONEIL/SourceData/geology/SSURGO"
+sourceFolder = "F:/KPONEIL/SourceData/geology/SSURGO"
 outputName = "Northeast"
 
 
-# Hydrologic group Combos	
-a =		""" "HYDGRP" = 'A' """
+# Define Hydrologic Group classifications (selection code in 1st column and name in 2nd column)
+hydroGroups = [ [""" "hydro_grp" = 'A' """, 															 	  	 "a" ],
+				[""" "hydro_grp" = 'A' OR "hydro_grp" = 'B' """, 											  	 "ab"],
+				[""" "hydro_grp" = 'C' OR "hydro_grp" = 'D' OR "hydro_grp" = 'C/D' """, 					  	 "cd"],
+				[""" "hydro_grp" = 'D' """, 															 	  	 "d1"],
+				[""" "hydro_grp" = 'A/D' OR "hydro_grp" = 'B/D' OR "hydro_grp" = 'C/D' OR "hydro_grp" = 'D' """, "d4"] ]
 
-ab = 	""" "HYDGRP" = 'A' OR 
-			"HYDGRP" = 'B' """
-	
-cd = 	""" "HYDGRP" = 'C' OR 
-			"HYDGRP" = 'D' OR 
-			"HYDGRP" = 'C/D' """
-
-d1 = 	""" "HYDGRP" = 'D' """
-
-d4 =	""" "HYDGRP" = 'A/D' OR 
-			"HYDGRP" = 'B/D' OR 
-			"HYDGRP" = 'C/D' OR
-			"HYDGRP" = 'D' """
-	
-grpList = [a, ab, cd, d1, d4]
-grpListNames = ["a", "ab", "cd", "d1", "d4"]
 
 
 # ===========
@@ -78,7 +66,7 @@ df = arcpy.mapping.ListDataFrames(mxd)[0]
 # Create a list of the state polygons
 statePolyList = []
 for k in range(len(states)):
-	statePolyList.append(soilsFolder + "/" + "gssurgo_g_" + states[k] + ".gdb/SAPOLYGON")
+	statePolyList.append(sourceFolder + "/" + "gssurgo_g_" + states[k] + ".gdb/SAPOLYGON")
 
 # Merge state boundaries
 arcpy.Merge_management(statePolyList, vectorDB + "/SoilsStates")
@@ -106,7 +94,7 @@ arcpy.PolygonToRaster_conversion("SoilsRange",
 for i in range(len(states)): 
 
 	# Copy the Mapunit polygon to the current directory for editing
-	arcpy.FeatureClassToFeatureClass_conversion(soilsFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/MUPOLYGON", 
+	arcpy.FeatureClassToFeatureClass_conversion(sourceFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/MUPOLYGON", 
 													vectorDB, 
 													"MUPOLYGON_" + states[i])
 
@@ -119,7 +107,7 @@ for i in range(len(states)):
 	# Join "component" table to the polygon
 	# -------------------------------------
 	# Add table to map
-	addTable = arcpy.mapping.TableView(soilsFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/component")
+	addTable = arcpy.mapping.TableView(sourceFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/component")
 		
 	#Export tables to new tables so the original tables don't get accidentally altered
 	arcpy.TableToTable_conversion(addTable, tableDB, "component_" + states[i])
@@ -133,37 +121,43 @@ for i in range(len(states)):
 	# Calculate the texture field in the Mapunit polygon
 	arcpy.CalculateField_management ("MUPOLYGON_" + states[i], "hydro_grp", "!hydgrp!", "PYTHON_9.3")	
 	
-	for j in range(len(grpList)):
+	for j in range(len(hydroGroups)):
 	
 		# Select out the categories for Hydrologic Group classifications
 		statePolyGrp = arcpy.FeatureClassToFeatureClass_conversion (vectorDB + "/MUPOLYGON_" + states[i], 
 																		vectorDB, 
-																		"hydgrp_" + grpListNames[j] + "_" + states[i], 
-																		grp[j])
+																		"hydgrp_" + hydroGroups[j][1] + "_" + states[i], 
+																		hydroGroups[j][0])
 
 		# Rasterize the state polygon
 		# ---------------------------
 		# Calculate the field that determines the raster value
 		arcpy.AddField_management(statePolyGrp, "rasterVal", "SHORT")
-		arcpy.CalculateField_management (statePolyGrp, "rasterVal", 1, "PYTHON_9.3")		
+		arcpy.CalculateField_management (statePolyGrp, "rasterVal", 1, "PYTHON_9.3")
 					
 		# Set the extent																			 
-		arcpy.env.extent = rasterFolder + "/rangeRaster"																			 
+		arcpy.env.extent = rasterFolder + "/rangeRaster"
 
 		# Convert to raster
 		arcpy.PolygonToRaster_conversion(statePolyGrp, 
 											"rasterVal", 
-											rasterFolder + "/hydgrp_" + grpListNames[j] + "_" + states[i], 
+											rasterFolder + "/hydgrp_" + hydroGroups[j][1] + "_" + states[i], 
 											"MAXIMUM_COMBINED_AREA", 
 											"NONE", 
 											30)
 											
-		# Remove some layers from the map
-		# -------------------------------
-		arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "hydgrp_" + grpListNames[j] + "_" + states[i], df)[0] )
-		arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "MUPOLYGON_"  + states[i], df)[0] )
-
+		# Remove grouped state polygon
+		arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "hydgrp_" + hydroGroups[j][1] + "_" + states[i], df)[0] )
+	
+	# Remove main state polygon
+	arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "MUPOLYGON_"  + states[i], df)[0] )
 # End state loop
+
+
+
+
+
+
 
 
 # ==================										
@@ -172,12 +166,12 @@ for i in range(len(states)):
 
 # Loop through each hydrologic group classification
 # -------------------------------------------------
-for k in range(len(grpList)):
+for m in range(len(hydroGroups)):
 
 	mosaicList = [rasterFolder + "/rangeRaster"]
 		
 	for s in range(len(states)): 
-		mosaicList.append(rasterFolder + "/hydgrp_" + grpListNames[k] + "_" + states[s])
+		mosaicList.append(rasterFolder + "/hydgrp_" + hydroGroups[m][1] + "_" + states[s])
 	del s
 		
 	# Set processing extent for rasterization
@@ -185,7 +179,7 @@ for k in range(len(grpList)):
 		
 	arcpy.MosaicToNewRaster_management(mosaicList,
 										outputFolder, 
-										"hydrogroup_" + grpListNames[k],
+										"hydrogroup_" + hydroGroups[m][1],
 										rasterFolder + "/rangeRaster",
 										"8_BIT_UNSIGNED", 
 										30, 

@@ -1,12 +1,7 @@
 Percent Sandy
 =============
 
-
-# IN PROGRESS....
-
-
-
-This script produces a spatial dataset of geology that is categorized as "surficial coarseness", based on the Soil Survey Geographic Database (SSURGO).
+This script produces a spatial dataset of geology that is categorized as "sandy" by the Soil Survey Geographic Database (SSURGO).
 
 
 ## Data Sources
@@ -20,10 +15,10 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `soilsFolder`
 
-Open the script `soils_surficialCoarseness`
+Open the script `percentSandy`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `surficialCoarseness` folder (current parent working directory)
+ - "baseDirectory" is the path to the `percentSandy` folder (current parent working directory)
  - "states" is the list of state abbreviations included in the desired range
  - "soilsFolder" is the source folder of the wetlands datasets by state
  - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
@@ -32,17 +27,17 @@ Open the script `soils_surficialCoarseness`
    - Sets up the folder structure in the specified directory
    - Creates an empty raster of the entire specified range
    - Merges the necessary data tables in order to connect spatial data to necessary soil classification
-   - Loops through the state polygons, creating state rasters of the surficial coarseness category
+   - Loops through the state polygons, creating state rasters of the sandy category
    - Mosaicks all of the state raster and the full range empty raster
 
 
 
 ## Output Rasters
 
-Raster name: surfCoarse <br>
+Raster name: percent_sandy <br>
 
 
-Description: This layer represents the soil parent material that is described as "surficially coarse". This classification is defined as a soil whose parent material texture is made up of sand, gravel, or a combination of the two. (In SSURGO's "Component Parent Material" table ("copm") the column "Textureal Modifier" ("pmmodifier") = "Sandy", "Sandy and gravelly", or "Gravelly"). A value of 1 indicates the cell is classified as surficial coarseness and 0 indicates not. The raster is meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
+Description: This layer represents the soil parent material that is described as "Sandy". This classification is defined as a soil whose parent material texture is sandy. (In SSURGO's "Component Parent Material" table ("copm") the column "Textural Modifier" ("pmmodifier") = "Sandy"). A value of 1 indicates the cell is classified as surficial coarseness and 0 indicates not. The raster is meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
 
 
 ## Notes

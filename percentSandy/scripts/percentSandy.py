@@ -4,7 +4,7 @@ import arcpy
 # Specify inputs
 # ==============
 
-baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/surficialCoarseness"
+baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/percentSandy"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC"]
 soilsFolder = "F:/KPONEIL/SourceData/geology/SSURGO"
 outputName = "Northeast"
@@ -79,7 +79,7 @@ arcpy.PolygonToRaster_conversion("SoilsRange",
 										30)
 
 
-										
+
 # ========================
 # Create the state rasters
 # ========================
@@ -123,29 +123,29 @@ for i in range(len(states)):
 	# Select out the categories for "surficial coarseness"
 	arcpy.FeatureClassToFeatureClass_conversion (vectorDB + "/MUPOLYGON_" + states[i], 
 																			vectorDB, 
-																			"sandy_" + states[i], 
+																			"sandyPoly_" + states[i], 
 																			""" "texture" = 'Sandy' """)
 
 	# Rasterize the state polygon
 	# ---------------------------
 	# Calculate the field that determines the raster value
-	arcpy.AddField_management("sandy_" + states[i], "rasterVal", "SHORT")
-	arcpy.CalculateField_management ("sandy_" + states[i], "rasterVal", 1, "PYTHON_9.3")		
+	arcpy.AddField_management("sandyPoly_" + states[i], "rasterVal", "SHORT")
+	arcpy.CalculateField_management ("sandyPoly_" + states[i], "rasterVal", 1, "PYTHON_9.3")		
 				
 	# Set the extent																			 
 	arcpy.env.extent = rasterFolder + "/rangeRaster"																			 
 
 	# Convert to raster
-	arcpy.PolygonToRaster_conversion("sandy_" + states[i], 
+	arcpy.PolygonToRaster_conversion("sandyPoly_" + states[i], 
 											"rasterVal", 
-											rasterFolder + "/pcntSandy_" + states[i], 
+											rasterFolder + "/sandyRast_" + states[i], 
 											"MAXIMUM_COMBINED_AREA", 
 											"NONE", 
 											30)
 											
 	# Remove some layers from the map
 	# -------------------------------
-	arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "sandy_" + states[i], df)[0] )
+	arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "sandyPoly_" + states[i], df)[0] )
 	arcpy.mapping.RemoveLayer(df, arcpy.mapping.ListLayers(mxd, "MUPOLYGON_"  + states[i], df)[0] )																					
 # End state loop
 
@@ -157,7 +157,7 @@ for i in range(len(states)):
 mosaicList = [rasterFolder + "/rangeRaster"]
 	
 for s in range(len(states)): 
-	mosaicList.append(rasterFolder + "/sandy_" + states[s])
+	mosaicList.append(rasterFolder + "/sandyRast_" + states[s])
 del s
 	
 # Set processing extent for rasterization
