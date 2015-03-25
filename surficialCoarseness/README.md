@@ -1,7 +1,7 @@
 Surficial Coarseness
 ====================
 
-This script produces a spatial dataset of geology that is categorized as "surficial coarseness", based on the Soil Survey Geographic Database (SSURGO).
+This script produces a spatial dataset of geology that is categorized as being "surficially coarse", based on the Soil Survey Geographic Database (SSURGO). A value of 1 indicates the cell is classified as surficial coarseness and 0 indicates not. 
 
 
 ## Data Sources
@@ -13,14 +13,14 @@ This script produces a spatial dataset of geology that is categorized as "surfic
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
 
-1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `soilsFolder`
+1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `sourceFolder`
 
-Open the script `soils_surficialCoarseness`
+Open the script `surficialCoarseness`
 
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `surficialCoarseness` folder (current parent working directory)
  - "states" is the list of state abbreviations included in the desired range
- - "soilsFolder" is the source folder of the wetlands datasets by state
+ - "sourceFolder" is the source folder of the wetlands datasets by state
  - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
 
 3. Run the script in ArcPython. It does the following:
@@ -34,12 +34,11 @@ Open the script `soils_surficialCoarseness`
 
 ## Output Rasters
 
+#### Surficial Coarseness
 Raster name: surfCoarse <br>
-
-
-Description: This layer represents the soil parent material that is described as "surficially coarse". This classification is defined as a soil whose parent material texture is made up of sand, gravel, or a combination of the two. (In SSURGO's "Component Parent Material" table ("copm") the column "Textureal Modifier" ("pmmodifier") = "Sandy", "Sandy and gravelly", or "Gravelly"). A value of 1 indicates the cell is classified as surficial coarseness and 0 indicates not. The raster is meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
+Description: This layer represents the soil parent material that is described as "surficially coarse". This classification is defined as a soil whose parent material texture is made up of sand, gravel, or a combination of the two. (In SSURGO's "Component Parent Material" table ("copm") the column "Textureal Modifier" ("pmmodifier") = "Sandy", "Sandy and gravelly", or "Gravelly").
 
 
 ## Notes
 
-- The range to run over is specified by state
+- The spatial range is determined by the list of states specified.

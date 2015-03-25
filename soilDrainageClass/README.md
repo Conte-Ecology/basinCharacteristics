@@ -1,7 +1,7 @@
 Soil Drainage Class
 ===================
 
-This script produces a spatial dataset of the soil drainage class of the soil based on the Soil Survey Geographic Database (SSURGO). The qualitiative classification are reclassified to numeric values for spatial averaging. 
+This script produces a spatial dataset of the soil drainage class of the soil based on the Soil Survey Geographic Database (SSURGO). The qualitiative classification are reclassified to numeric values (ranging from 1 to 7) for spatial averaging. 
 
 
 ## Data Sources
@@ -45,12 +45,11 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 ## Output Rasters
 
+#### Soil Drainage Class
 Raster name: drainageclass <br>
-
-
-Description: This layer is a numeric representation of the soil drainage class. This category is defined in the Drainage Class ("drainagecl") column of SSURGO's Component table ("component"). The raster is meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
+Description: This layer is a numeric representation of the soil drainage class. This category is defined in the Drainage Class ("drainagecl") column of SSURGO's Component table ("component").
 
 
 ## Notes
 
-- The range to run over is specified by state
+- The spatial range is determined by the list of states specified.

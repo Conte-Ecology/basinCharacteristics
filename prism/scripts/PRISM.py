@@ -11,16 +11,13 @@ baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/prism"
 
 # Define catchments file
 catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
-catchmentsFilePath = "F:/KPONEIL/SourceData/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
 
 # Define NLCD Impervious raster
 sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/climate/prism/spatial"
-sourceFolder = "F:/KPONEIL/SourceData/climate/prism/spatial"
 
 # Create a version ID for saving
 version = "NortheastHRD"
 
-#      ***** DO NOT CHANGE SCRIPT BELOW THIS POINT ****
 
 # ---------------
 # Folder creation
@@ -77,7 +74,7 @@ else: outline = geoDatabase + "/outline"
 if not arcpy.Exists(geoDatabase + "/boundary"):
 	boundary = arcpy.Buffer_analysis(outline, 
 										geoDatabase + "/boundary", 
-										"1 Kilometers", 
+										"25 Kilometers", 
 										"#", 
 										"#", 
 										"ALL")
@@ -87,18 +84,12 @@ else: boundary = geoDatabase + "/boundary"
 if not arcpy.Exists(geoDatabase + "/boundaryProj"):
 	boundaryProj = arcpy.Project_management(boundary, 
 											geoDatabase + "/boundaryProj", 
-											sourceFolder + "/" + rasterList[0][0])
+											sourceFolder + "/" + rasterList[0][0],)
 else: boundaryProj = geoDatabase + "/boundaryProj"
 
 # ------------------
 # Process the raster
 # ------------------
-
-#
-##
-### Extract by Mask has a datum conflict
-##
-#
 
 for r in range(len(rasterList)):
 

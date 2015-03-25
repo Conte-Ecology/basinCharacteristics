@@ -1,7 +1,7 @@
 NADP Atmospheric Deposition
 ===========================
 
-This script produces rasters representing the atmospheric deposition of various compounds.
+This script produces continuous rasters representing the atmospheric deposition of various compounds. The raster values are the total annual wet atmospheric deposition in kg/ha.
 
 
 ## Data Sources
@@ -17,7 +17,7 @@ The folder structure is set up within the scripts. In general, the existing stru
 1. Open the script `atmosphericDeposition`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `nlcdLandCover` folder
+ - "baseDirectory" is the path to the `atmosphericDeposition` folder
  - "catchmentsFilePath" is the file path to the catchments polygons shapefile. (See "Notes" section")
  - "rasterFilePath" is the file path to the raw NADP atmospheric deposition raster (.tif format)
  - "version" is the name that will be associated with this particular run of the tool (e.g. `NortheastHRD` for all High Resolution Catchments)
@@ -25,12 +25,20 @@ The folder structure is set up within the scripts. In general, the existing stru
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
    - Generates the processing boundary from the specified shapefile and clips the source raster to this range
-   - Trims the raw raster to the boundary and removes the missing data. (The result in the same projection as the shapefile used to determine the processing boundary)
+   - Trims the raw raster to the spatial boundary
 
 
 ## Output Rasters
 
-Two rasters are created. The "dep_no3_2011" and "dep_so4_2011" rasters represent the wet atmospheric deposition of the nitrate ion (NO3) and the sulfate ion (SO4) in 2011, respectively.
+#### Nitrate Ion (NO3) Deposition
+Raster name: dep_no3_2011 <br>
+Description: This layer represents the total annual wet deposition of nitrate (NO3) in 2011.
+
+#### Sulfate Ion (SO4) Deposition
+Raster name: dep_so4_2011 <br>
+Description: This layer represents the total annual wet deposition of sulfate (SO4) in 2011.
+
+
 
 ## Notes
 

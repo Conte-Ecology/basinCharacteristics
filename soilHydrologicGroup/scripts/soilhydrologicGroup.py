@@ -6,7 +6,7 @@ import arcpy
 
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/soilHydrologicGroup"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC"]
-sourceFolder = "F:/KPONEIL/SourceData/geology/SSURGO"
+sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nrcsSSURGO/spatial"
 outputName = "Northeast"
 
 

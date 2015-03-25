@@ -1,7 +1,7 @@
 Wetland & Open Water Area
 =========================
 
-This script produces a spatial dataset "Open Water" and "Wetland" land coverage, based on the USFWS National Wetlands Inventory.
+This script produces the spatial datasets of "Open Water" and "Wetland" land coverage, based on the USFWS National Wetlands Inventory. In each raster, a value of 1 represents the presence the specified land cover classification and a 0 represents the absence.
 
 
 ## Data Sources
@@ -14,7 +14,7 @@ This script produces a spatial dataset "Open Water" and "Wetland" land coverage,
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded (unzip the state boundaries layer)
 
-1. Open the script `fwsWetlandsProcessing_GIS`
+1. Open the script `fwsWetlands`
 
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `fwsWetlands` folder (current parent working directory) on GitHub
@@ -34,8 +34,6 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 ## Output Rasters
 
-In total two rasters are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
-
 #### Open Water 
 Raster name: fwsOpenWater <br>
 Description: This layer represents the FWS wetlands defined as "open water" (where "WETLAND_TYPE" = "Freshwater Pond", "Lake", or "Estuarine and Marine Deepwater").
@@ -44,10 +42,11 @@ Description: This layer represents the FWS wetlands defined as "open water" (whe
 Raster name: fwsWetlands <br>
 Description: This layer represents the FWS wetlands defined as "open water" (where "WETLAND_TYPE" = "Estuarine and Marine Wetland", "Freshwater Emergent Wetland", or "Freshwater Forested/Shrub Wetland").
 
+These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
 
 ## Notes
 
-- The states included specify the final ranger
+- The states listed in the "Specify inputs" section of the script will determine the spatial range of the output
 
 - The layers for Maryland (MD) and the District of Columbia (DC) overlap in the FWS data, but not in the state boundary layer. DC is not included in "states" (only MD is used). In the state boundaries layer, "District of Columbia" must be specified if including Maryland.
 

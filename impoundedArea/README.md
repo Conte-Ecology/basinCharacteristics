@@ -1,7 +1,7 @@
 Impounded Area
 ==============
 
-This script produces a spatial dataset of on- and off- stream network water bodies, based on the USFWS National Wetlands Inventory and NHD high resolution flowlines that have been edited by the UMass Landscape Ecology lab. This product aims to represent impounded water bodies. 
+This script produces a spatial dataset of on- and off- stream network water bodies, based on the USFWS National Wetlands Inventory and NHD high resolution flowlines that have been edited by the UMass Landscape Ecology lab. This product aims to represent impounded water bodies. The categorical rasters represent the presence or absence of water bodies (as classified) with a value of 1 or 0 respectively.
 
 
 ## Data Sources
@@ -15,7 +15,7 @@ This script produces a spatial dataset of on- and off- stream network water bodi
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
 
-1. Open the script `impoundedAreaProcessing_GIS`
+1. Open the script `impoundedArea`
 
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `impoundedArea` folder(current parent working directory) on GitHub
@@ -36,8 +36,6 @@ The folder structure is set up within the scripts. In general, the existing stru
 
 
 ## Output Rasters
-
-In total four rasters are produced. A cell value of 1 indicates a waterbody and 0 indicates not. These rasters are meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
 
 #### Open Water On Stream Network
 Raster name: openOnNet <br>

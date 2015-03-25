@@ -1,22 +1,19 @@
 Hydrologic Unit Code
 ====================
 
-*** This section may fit better under the `zonalStatistics` sub-repo. ****
-
-
 This script maps catchments to Hyrdologic Unit Codes as defined in the Watershed Boundary Dataset.
 
 
 ## Data Sources
-| Layer           | Source                                | Link                        |
-|:-----:          | ------                                | ----                        |
-| Wetlands Layer  | USGS Watershed Boundary Dataset       | http://nhd.usgs.gov/wbd.html|
+| Layer                 | Source                                | Link                        |
+|:-----:                | ------                                | ----                        |
+| HUC Outline Polygons  | USGS Watershed Boundary Dataset       | http://nhd.usgs.gov/wbd.html|
 
 ## Steps to Run:
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
 
-1. Open the script `fwsWetlandsProcessing_GIS`
+1. Open the script `matchHUCsWithCatchments`
 
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `hucs` folder (current parent working directory)
@@ -35,11 +32,6 @@ The folder structure is set up within the scripts. In general, the existing stru
    - Outputs the results as a separate `.dbf` file for each HUC level
 
 
-
-
 ## Output Tables
 
-One `.dbf` table is created for every HUC level processed. The file contains a column for catchment IDs that is linked to relevant HUC information. The tablemay be further processed in R to select relevant columns. Example output table:
-
-
-
+One `.dbf` table is created for every HUC level processed. The file contains a column for catchment IDs that is linked to relevant HUC information. The table may be further processed in R to select relevant columns.

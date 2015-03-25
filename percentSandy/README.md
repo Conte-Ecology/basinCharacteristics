@@ -1,7 +1,7 @@
 Percent Sandy
 =============
 
-This script produces a spatial dataset of geology that is categorized as "sandy" by the Soil Survey Geographic Database (SSURGO).
+This script produces a categorical raster of geology that is categorized as "sandy" by the Soil Survey Geographic Database (SSURGO). A raster value of 1 represents the presence the "sandy" classification and a 0 represents the absence.
 
 
 ## Data Sources
@@ -13,14 +13,14 @@ This script produces a spatial dataset of geology that is categorized as "sandy"
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
 
-1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `soilsFolder`
+1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `sourceFolder`
 
 Open the script `percentSandy`
 
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `percentSandy` folder (current parent working directory)
  - "states" is the list of state abbreviations included in the desired range
- - "soilsFolder" is the source folder of the wetlands datasets by state
+ - "sourceFolder" is the source folder of the wetlands datasets by state
  - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
 
 3. Run the script in ArcPython. It does the following:
@@ -31,15 +31,13 @@ Open the script `percentSandy`
    - Mosaicks all of the state raster and the full range empty raster
 
 
-
 ## Output Rasters
 
-Raster name: percent_sandy <br>
-
-
-Description: This layer represents the soil parent material that is described as "Sandy". This classification is defined as a soil whose parent material texture is sandy. (In SSURGO's "Component Parent Material" table ("copm") the column "Textural Modifier" ("pmmodifier") = "Sandy"). A value of 1 indicates the cell is classified as surficial coarseness and 0 indicates not. The raster is meant to be run through the `zonalStatistics` process in the parent `basinCharacteristics` folder.
+#### Percent Sandy
+Raster name: sandy <br>
+Description: This layer represents the soil parent material that is described as "sandy". This classification is defined as a soil whose parent material texture is sandy and is defined in SSURGO's "Component Parent Material" table ("copm") by features in the column "Textural Modifier" ("pmmodifier") = "Sandy". 
 
 
 ## Notes
 
-- The range to run over is specified by state
+- The spatial range is determined by the list of states specified.

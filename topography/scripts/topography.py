@@ -2,25 +2,20 @@ import arcpy
 from arcpy.sa import *
 from arcpy import env
 
-# -----------------
-# Enter user inputs
-# -----------------
+# --------------
+# Specify inputs
+# --------------
 
 # Define working directory
-baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/topography"
-
-# Define catchments file
-catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+baseDirectory  = "C:/KPONEIL/GitHub/projects/basinCharacteristics/topography"
 
 # Define NLCD Impervious raster
-sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/deposition/nadp/spatial"
-sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/deposition/nadp/spatial"
-
+demFilePath = "F:/KPONEIL/SourceData/topography/umass/dem"
+demFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/topography/umass/dem"
 
 # Create a version ID for saving
 version = "NortheastHRD"
 
-#      ***** DO NOT CHANGE SCRIPT BELOW THIS POINT ****
 
 # ---------------
 # Folder creation
@@ -34,19 +29,29 @@ if not arcpy.Exists(gisFilesDir): arcpy.CreateFolder_management(baseDirectory, "
 versionDir = gisFilesDir + "/" + version
 if not arcpy.Exists(versionDir): arcpy.CreateFolder_management(gisFilesDir, version)
 
-# Create version database
-geoDatabase = versionDir + "/workingFiles.gdb"
-if not arcpy.Exists(geoDatabase): arcpy.CreateFileGDB_management(versionDir, "workingFiles.gdb")
-
 # Create output folder
 outputDir = versionDir + "/outputFiles"
 if not arcpy.Exists(outputDir): arcpy.CreateFolder_management(versionDir, "outputFiles")
 
-rasterList = ["dep_no3_2011", "dep_so4_2011"]
 
-# --------------------------
-# Prepare the boundary layer
-# --------------------------
+# --------------
+# Create rasters
+# --------------
+# Generate the slope raster
+outSlope = Slope(demFilePath, "PERCENT_RISE")
+outSlope.save(outputDir + "/slope_pcnt")
+
+# Move the DEM & rename
+arcpy.CopyRaster_management(demFilePath,
+								outputDir + "/elevation")
+
+
+
+
+
+
+
+
 
 # Create regional outline
 if not arcpy.Exists(geoDatabase + "/outline"):

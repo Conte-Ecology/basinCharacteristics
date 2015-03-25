@@ -1,40 +1,41 @@
 Topography
 ==========
 
-This script produces rasters representing the atmospheric deposition of various compounds.
+This script produces rasters representing the elevation and slope of the landscape.
 
 
 ## Data Sources
-|    Layer           | Source                                  | Link                                                       |
-|   :-----:          | ------                                  | ----                                                       |
-| Deposition Rasters | National Atmospheric Deposition Program | http://nadp.sws.uiuc.edu/ntn/annualmapsByYear.aspx#2011    |
-| Catchments         | Conte Ecology Group                     | NA                                                         |
+|    Layer   | Source                                                             | Link                      |
+|   :-----:  | ------                                                             | ----                      |
+|     DEM    | National Elevation Dataset (Edited by UMass Landscape Ecology Lab) | http://nationalmap.gov/   |
+
 
 ## Steps to Run:
 
-The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be unzipped, but otherwise kept in the same format as it is downloaded.
+The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. 
 
-1. Open the script `atmosphericDeposition`
+1. Open the script `topography`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `nlcdLandCover` folder
- - "catchmentsFilePath" is the file path to the catchments polygons shapefile. (See "Notes" section")
- - "rasterFilePath" is the file path to the raw NADP atmospheric deposition raster (.tif format)
+ - "baseDirectory" is the path to the `topography` folder
+ - "demFilePath" is the file path to the raw DEM
  - "version" is the name that will be associated with this particular run of the tool (e.g. `NortheastHRD` for all High Resolution Catchments)
 
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
-   - Generates the processing boundary from the specified shapefile and clips the source raster to this range
-   - Trims the raw raster to the boundary and removes the missing data. (The result in the same projection as the shapefile used to determine the processing boundary)
+   - Calculates the slope raster from the DEM
+   - Copies & renames the DEM to the `basinCharacteristics` repo
 
 
 ## Output Rasters
 
-Two rasters are created. The "dep_no3_2011" and "dep_so4_2011" rasters represent the wet atmospheric deposition of the nitrate ion (NO3) and the sulfate ion (SO4) in 2011, respectively.
+#### Digital Elevation Model
+Raster name: dem <br>
+Description: This layer represents the elevation (meters) of the landscape. No editing is done to this layer, it is copied as is into the proper folder
 
-## Notes
-
-- Typically, the "catchmentsFilePath" variable specifies a shapefile of hydrologic catchments defining the range over which the "Zonal Statistics" tool will be applied. It is possible to enter another polygon shapefile, such as state or town boundaries, as this variable. The primary purpose of this file is to trim the original raster, which represents the continental US, to a manageable size.
+#### Slope Raster
+Raster name: slope_pcnt <br>
+Description: This layer represents the slope (percent rise) of the landscape.
 
 ## Possible Future Work
-- Additional deposition layers are available and can be added with relative ease
+- Additional topographical layers can be produced (e.g. Aspect)

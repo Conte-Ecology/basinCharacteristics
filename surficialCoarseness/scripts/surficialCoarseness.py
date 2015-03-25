@@ -6,7 +6,7 @@ import arcpy
 
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/surficialCoarseness"
 states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC"]
-soilsFolder = "C:/KPONEIL/SourceData/SSURGO"
+sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nrcsSSURGO/spatial"
 outputName = "Northeast"
 
 
@@ -58,7 +58,7 @@ df = arcpy.mapping.ListDataFrames(mxd)[0]
 # Create a list of the state polygons
 statePolyList = []
 for k in range(len(states)): 
-	statePolyList.append(soilsFolder + "/" + "gssurgo_g_" + states[k] + ".gdb/SAPOLYGON")
+	statePolyList.append(sourceFolder + "/" + "gssurgo_g_" + states[k] + ".gdb/SAPOLYGON")
 
 # Merge state boundaries
 arcpy.Merge_management(statePolyList, vectorDB + "/SoilsStates")
@@ -86,7 +86,7 @@ arcpy.PolygonToRaster_conversion("SoilsRange",
 for i in range(len(states)): 
 
 	# Copy the Mapunit polygon to the current directory for editing
-	arcpy.FeatureClassToFeatureClass_conversion(soilsFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/MUPOLYGON", 
+	arcpy.FeatureClassToFeatureClass_conversion(sourceFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/MUPOLYGON", 
 												vectorDB, 
 												"MUPOLYGON_" + states[i])
 
@@ -103,7 +103,7 @@ for i in range(len(states)):
 	for k in range(len(tableList)): 
 
 		# Add table to map
-		addTable = arcpy.mapping.TableView(soilsFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/" + tableList[k] )
+		addTable = arcpy.mapping.TableView(sourceFolder + "/" + "gssurgo_g_" + states[i] + ".gdb/" + tableList[k] )
 		
 		#Export tables to new tables so the original tables don't get accidentally altered
 		arcpy.TableToTable_conversion(addTable, tableDB, tableList[k] + "_" + states[i])

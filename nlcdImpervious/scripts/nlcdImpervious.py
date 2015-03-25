@@ -18,7 +18,6 @@ rasterFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spat
 # Create a version ID for saving
 version = "NortheastHRD"
 
-#      ***** DO NOT CHANGE SCRIPT BELOW THIS POINT ****
 
 # ---------------
 # Folder creation
@@ -87,33 +86,4 @@ else: trimmedRaster = geoDatabase + "/extractedRaster"
 # -------------------------
 # All values should be between 0 and 100. Values outside of this range indicates that the cells need to be removed. (NLCD indicates missing data in this layer with a value of 127)
 outCon = Con(trimmedRaster, trimmedRaster, "", "VALUE >= 0 AND VALUE <= 100")
-outCon.save(outputDir + "/impervious")
-
-
-
-
-
-
-
-# Get spatial references
-catchSpatialRef  = arcpy.Describe(catchmentsFilePath).spatialReference.name
-rasterSpatialRef = arcpy.Describe(trimmedRaster).spatialreference.name
-
-
-# Remove reprojection for consistency's sake
-
-
-# Reproject if necessary
-if not arcpy.Exists(geoDatabase + "/rangeRasterPrj"):
-	if rasterSpatialRef != catchSpatialRef:	
-		projectedRaster = arcpy.ProjectRaster_management(rangeRaster, 
-															geoDatabase + "/rangeRasterPrj",
-															catchmentsFilePath)
-	else: projectedRaster = rangeRaster
-else: projectedRaster = geoDatabase + "/rangeRasterPrj"
-
-# Remove cells without data
-# -------------------------
-# All values should be between 0 and 100. Values outside of this range indicates that the cells need to be removed. (NLCD indicates missing data in this layer with a value of 127)
-outCon = Con(projectedRaster, projectedRaster, "", "VALUE >= 0 AND VALUE <= 100")
 outCon.save(outputDir + "/impervious")

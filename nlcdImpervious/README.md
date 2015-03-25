@@ -1,7 +1,7 @@
 Impervious Surface
 ==================
 
-This script produces impervious surface raster based on the National Land Cover Dataset.
+This script produces a raster representing the percentage of the area, based on the National Land Cover Dataset, that is covered by impervious surface. Raster values range from 1 to 100.
 
 
 ## Data Sources
@@ -14,7 +14,7 @@ This script produces impervious surface raster based on the National Land Cover 
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be unzipped, but otherwise kept in the same format as it is downloaded.
 
-1. Open the script `nlcdImperviousProcessing_GIS`
+1. Open the script `nlcdImpervious`
 
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `nlcdLandCover` folder
@@ -25,15 +25,16 @@ The folder structure is set up within the scripts. In general, the existing stru
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
    - Generates the processing boundary from the specified shapefile and clips the source raster to this range
-   - Trims the raw raster to the boundary and removes the missing data. (The result in the same projection as the shapefile used to determine the processing boundary)
+   - Trims the raw raster to the spatial boundary and removes the missing data
 
 
-## Output Rasters
+## Output Rasters 
 
-One raster named "impervious".
+#### Open Water 
+Raster name: impervious <br>
+Description: This layer represents the percentage of the area that is covered by impervious surface.
+
 
 ## Notes
 
 - Typically, the "catchmentsFilePath" variable specifies a shapefile of hydrologic catchments defining the range over which the "Zonal Statistics" tool will be applied. It is possible to enter another polygon shapefile, such as state or town boundaries, as this variable. The primary purpose of this file is to trim the original raster, which represents the continental US, to a manageable size.
-
-## Possible Future Work
