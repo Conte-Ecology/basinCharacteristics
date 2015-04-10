@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>Zonal Statistics</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>Zonal Statistics</h1>
+
+<p>This repo stores the necessary scripts and files to calculate basin characteristics for the layers created in the <code>basinCharacteristics</code> parent directory.</p>
+
+<h2>Setup Info:</h2>
+
+<ul>
+<li>The completed rasters from other sections serve as input to these scripts. These rasters reside in the <code>zonalStatistics/gisFiles/rasters</code> sub-folder.</li>
+<li>The shapefile of the catchment polygons for which the statistics will be evaluated resides in the <code>zonalStatistics/gisFiles/vectors</code> sub-folder.</li>
+<li>These two folders must be created before running the scripts. All other folders are created within the scripts.</li>
+<li>The scripts to run begin with numbers to signify the order in which they should be executed. Letters preceding the numbers indicate scripts for a specified version (e.g. &ldquo;RB&rdquo; indicates the script series for Riparian Buffer stats. A description of this process for each version exists in the next sections. Each time a new version is added, this README file should be updated.</li>
+</ul>
+
+<h2>Current Versions:</h2>
+
+<h3>Catchments for High Resolution Delineation:</h3>
+
+<h4>Description</h4>
+
+<p>This section calculates the basin characteristics for the high resolultion delineation (HRD) catchments. For each catchment, 2 values are calculated:
+1. Local - The spatial average of the variable within the individual catchment polygon.
+2. Upstream - The spatial average of all of the local values calculated for all of the catchments in the upstream network. The spatial average is weighted buy indiviudal catchment area and is accurate to the downstream point of the specified catchment.</p>
+
+<p>In addition to the values for each catchment, the percent of the catchment area with data is calculated for each catchment. This accounts for cases where there is missing raster data within the catchment boundary. This is determined by dividing the &ldquo;AREA&rdquo; column output by the Zonal Statistics tool by the area of the rasterized version of the catchments.</p>
+
+<h4>Steps to Run</h4>
+
+<ol>
+<li><p><code>HRD_INPUTS.txt</code> - This file is used to specify common user inputs that will be used across python and R scripts</p>
+
+<p>Open this file in the <code>/scrpits</code> folder. Open the file and change the variables as necessary. Do not add extra lines or change the structure of this file other than changing the names.</p>
+
+<ul>
+<li>&ldquo;outputName&rdquo; is the name that will be associated with this particular run of the tool (e.g. <code>NortheastHRD</code> for all High Resolution Catchments)</li>
+<li>&ldquo;catchmentsFileName&rdquo; is the name of the catchments shapefile without extension (e.g. <code>NortheastHRD_AllCatchments</code>)</li>
+<li>&ldquo;zoneField&rdquo; is the name of the field that is used to identify features (e.g. <code>FEATUREID</code>)</li>
+<li>&ldquo;statType&rdquo; is the statistic to calculate (e.g. <code>MEAN</code>)</li>
+<li>&ldquo;discreteRasters&rdquo; is list of the discrete, or categorical, data layers  to run such as land use (e.g. <code>forest</code>)</li>
+<li>&ldquo;continuousRasters&rdquo; is list of the continuous data layers  to run such as climate or elevation data (e.g. <code>ann_tmax_c</code>)</li>
+</ul></li>
+<li><p><code>HRD1_zonalStatisticsProcessing.py</code> - This script calculates statistics on the raster dataset for each of the catchments in the polygon shapefile. The primary tool used is &ldquo;Zonal Statistics&rdquo; in ArcGIS. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the catchments as <code>.dbf</code> tables in the <code>gisTables</code> folder in the run-specific versions folder (e.g. <code>zonalStatistics/versions/NortheastHRD/gisTables/forest_MEAN.dbf</code>). </p>
+
+<p>Open this script and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
+a. Reads user-specified inputs from Step 1
+b. Sets up the folder structure in the specified directory
+c. Reprojects &amp; resamples the rasters to match the zone layer (Catchments)
+d. Calculates the mean value for each zone in the zone shapefile (Zonal Statistics)
+e. Adds -9999 values for zones that are not assigned any value</p>
+
+<p>Example output:</p>
+
+<table><thead>
+<tr>
+<th align="center">FEATUREID</th>
+<th>COUNT</th>
+<th>AREA</th>
+<th>MEAN</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="center">350854</td>
+<td>6</td>
+<td>9608.108</td>
+<td>0.00000000</td>
+</tr>
+<tr>
+<td align="center">350855</td>
+<td>1</td>
+<td>1601.351</td>
+<td>0.00000000</td>
+</tr>
+<tr>
+<td align="center">350881</td>
+<td>327</td>
+<td>523641.872</td>
+<td>0.20795107</td>
+</tr>
+<tr>
+<td align="center">350888</td>
+<td>105</td>
+<td>168141.886</td>
+<td>0.03809524</td>
+</tr>
+<tr>
+<td align="center">350891</td>
+<td>83</td>
+<td>132912.157</td>
+<td>0.22891566</td>
+</tr>
+<tr>
+<td align="center">350897</td>
+<td>6</td>
+<td>9608.108</td>
+<td>0.16666667</td>
+</tr>
+</tbody></table></li>
+<li><p><code>HRD2_delineateUpstreamCatchments.R</code> - This script uses the catchment relationships built into the shapefile to generate a delineation of the network from each catchment. The output is a file in <code>.RData</code> containing a list of lists. The greater list is comprised of all of the catchments in the original shapefile. Each sublist contains all of the catchments upstream of that particuar catchment. The sublists are named by their primary (most downstream) catchment and can be accesed by the $ operator (e.g. <code>delineatedCatchments$&#39;730076&#39;</code>).</p>
+
+<p>If this script has not been run and the delineated catchments <code>.RData</code> file does not exist, then open this script in R and set the &ldquo;baseDirectory&rdquo; as in previous scripts. Run the script which outputs the file to the proper folder. If the delineated catchments file does exist in the proper location, the script will not run. If the file is created separately, ensure proper naming of the file and move it to the same directory as the tables folders (e.g. <code>zonalStatistics/versions/NortheastHRD/NortheastHRD_delineatedCatchments.RData</code>).</p></li>
+<li><p><code>HRD3_calculateUpstreamStatistics.R</code> - The primary function of this script is to use the output from the zonal statistics step with the <code>_delineatedCatchments</code> object to generate values for upstream statistics in each catchment. The variables listed in the <code>HRD_INPUTS.txt</code> file will be processed. For each individual catchment, the variable values for all catchments in the upstream network are averaged (weighted by area). For each catchment, the percent of the area with data is calculated. This is to account for missing raster data within the catchments. The output from the zonal statistics step (<code>.dbf</code> tables) to <code>.csv</code> files for uniformity. The script outputs two <code>.csv</code> files, 1 upstream and 1 local, for each variable into the <code>rTables</code> directory (e.g. <code>zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv</code>). </p>
+
+<p>Open this script in R and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. </p>
+
+<p>Example output:</p>
+
+<table><thead>
+<tr>
+<th align="center">FEATUREID</th>
+<th>MEAN</th>
+<th>percentAreaWithData</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="center">730236</td>
+<td>0.24288425</td>
+<td>0.654682783</td>
+</tr>
+<tr>
+<td align="center">730243</td>
+<td>0.052083333</td>
+<td>3.098773402</td>
+</tr>
+<tr>
+<td align="center">730246</td>
+<td>0.237735849</td>
+<td>0.936120106</td>
+</tr>
+<tr>
+<td align="center">730252</td>
+<td>0.400487975</td>
+<td>11.82605111</td>
+</tr>
+<tr>
+<td align="center">730254</td>
+<td>0.412833724</td>
+<td>93.07699015</td>
+</tr>
+</tbody></table></li>
+<li><p><code>HRD4_statsFileGenerator.R</code> - This is a simple script to generate custom <code>.RData</code> files of zonal statistics for both local and upstream variables. It reads in the individual <code>.csv</code> files and outputs a combined <code>.RData</code> file with two dataframes: &ldquo;LocalStats&rdquo; and &ldquo;UpstreamStats&rdquo;. It also outputs a long format dataframe for input into the web system database.</p>
+
+<p>Open this script in R and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. Specify the variables to include in &ldquo;outputVariables&rdquo;. There are 3 options for specifying the variables to output:</p>
+
+<ol>
+<li>&ldquo;ALL&rdquo; will include all of the variables present in the folder</li>
+<li>NULL will include the variables from the &ldquo;rasterList&rdquo; object in the &ldquo;RB_INPUTS.txt&rdquo; file</li>
+<li>Manually list the variables to output (do not include the buffer specification)</li>
+</ol>
+
+<p>This script also pulls factors from the &ldquo;Covariate Data Status - High Res Delineation.csv&rdquo; (a duplicate of the excel spreadsheet with the same name). The factors convert the zonal values to the values used in models and on the web system (e.g. fraction to percent).</p></li>
+</ol>
+
+<h3>Riparian Buffers for High Resolution Flowlines:</h3>
+
+<h4>Description</h4>
+
+<p>The scripts in this section are dependent on some elements of the overall HRD zonal statistics process, which should be completed first for all layers and ranges used in this section. First, the rasters are processed in the HRD section to be resampled and reprojected to match the catchments and each other. The scripts in this section rely on these previously processed rasters, pointing to the repo that contains the existing files. Second, the network delineation is identical to the HRD network. The <code>NortheastHRD_delineatedCatchments.RData</code> file from that section is referenced directly from this section. These steps are taken primarily to save time and data storage space. Development of stand-alone repos is possible.</p>
+
+<p>The calculation of basin characteristics for the riparian buffers is based on the overlapping polygons. The process does not account for the overlapping area of the polygons which essentially gets double counted. This area amounts to a roughly 0.001 - 0.01 square kilometers.</p>
+
+<p>In the scripts in this section, the term &ldquo;catchments&rdquo; is often used in place of &ldquo;buffers&rdquo;. This is simply for ease of use in making code interchangeable and not meant to cause confusion.</p>
+
+<h4>Steps to Run</h4>
+
+<ol>
+<li><p><code>RB_INPUTS.txt</code> - This file is used to specify common user inputs that will be used across python and R scripts</p>
+
+<p>Open this file in the <code>/scrpits</code> folder. Open the file and change the variables as necessary. Do not add extra lines or change the structure of this file other than changing the names.</p>
+
+<ul>
+<li>&ldquo;outputName&rdquo; is the name that will be associated with this particular run of the tool (e.g. <code>riparianBuffers</code> for all High Resolution Catchments)</li>
+<li>&ldquo;catchmentsFilePath&rdquo; is the name of the catchments shapefile without extension (e.g. <code>&quot;C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft&quot;</code>)</li>
+<li>&ldquo;bufferID&rdquo; the name of the field that is used to identify the buffer distance and separate runs (e.g. <code>200ft</code>)</li>
+<li>&ldquo;zoneField&rdquo; is the name of the field that is used to identify features (e.g. <code>FEATUREID</code>)</li>
+<li>&ldquo;statType&rdquo; is the statistic to calculate (e.g. <code>MEAN</code>)</li>
+<li>&ldquo;rasterList&rdquo; is list of the rasters to run (e.g. <code>c(&quot;devel_hi&quot;, &quot;devel_low&quot;, &quot;devel_med&quot;, &quot;devel_opn&quot;, &quot;developed&quot;, &quot;forest&quot;, &quot;impervious&quot;, &quot;tree_canopy&quot;)</code>)</li>
+<li>&ldquo;hucFilePath&rdquo; is the file path to the shapefile used to split the large buffer files into sections small enough to process (e.g. <code>&quot;C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs&quot;</code>)</li>
+</ul></li>
+<li><p>&ldquo;rasterDirectory&rdquo; is the path to the directory containing the rasters to run (e.g. <code>&quot;C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb&quot;</code>)</p></li>
+<li><p><code>RB1_zonalStatisticsProcessing.py</code> - This script calculates statistics on the raster dataset for each of the buffers in the polygon shapefile. The primary tool used is &ldquo;Zonal StatisticsAsTable2&rdquo; in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons. The tool is downloaded from here: <a href="http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007">http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007</a>. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as <code>.dbf</code> tables in the <code>gisTables</code> folder in the run-specific versions folder (e.g. <code>zonalStatistics/versions/riparianBuffers/gisTables/forest_MEAN.dbf</code>). The script also outputs the polygon areas as a <code>.dbf</code> file. Example output:</p>
+
+<table><thead>
+<tr>
+<th align="center">FEATUREID</th>
+<th>COUNT</th>
+<th>AREA</th>
+<th>MEAN</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="center">350854</td>
+<td>6</td>
+<td>9608.108</td>
+<td>0.00000000</td>
+</tr>
+<tr>
+<td align="center">350855</td>
+<td>1</td>
+<td>1601.351</td>
+<td>0.00000000</td>
+</tr>
+<tr>
+<td align="center">350881</td>
+<td>327</td>
+<td>523641.872</td>
+<td>0.20795107</td>
+</tr>
+<tr>
+<td align="center">350888</td>
+<td>105</td>
+<td>168141.886</td>
+<td>0.03809524</td>
+</tr>
+<tr>
+<td align="center">350891</td>
+<td>83</td>
+<td>132912.157</td>
+<td>0.22891566</td>
+</tr>
+<tr>
+<td align="center">350897</td>
+<td>6</td>
+<td>9608.108</td>
+<td>0.16666667</td>
+</tr>
+</tbody></table>
+
+<p>Open this script and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
+a. Reads user-specified inputs from Step 1
+b. Sets up the folder structure in the specified directory
+c. Reprojects the zone and HUC polygons as needed
+d. Calculates the mean value for each zone in the zone shapefile (broken up by section)
+e. Joins all of the sections and elminiates duplicate features
+f. Adds -9999 values for zones that are not assigned any value
+g. Calculates the areas for the buffer polygons in the shapefile</p></li>
+<li><p><code>RB2_calculateUpstreamStatistics.R</code> - The primary function of this script is to use the output from the zonal statistics step with the <code>_delineatedCatchments</code> object to generate values for upstream statistics in each catchment. The variables listed in the <code>RB_INPUTS.txt</code> file will be processed. For each individual buffer polygon, the variable values for all buffers in the upstream network are averaged (weighted by area). The script also converts the stats output from the zonal statistics step (<code>.dbf</code> tables) to <code>.csv</code> files for uniformity. The script outputs two <code>.csv</code> files, 1 upstream and 1 local, for each variable into the <code>rTables</code> directory (e.g. <code>zonalStatistics\versions\riparianBuffers\rTables\upstream_forest_200ft.csv</code>). Example output:</p>
+
+<table><thead>
+<tr>
+<th align="center">FEATUREID</th>
+<th>MEAN</th>
+</tr>
+</thead><tbody>
+<tr>
+<td align="center">730243</td>
+<td>0</td>
+</tr>
+<tr>
+<td align="center">730254</td>
+<td>0.296062992</td>
+</tr>
+<tr>
+<td align="center">730258</td>
+<td>0.25</td>
+</tr>
+<tr>
+<td align="center">730259</td>
+<td>0.029126214</td>
+</tr>
+<tr>
+<td align="center">730260</td>
+<td>0.266112266</td>
+</tr>
+</tbody></table>
+
+<p>Open this script in R and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. </p></li>
+<li><p><code>RB3_statsFileGenerator.R</code> - This is a simple script to generate custom <code>.RData</code> files of zonal statistics for both local and upstream variables. It reads in the individual <code>.csv</code> files and outputs a combined <code>.RData</code> file with two dataframes: &ldquo;LocalStats&rdquo; and &ldquo;UpstreamStats&rdquo;. It also outputs a long format dataframe for input into the web system database.</p>
+
+<p>Open this script in R and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. Specify the variables to include in &ldquo;outputVariables&rdquo;. There are 3 options for specifying the variables to output:</p>
+
+<ol>
+<li>&ldquo;ALL&rdquo; will include all of the variables present in the folder</li>
+<li>NULL will include the variables from the &ldquo;rasterList&rdquo; object in the &ldquo;RB_INPUTS.txt&rdquo; file</li>
+<li>Manually list the variables to output (do not include the buffer specification)</li>
+</ol></li>
+</ol>
+
+<p>This script also pulls factors from the &ldquo;Covariate Data Status - High Res Delineation.csv&rdquo; (a duplicate of the excel spreadsheet with the same name). The factors convert the zonal values to the values used in models and on the web system (e.g. fraction to percent).</p>
+
+<h3>Point Delineation for MassDOT Project:</h3>
+
+</body>
+
+</html>
+

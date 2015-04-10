@@ -19,18 +19,18 @@ The folder structure is set up within the scripts. In general, the existing stru
 2. Change the values in the "Specify inputs" section of the script
  - "baseDirectory" is the path to the `nlcdLandCover` folder
  - "catchmentsFilePath" is the file path to the catchments polygons shapefile. (See "Notes" section")
- - "rasterFilePath" is the file path to the raw NLCD Land Use raster (.img format)
+ - "rasterFilePath" is the file path to the raw NLCD Impervious raster (.img format)
  - "version" is the name that will be associated with this particular run of the tool (e.g. `NortheastHRD` for all High Resolution Catchments)
 
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
-   - Generates the processing boundary from the specified shapefile and clips the source raster to this range
+   - Generates the processing boundary from the specified shapefile
    - Trims the raw raster to the spatial boundary and removes the missing data
 
 
 ## Output Rasters 
 
-#### Open Water 
+#### Impervious
 Raster name: impervious <br>
 Description: This layer represents the percentage of the area that is covered by impervious surface.
 

@@ -1,0 +1,23 @@
+# Name of the run
+outputName = "riparianBuffers"
+
+# Catchments file path
+catchmentsFilePath =  "C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft"
+
+# Buffer specific ID (should match the length)
+bufferID =  "200ft"
+
+# Field name defining the zones
+zoneField = "FEATUREID"
+
+# Stat to calculate
+statType = "MEAN"
+
+# Raster names
+rasterList = c("devel_hi", "devel_low", "devel_med", "devel_opn", "developed", "forest", "impervious", "tree_canopy")
+
+# HUC file used to split up processing
+hucFilePath = "C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs"
+
+# Directory where rasters are located
+rasterDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"
