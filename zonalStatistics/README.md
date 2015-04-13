@@ -6,7 +6,7 @@ This repo stores the necessary scripts and files to calculate basin characterist
 ## Setup Info: 
 
 - Two folders for spatial data must be created before running the scripts. All other folders are created within the scripts.
-  1. *zonalStatistics\gisFiles\rasters* holds the completed rasters from other sections which serve as input to these scripts. 
+  1. *"zonalStatistics\gisFiles\rasters"* holds the completed rasters from other sections which serve as input to these scripts. 
   2. *zonalStatistics\gisFiles\vectors* holds the shapefiles of the catchment polygons for which the statistics will be evaluated
 - The scripts to run begin with numbers to signify the order in which they should be executed. Letters preceding the numbers indicate scripts for a specified version (e.g. "RB" indicates the script series for Riparian Buffer stats. A description of this process for each version exists in the next sections. Each time a new version is added, this README file should be updated.
 
