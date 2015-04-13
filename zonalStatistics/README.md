@@ -135,14 +135,14 @@ In the scripts in this section, the term "catchments" is often used in place of 
 1. **RB_INPUTS.txt** - This file is used to specify common user inputs that will be used across python and R scripts
 
   Open this file in the "zonalStatistics\scripts" folder and change the variables as necessary. Do not add extra lines or change the structure of this file other than changing the names.
- - `outputName` is the name that will be associated with this particular run of the tool (e.g. "riparianBuffers")
- - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. "C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft")
- - `bufferID` the name of the field that is used to identify the buffer distance and separate runs (e.g. "200ft")
- - `zoneField` is the name of the field that is used to identify features (e.g. "FEATUREID")
- - `statType` is the statistic to calculate (e.g. "MEAN")
- - `rasterList` is list of the rasters to run (e.g. c("devel_hi", "devel_low", "devel_med", "devel_opn", "developed", "forest", "impervious", "tree_canopy"))
- - `hucFilePath` is the file path to the shapefile used to split the large buffer files into sections small enough to process (e.g. "C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs")
-- `rasterDirectory` is the path to the directory containing the rasters to run (e.g. "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb")
+ - `outputName` is the name that will be associated with this particular run of the tool (e.g. `"riparianBuffers"`)
+ - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft"`)
+ - `bufferID` the name of the field that is used to identify the buffer distance and separate runs (e.g. `"200ft"`)
+ - `zoneField` is the name of the field that is used to identify features (e.g. `"FEATUREID"`)
+ - `statType` is the statistic to calculate (e.g. `"MEAN"`)
+ - `rasterList` is list of the rasters to run (e.g. `c("devel_hi", "devel_low", "devel_med", "devel_opn", "developed", "forest", "impervious", "tree_canopy")`)
+ - `hucFilePath` is the file path to the shapefile used to split the large buffer files into sections small enough to process (e.g. `"C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs"`)
+- `rasterDirectory` is the path to the directory containing the rasters to run (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"`)
  
  
 2. **RB1_zonalStatisticsProcessing.py** - This script calculates statistics on the raster dataset for each of the buffers in the polygon shapefile. The primary tool used is "Zonal StatisticsAsTable2" in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons.  Make sure that the zone field in the shapefile has been indexed to increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\riparianBuffers\gisTables\forest_MEAN.dbf`). The script also outputs the polygon areas as a `.dbf` file. 
@@ -188,7 +188,7 @@ In the scripts in this section, the term "catchments" is often used in place of 
   Open this script in R and set the `baseDirectory` variable to the path up to and including the "zonalStatistics"" folder and run the script. Specify the variables to include in `outputVariables`. There are 3 options for specifying the variables to output:
   1. "ALL" will include all of the variables present in the folder
   2. NULL will include the variables from the `rasterList` object in the **RB_INPUTS.txt** file
-  3. Manually list the variables to output (do not include the buffer specification)
+  3. Manually list the variables to output, but do not include the buffer specification(e.g. `c("forest", "agriculture")`)
   
 This script also pulls factors from the `Covariate Data Status - High Res Delineation.csv` (a duplicate of the excel spreadsheet with the same name). The factors convert the zonal values to the values used in models and on the web system (e.g. fraction to percent).
   
@@ -219,12 +219,12 @@ The scripts in this section are dependent on the raster processing completed in 
 
   Open this script and set the `baseDirectory` variable to the path up to and including the "zonalStatistics" folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.
   
-  - `outputName` is the name that will be associated with this particular run of the tool (e.g. "pointDelineation")
-  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. "C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp")
-  - `zoneField` is the name of the field that is used to identify features (e.g. "DelinID")
-  - `rasterDirectory` is the path to the directory containing the rasters to run (e.g. "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb")
-  - `rasterList` is list of the rasters to run (e.g. ["forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab"])
-  - `statType` is the statistic to calculate (e.g. "MEAN")
+  - `outputName` is the name that will be associated with this particular run of the tool (e.g. `"pointDelineation"`)
+  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"`)
+  - `zoneField` is the name of the field that is used to identify features (e.g. `"DelinID"`)
+  - `rasterDirectory` is the path to the directory containing the rasters to run (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"`)
+  - `rasterList` is list of the rasters to run (e.g. `["forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab"]`)
+  - `statType` is the statistic to calculate (e.g. `"MEAN"`)
 
   This script does the following:
     a. Sets up the folder structure in the specified directory
@@ -249,11 +249,11 @@ The scripts in this section are dependent on the raster processing completed in 
 
   - `outputName` is the name that will be associated with this particular run of the tool (e.g. "pointDelineation")
   - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. "C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp")
-  - `zoneField` is the name of the field that is used to identify features (e.g. "DelinID")
-  - `rasterList` is list of the rasters to run (e.g. c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab"))
+  - `zoneField` is the name of the field that is used to identify features (e.g. `"DelinID"`)
+  - `rasterList` is list of the rasters to run (e.g. `c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab")`)
   - `conversionValues` are the values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the `rasterList`.
-  - `statType` is the statistic to calculate (e.g. "MEAN")
-  - `damsFile` is the path to the directory containing the separately calculated TNC Dams count (e.g. "C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf")
+  - `statType` is the statistic to calculate (e.g. `"MEAN"`)
+  - `damsFile` is the path to the directory containing the separately calculated TNC Dams count (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"`)
 
   This script does the following:
     a. Reads the ArcPy output tables for all specified basin characteristics
