@@ -46,21 +46,25 @@ In addition to the values for each catchment, the percent of the catchment area 
 1. **HRD_INPUTS.txt** - This file is used to specify common user inputs that will be used across python and R scripts
 
   Open this file in the `zonalStatistics\scripts` folder and change the variables as needed. Do not add extra lines or change the structure of this file other than changing the names.
- - `outputName` is the name that will be associated with this particular run of the tool (e.g. `"NortheastHRD"`)
- - `catchmentsFileName` is the name of the catchments shapefile without extension (e.g. `"NortheastHRD_AllCatchments"`)
- - `zoneField` is the name of the field that is used to identify features (e.g. `"FEATUREID"`)
- - `statType` is the statistic to calculate (e.g. `"MEAN"`)
- - `discreteRasters` is list of the discrete, or categorical, data layers  to run such as land use (e.g. `"forest"`)
- - `continuousRasters` is list of the continuous data layers  to run such as climate or elevation data (e.g. `"ann_tmax_c"`)
 
-2. **HRD1_zonalStatisticsProcessing.py** - This script calculates statistics on the raster dataset for each of the catchments in the polygon shapefile. The primary tool used is "Zonal Statistics" in ArcGIS. Ensuring that the zone field in the shapefile has been indexed will increase the tool performance. The script outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`).
+ |    Object Name          |            Description                                             |      Example |
+ |:-----------------------:| ------------------------------------------------------------------- |----------------|
+ | `outputName`            |  Name associated with this particular version |(e.g. `"NortheastHRD"`)|
+ | `catchmentsFileName`    |  Name of the catchments shapefile (without extension)| (e.g. `"NortheastHRD_AllCatchments"`)|
+ | `zoneField`             |  Name of the field used to identify features ("Zone Field")| (e.g. `"FEATUREID"`)|
+ | `statType`              |  Statistic to calculate |(e.g. `"MEAN"`)|
+ | `discreteRasters`       |  List of the discrete (categorical) data layers to calculate the statistic for |(e.g. Land use: `"forest"`)|
+ | `continuousRasters`     |  List of the continuous data layers to calculate the statistic for  |(e.g. Climate: `"ann_tmax_c"`)|
+
+2. **HRD1_zonalStatisticsProcessing.py** - This script calculates statistics on the specified raster(s) for each of the catchments in the polygon shapefile. The primary tool used is "Zonal Statistics" in ArcGIS. Ensuring that the zone field in the shapefile has been indexed will increase the tool performance. The script outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`).
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
     a. Reads user-specified inputs from Step 1
-    b. Sets up the folder structure in the specified directory
-    c. Reprojects & resamples the rasters to match the zone layer (Catchments)
-    d. Calculates the mean value for each zone in the zone shapefile (Zonal Statistics)
-    e. Adds -9999 values for zones that are not assigned any value
+    b. Sets up the folder structure in the specified directory. This structure will be used by the rest of the scripts in the series.
+    c. Projects & resamples the rasters to match zone layer (Catchments). Consistency in spatial reference ensures proper calculate of stats.
+    d. Rasterizes the zone polygon so it can be used to directly compare area in each catchment with or without raster data.
+    e. Calculates the specified statistic (e.g. "MEAN") for each zone in the zone shapefile using the "Zonal Statistics" tool.
+    f. Adds -9999 values for zones that are not assigned any value. This will 
 
   Example output:
 
@@ -227,6 +231,7 @@ The scripts in this section are dependent on the raster processing completed in 
   - `statType` is the statistic to calculate (e.g. `"MEAN"`)
 
   This script does the following:
+  
     a. Sets up the folder structure in the specified directory
     b. Reprojects the zone polygon as needed
     c. Calculates the mean value for each zone in the zone shapefile
@@ -248,7 +253,7 @@ The scripts in this section are dependent on the raster processing completed in 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.
 
   - `outputName` is the name that will be associated with this particular run of the tool (e.g. "pointDelineation")
-  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. "C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp")
+  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"`)
   - `zoneField` is the name of the field that is used to identify features (e.g. `"DelinID"`)
   - `rasterList` is list of the rasters to run (e.g. `c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab")`)
   - `conversionValues` are the values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the `rasterList`.
@@ -256,6 +261,7 @@ The scripts in this section are dependent on the raster processing completed in 
   - `damsFile` is the path to the directory containing the separately calculated TNC Dams count (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"`)
 
   This script does the following:
+  
     a. Reads the ArcPy output tables for all specified basin characteristics
     b. Changes all -9999 values to NA
     c. Converts values according to specified factors
