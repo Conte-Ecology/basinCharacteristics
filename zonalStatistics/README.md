@@ -15,6 +15,9 @@ This repo stores the necessary scripts and files to calculate basin characterist
 
 ### Catchments for High Resolution Delineation:
 
+#### Repo
+`basinCharacteristcs\zonalStatistics\version\NortheastHRD`
+
 #### Description
 This section calculates the basin characteristics for the high resolultion delineation (HRD) catchments. For each catchment, 2 values are calculated:
 1. Local - The spatial average of the variable within the individual catchment polygon.
@@ -87,6 +90,9 @@ In addition to the values for each catchment, the percent of the catchment area 
  
 ### Riparian Buffers for High Resolution Flowlines:
 
+#### Repo
+`basinCharacteristcs\zonalStatistics\version\riparianBuffers`
+
 #### Description
 The scripts in this section are dependent on some elements of the overall HRD zonal statistics process, which should be completed first for all layers and ranges used in this section. First, the rasters are processed in the HRD section to be resampled and reprojected to match the catchments and each other. The scripts in this section rely on these previously processed rasters, pointing to the repo that contains the existing files. Second, the network delineation is identical to the HRD network. The `NortheastHRD_delineatedCatchments.RData` file from that section is referenced directly from this section. These steps are taken primarily to save time and data storage space. Development of stand-alone repos is possible.
 
@@ -157,21 +163,24 @@ This script also pulls factors from the "Covariate Data Status - High Res Deline
  
 ### Point Delineation for MassDOT Project: 
 
+#### Repo
+`basinCharacteristcs\zonalStatistics\version\pointDelineation`
+
 #### Description
 The scripts in this section are dependent on the raster processing completed in the HRD section (resampling and reprojecting each raster to match the catchments and each other). The scripts in this section point to the repo that contains the existing files. These steps are taken primarily to save time and data storage space. Development of stand-alone repos is possible.
 
 #### Steps to Run
 
-1. `PD1_zonalStatisticsProcessing.py` - This script calculates statistics on the raster dataset for each of delineated basins in the polygon shapefile. The primary tool used is "Zonal StatisticsAsTable2" in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons. The tool is downloaded from here: http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as `.dbf` tables in the `gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics/versions/pointDelineation/gisTables/forest_MEAN.dbf`). The script also outputs the polygon areas as a `.dbf` file. 
+1. `PD1_zonalStatisticsProcessing.py` - This script calculates statistics on the raster dataset for each of delineated basins in the polygon shapefile. The primary tool used is "Zonal StatisticsAsTable2" in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons. The tool is downloaded from here: http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as `.dbf` tables in the `gisTables` folder in the run-specific versions folder (e.g. `pointDelineation/gisTables/forest_MEAN.dbf`). The script also outputs the polygon areas as a `.dbf` file. 
 
   Open this script and set the "baseDirectory" variable to the path up to and including the `zonalStatistics` folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.
   
-   - "outputName" is the name that will be associated with this particular run of the tool (e.g. `riparianBuffers` for all High Resolution Catchments)
- - "catchmentsFilePath" is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp`)
- - "zoneField" is the name of the field that is used to identify features (e.g. `DelinID`)
- - "rasterDirectory" is the path to the directory containing the rasters to run (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"`)
- - "rasterList" is list of the rasters to run (e.g. `["forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab"]`)
- - "statType" is the statistic to calculate (e.g. `MEAN`)
+  - `outputName` is the name that will be associated with this particular run of the tool (e.g. `pointDelineation` for all High Resolution Catchments)
+  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp`)
+  - `zoneField` is the name of the field that is used to identify features (e.g. `DelinID`)
+  - `rasterDirectory` is the path to the directory containing the rasters to run (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"`)
+  - `rasterList` is list of the rasters to run (e.g. `["forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab"]`)
+  - `statType` is the statistic to calculate (e.g. `MEAN`)
 
   This script does the following:
     a. Sets up the folder structure in the specified directory
@@ -190,5 +199,23 @@ The scripts in this section are dependent on the raster processing completed in 
   |   350891  |  83    | 132912.157 | 0.22891566 |
   |   350897  |   6    | 9608.108   | 0.16666667 | 
  
-2. `PD2_finalizeZonalStatistics.R` - 
+2. `PD2_finalizeZonalStatistics.R` - This script pulls together the results from the ArcPy script, as well as TNC dams processing (see repo: `basinCharacteristics\tncDams`). It converts the input values to the desired output values and saves the results as an `.RData` file.
 
+  Open this script and set the "baseDirectory" variable to the path up to and including the `zonalStatistics` folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.
+
+  - `outputName` is the name that will be associated with this particular run of the tool (e.g. `pointDelineation`)
+  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp`)
+  - `zoneField` is the name of the field that is used to identify features (e.g. `DelinID`)
+  - `rasterList` is list of the rasters to run (e.g. `c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab")`)
+  - `conversionValues` are the values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the `rasterList`.
+  - `statType` is the statistic to calculate (e.g. `MEAN`)
+  - `damsFile` is the path to the directory containing the separately calculated TNC Dams count (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"`)
+
+  This script does the following:
+    a. Reads the ArcPy output tables for all specified basin characteristics
+    b. Changes all -9999 values to NA
+    c. Converts values according to specified factors
+
+#### Next Steps
+
+It is possible to set this script up according to the structure of other versions, mainly by moving the user inputs to a separate text file accessed by all of the scripts.

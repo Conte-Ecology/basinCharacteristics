@@ -1,6 +1,14 @@
 basinCharacteristics
 ====================
 
+# Outline notes
+
+1. What this project is and what it does
+2. small code example
+3. required libraries, functions, packages, etc. (installation)
+4. contact info
+
+
 Contains the scripts, procedures and some of the ouputs for the basin characteristics generated in the models and maps. Currently the dataset is based on the NHDplus medium res delineation.
 
 ## fwsWetlands

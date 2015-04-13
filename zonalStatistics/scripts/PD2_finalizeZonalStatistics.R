@@ -28,6 +28,8 @@ catchmentsFilePath <- "C:/KPONEIL/delineation/northeast/pointDelineation/outputF
 
 outputName <- "pointDelineation"
 
+damsFile <- "C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"
+
 # ==========
 # Load files
 # ==========
@@ -80,7 +82,7 @@ for (j in seq_along(rasterList)){
 # TNC Dams
 # --------
 
-dams <- read.dbf("C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf")
+dams <- read.dbf(damsFile)
 
 dams <- dams[,-2]
 
@@ -98,7 +100,7 @@ finalDF <- left_join(finalDF, dams, zoneField)
 pointDelineationStats <- finalDF
 
 # Save file
-save(pointDelineationStats, file = "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/versions/pointDelineation/completedStats/pointDelineationStats.RData")
+save(pointDelineationStats, file = paste0(baseDirectory, "/versions/pointDelineation/completedStats/pointDelineationStats.RData"))
 
 
-write.dbf(pointDelineationStats, file = "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/versions/pointDelineation/completedStats/pointDelineationStats.dbf")
+#write.dbf(pointDelineationStats, file = paste0(baseDirectory, "/versions/pointDelineation/completedStats/pointDelineationStats.dbf"))
