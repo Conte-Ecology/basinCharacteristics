@@ -3,14 +3,12 @@ Zonal Statistics
 
 ## Description
 
-This repo stores the necessary scripts and files to calculate basin characteristics for the layers created in the `\basinCharacteristics` parent directory. Both ArcPy and R scripts are used in series to generate the final output statistics.
+This repo stores the necessary scripts and files to calculate basin characteristics for the layers created in the `\basinCharacteristics` parent directory. Both ArcPy and R scripts are used in series to generate the final output statistics. The repo is set up to handle different versions of basin characteristics such as catchments or riparian buffers separately. Each version will have a series of scripts that must be run in the specified order. Scripts are named by letters indicating the series, a number indicating the order in the series, and the title of the script preceded by an underscore. For exmple, `HRD1_zonalStatisticsProcessing.py` is the first script in the High Resolution Delineation (HRD) series and it's main prupose is to run the "Zonal Statistics" tool in ArcPython. Each series is described below in depth in the "Current Versions" section. Each time a new version is added, this README file should be updated. 
 
-## Setup Info: 
-
-- Two folders for spatial data must be created before running the scripts. All other folders are created within the scripts.
-  1. `zonalStatistics\gisFiles\rasters` holds the completed rasters from other sections which serve as input to these scripts. 
-  2. `zonalStatistics\gisFiles\vectors` holds the shapefiles of the catchment polygons for which the statistics will be evaluated
-- The scripts to run begin with numbers to signify the order in which they should be executed. Letters preceding the numbers indicate scripts for a specified version (e.g. "RB" indicates the script series for Riparian Buffer stats. A description of this process for each version exists in the next sections. Each time a new version is added, this README file should be updated.
+Prior to running any scripts, two folders for spatial data must be created:
+  1. `zonalStatistics\gisFiles\rasters` holds the the rasters to calculate stats for 
+  2. `zonalStatistics\gisFiles\vectors` holds the polygon shapefiles to calculate stats over
+The rasters should be copied form the `\outputFolder` directories from other repos in the `\basinCharacteristics` parent directory. If this is the case, no pre-processing is necessary for these files. Each version will point to these files which must reside in these folders for the scripts to work properly. All other folders are created within the scripts.
 
 
 ## Current Versions:
@@ -28,7 +26,6 @@ This section calculates the basin characteristics for the high resolultion delin
 
 In addition to the values for each catchment, the percent of the catchment area with data is calculated for each catchment. This accounts for cases where there is missing raster data within the catchment boundary. This is determined by dividing the "AREA" column output by the Zonal Statistics tool by the area of the rasterized version of the catchments.
 
-
 #### Required tools, packages, etc.
 
 **ArcPy Tools**
@@ -43,20 +40,22 @@ In addition to the values for each catchment, the percent of the catchment area 
 
 
 #### Steps to Run
-1. **HRD_INPUTS.txt** - This file is used to specify common user inputs that will be used across python and R scripts
+1. **HRD_INPUTS.txt** - Text file used to specify common user inputs that will be used across all scripts in the series
 
-  Open this file in the `zonalStatistics\scripts` folder and change the variables as needed. Do not add extra lines or change the structure of this file other than changing the names.
+ Open this file in the `zonalStatistics\scripts` folder and change the variables as needed. Do not add extra lines or change the structure of this file other than changing the names.
+ 
+ |    Object Name          |                        Description                                                    |      Example                   |
+ |:-----------------------:| ------------------------------------------------------------------------------------- |------------------------------- |
+ | `outputName`            |  Name associated with this particular version                                         | `"NortheastHRD"`               |
+ | `catchmentsFileName`    |  Name of the catchments shapefile (without extension)                                 | `"NortheastHRD_AllCatchments"` |
+ | `zoneField`             |  Name of the field used to identify features ("Zone Field")                           | `"FEATUREID"`                  |
+ | `statType`              |  Statistic to calculate                                                               | `"MEAN"`                       |
+ | `discreteRasters`       |  List of the discrete data layers, such as land cover, to calculate the statistic for | `c("forest", "agriculture")`   |
+ | `continuousRasters`     |  List of the continuous data layers, such as climate, to calculate the statistic for  | `c("ann_tmax_c", "elevation")` |
+ 
+ 
 
- |    Object Name          |            Description                                             |      Example |
- |:-----------------------:| ------------------------------------------------------------------- |----------------|
- | `outputName`            |  Name associated with this particular version |(e.g. `"NortheastHRD"`)|
- | `catchmentsFileName`    |  Name of the catchments shapefile (without extension)| (e.g. `"NortheastHRD_AllCatchments"`)|
- | `zoneField`             |  Name of the field used to identify features ("Zone Field")| (e.g. `"FEATUREID"`)|
- | `statType`              |  Statistic to calculate |(e.g. `"MEAN"`)|
- | `discreteRasters`       |  List of the discrete (categorical) data layers to calculate the statistic for |(e.g. Land use: `"forest"`)|
- | `continuousRasters`     |  List of the continuous data layers to calculate the statistic for  |(e.g. Climate: `"ann_tmax_c"`)|
-
-2. **HRD1_zonalStatisticsProcessing.py** - This script calculates statistics on the specified raster(s) for each of the catchments in the polygon shapefile. The primary tool used is "Zonal Statistics" in ArcGIS. Ensuring that the zone field in the shapefile has been indexed will increase the tool performance. The script outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`).
+2. **HRD1_zonalStatisticsProcessing.py** - Script to calculate statistics on the specified raster(s) for each of the catchments in the polygon shapefile. 
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
     a. Reads user-specified inputs from Step 1
@@ -64,8 +63,9 @@ In addition to the values for each catchment, the percent of the catchment area 
     c. Projects & resamples the rasters to match zone layer (Catchments). Consistency in spatial reference ensures proper calculate of stats.
     d. Rasterizes the zone polygon so it can be used to directly compare area in each catchment with or without raster data.
     e. Calculates the specified statistic (e.g. "MEAN") for each zone in the zone shapefile using the "Zonal Statistics" tool.
-    f. Adds -9999 values for zones that are not assigned any value. This will 
-
+    f. Adds -9999 values for zones that are not assigned any value ensuring that all values from the input catchments file are account for.
+    g. Outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`).   
+    
   Example output:
 
   | FEATUREID | COUNT  |    AREA    |    MEAN    |
@@ -78,14 +78,26 @@ In addition to the values for each catchment, the percent of the catchment area 
   |   350897  |   6    | 9608.108   | 0.16666667 |
 
 
-3. **HRD2_delineateUpstreamCatchments.R** - This script uses the catchment relationships built into the shapefile to generate a delineation of the network from each catchment. The output is a file in `.RData` containing a list of lists. The greater list is comprised of all of the catchments in the original shapefile. Each sublist contains all of the catchments upstream of that particuar catchment. The sublists are named by their primary (most downstream) catchment and can be accesed by the $ operator (e.g. `delineatedCatchments$'730076'`).
+3. **HRD2_delineateUpstreamCatchments.R** - Script that generates a list of the upstream catchments for each catchment in the shapefile
 
-  If this script has not been run and the delineated catchments `.RData` file does not exist, then open this script in R and set the `baseDirectory` as in previous scripts. Run the script which outputs the file to the proper folder. If the delineated catchments file does exist in the proper location, the script will not run. If the file is created separately, ensure proper naming of the file and move it to the same `\versions` directory (e.g. `zonalStatistics\versions\NortheastHRD\NortheastHRD_delineatedCatchments.RData`).
+  Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
+    a. Reads user-specified inputs from Step 1
+    b. Determines if catchments have already been delineated. If they exist in the proper directory, the script will not run.
+    c. Uses the catchment relationships built into the shapefile ("NextDownID" field) to generate a delineation of the network from each catchment.
+    d. Formats the result as a list of lists with each sublist named by the primary (most downstream) catchment (`delineatedCatchments$'730076'`).
+    e. Saves the output as an `.RData` file with the object named: `delineatedCatchments` in the `\versions` directory (e.g. `zonalStatistics\versions\NortheastHRD\NortheastHRD_delineatedCatchments.RData`).
 
 
-4. **HRD3_calculateUpstreamStatistics.R** - The primary function of this script is to use the output from the zonal statistics step with the `_delineatedCatchments` object to generate values for upstream statistics in each catchment. The variables listed in the **HRD_INPUTS.txt** file will be processed. For each individual catchment, the variable values for all catchments in the upstream network are averaged (weighted by area). For each catchment, the percent of the area with data is calculated to account for missing raster data within the catchments. The script outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv`). 
+4. **HRD3_calculateUpstreamStatistics.R** - Script that calculates the upstream average of all basin characteristics
 
-  Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. 
+  Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. This script does the following:
+    a. Reads user-specified inputs from Step 1.
+    b. Reads the two versions of the catchment areas (vector and raster). Vector is the actual area, while raster is used for determining the area containing raster data for each basin characteristic.
+    c. Reads the ArcPy output tables for each of the rasters specified in the `HRD_INPUTS.txt` file.
+    d. Converts all -9999 values to NA
+    e. Calculates the percent of the catchment area that has contributing raster data for each local catchment. This value shows how much data is missing from the catchment to help determine if the value is reliable or not.
+    f. Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area) as well as the percent of the area with data.
+    g. Outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv`). 
   
   Example output:
   
@@ -97,15 +109,37 @@ In addition to the values for each catchment, the percent of the catchment area 
   | 730252    |	0.400487975	|  11.82605111        |
   | 730254    |	0.412833724	|  93.07699015        |
 
+5. **HRD3a_calculateUpstreamStatistics (TNC Dams).R** - Script that calculates the upstream count of dams defined by TNC. This script is optional and depends on the TNC dams analysis.
+
+  Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. Also set the path to the results table form the matching version of the barrier analysis repo (`barrierStatsFilePath <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_NortheastHRD.dbf'`). This script does the following:
+    a. Reads user-specified inputs from Step 1.
+    b. Uses the delineated catchments object to calculate the number of barriers of each type located upstream from each catchment.
+    c. Outputs two `.csv` files, 1 upstream and 1 local, for each barrier type into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_deg_barr_1.csv`). 
+  
+  Example output:
+  
+  | FEATUREID | deg_barr_1  |
+  | :-------: | ----------- |
+  | 730236    |     0	      |
+  | 730243    |   	0	      |
+  | 730246    |   	1	      |
+  | 730252    |   	0	      |
+  | 730254    |	    1	      |
+
  
-5. **HRD4_statsFileGenerator.R** - This is a simple script to generate custom `.RData` files of zonal statistics for both local and upstream variables. It reads in the individual `.csv` files and outputs a combined `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. It also outputs a long format dataframe for input into the web system database.
+6. **HRD4_statsFileGenerator.R** - Script that generates useable `.RData` files of basin characteristics values.
 
   Open this script in R and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder and run the script. Specify the variables to include in `outputVariables`. There are 3 options for specifying the variables to output:
   1. "ALL" will include all of the variables present in the folder
-  2. NULL will include the variables from the `rasterList` object in the **RB_INPUTS.txt** file
+  2. NULL will include the variables from the `rasterList` object in the `HRD_INPUTS.txt` file
   3. Manually list the variables to output (e.g. `c("forest", "agriculture")`)
   
-  This script also pulls factors from the `Covariate Data Status - High Res Delineation.csv` (a duplicate of the excel spreadsheet with the same name). The factors convert the zonal values to the values used in models and on the web system (e.g. fraction to percent).
+  The script does the following:
+    a. Reads the individual `.csv` files according to the `outputVariables` object. 
+    b. Converts each basin characteristic to the output units according to factors in the `Covariate Data Status - High Res Delineation.csv` file.
+    c. Outputs an `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
+    d. Outputs an a long format dataframe for input into the web system database. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
+  
 
 #### Next Steps
 Next steps include the possibility of adding new variables.
@@ -116,11 +150,19 @@ Next steps include the possibility of adding new variables.
 `basinCharacteristcs\zonalStatistics\version\riparianBuffers`
 
 #### Description
-The scripts in this section are dependent on some elements of the overall HRD zonal statistics process, which should be completed first for all layers and ranges used in this section. First, the rasters are processed in the HRD section to be resampled and reprojected to match the catchments and each other. The scripts in this section rely on these previously processed rasters, pointing to the repo that contains the existing files. Second, the network delineation is identical to the HRD network. The "NortheastHRD_delineatedCatchments.RData" file from that section is referenced directly from this section. These steps are taken primarily to save time and data storage space. Development of stand-alone repos is possible if necessary.
+
+This section calculates the basin characteristics for the riparian buffers based on the high resolution delineation. For each buffer, 2 values are calculated:
+
+1. Local - The spatial average of the variable within the individual buffer polygon.
+2. Upstream - The spatial average of all of the local values calculated for all of the catchments in the upstream network. The spatial average is weighted buy indiviudal buffer area and is accurate to the downstream point of the specified reach.
+
+The scripts in this section are dependent on some elements of the overall HRD zonal statistics process, which should be completed first for all layers and ranges used in this section. First, the rasters are processed in the HRD section to be resampled and reprojected to match the catchments and each other. The scripts in this section rely on these previously processed rasters, pointing to the repo that contains the existing files. Second, the network delineation is identical to the HRD network. The `NortheastHRD_delineatedCatchments.RData` file from that section is referenced directly from this section. These steps are taken primarily to save time and data storage space. Development of stand-alone repos is possible if necessary.
 
 The calculation of basin characteristics for the riparian buffers is based on the overlapping polygons. The process does not account for the overlapping area of the polygons which essentially gets double counted during spatial averaging. This area amounts to a roughly 0.001 - 0.01 square kilometers, depending on buffer distance.
 
 In the scripts in this section, the term "catchments" is often used in place of "buffers". This is simply for ease of use in making code interchangeable and not meant to cause confusion.
+
+Currently the scripts are set up to only work with one buffer polygon file at a time.
 
 #### Required tools, packages, etc.
 
@@ -136,20 +178,23 @@ In the scripts in this section, the term "catchments" is often used in place of 
   - `lazyeval`
 
 #### Steps to Run
-1. **RB_INPUTS.txt** - This file is used to specify common user inputs that will be used across python and R scripts
+1. **RB_INPUTS.txt** - Text file used to specify common user inputs that will be used across all scripts in the series
 
-  Open this file in the "zonalStatistics\scripts" folder and change the variables as necessary. Do not add extra lines or change the structure of this file other than changing the names.
- - `outputName` is the name that will be associated with this particular run of the tool (e.g. `"riparianBuffers"`)
- - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft"`)
- - `bufferID` the name of the field that is used to identify the buffer distance and separate runs (e.g. `"200ft"`)
- - `zoneField` is the name of the field that is used to identify features (e.g. `"FEATUREID"`)
- - `statType` is the statistic to calculate (e.g. `"MEAN"`)
- - `rasterList` is list of the rasters to run (e.g. `c("devel_hi", "devel_low", "devel_med", "devel_opn", "developed", "forest", "impervious", "tree_canopy")`)
- - `hucFilePath` is the file path to the shapefile used to split the large buffer files into sections small enough to process (e.g. `"C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs"`)
-- `rasterDirectory` is the path to the directory containing the rasters to run (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"`)
+ Open this file in the `zonalStatistics\scripts` folder and change the variables as needed. Do not add extra lines or change the structure of this file other than changing the names.
+
+ |    Object Name          |                        Description                                                    |      Example                   |
+ |:-----------------------:| ------------------------------------------------------------------------------------- |------------------------------- |
+ | `outputName`            |  Name associated with this particular version                                         | `"riparianBuffers"`            |
+ | `catchmentsFilePath`    |  Name of the catchments shapefile (without extension) | `"C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft"` |
+ | `bufferID`              |  Name of the field that is used to identify the buffer distance used                  | `"200ft"`                      |
+ | `zoneField`             |  Name of the field used to identify features ("Zone Field")                           | `"FEATUREID"`                  |
+ | `statType`              |  Statistic to calculate                                                               | `"MEAN"`                       |
+ | `rasterList`            |  List of the rasters to run | `c("devel_hi", "devel_low", "devel_med", "devel_opn", "developed", "forest", "impervious", "tree_canopy")`   |
+ | `hucFilePath`           |  File path to the shapefile used to split the large buffer files into sections small enough to process  | `"C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs"` |
+ | `rasterDirectory`       |  File path to the directory containing the rasters to run  | `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"` |
+
  
- 
-2. **RB1_zonalStatisticsProcessing.py** - This script calculates statistics on the raster dataset for each of the buffers in the polygon shapefile. The primary tool used is "Zonal StatisticsAsTable2" in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons.  Make sure that the zone field in the shapefile has been indexed to increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\riparianBuffers\gisTables\forest_MEAN.dbf`). The script also outputs the polygon areas as a `.dbf` file. 
+2. **RB1_zonalStatisticsProcessing.py** - - Script to calculate statistics on the specified raster(s) for each of the polygons in the buffer shapefile. 
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
     a. Reads user-specified inputs from Step 1
@@ -159,7 +204,9 @@ In the scripts in this section, the term "catchments" is often used in place of 
     e. Joins all of the sections and elminiates duplicate features
     f. Adds -9999 values for zones that are not assigned any value
     g. Calculates the areas for the buffer polygons in the shapefile
-
+    h. Outputs the specified spatial statistic for all of the buffers as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\riparianBuffers\gisTables\forest_50ft.dbf`). 
+    i. Outputs the polygon areas as a `.dbf` file. 
+  
   Example output:
 
   | FEATUREID | COUNT  |    AREA    |    MEAN    |
@@ -172,10 +219,16 @@ In the scripts in this section, the term "catchments" is often used in place of 
   |   350897  |   6    | 9608.108   | 0.16666667 |
 
 
-3. **RB2_calculateUpstreamStatistics.R** - The primary function of this script is to use the output from the zonal statistics step with the `_delineatedCatchments` object to generate values for upstream statistics in each catchment. The variables listed in the **RB_INPUTS.txt** file will be processed. For each individual buffer polygon, the variable values for all buffers in the upstream network are averaged (weighted by area). The script outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\riparianBuffers\rTables\upstream_forest_200ft.csv`). 
 
-  Open this script in R and set the `baseDirectory` variable to the path up to and including the "zonalStatistics" folder and run the script. 
+3. **RB2_calculateUpstreamStatistics.R** - Script that calculates the upstream average of all basin characteristics
 
+  Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. This script does the following:
+    a. Reads user-specified inputs from Step 1.
+    b. Reads the ArcPy output tables for each of the rasters specified in the `RB_INPUTS.txt` file.
+    d. Converts all -9999 values to NA
+    f. Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area).
+    g. Outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\riparianBuffers\rTables\upstream_forest_50ft.csv`). 
+    
   Example output:
 
   | FEATUREID |    MEAN      |
@@ -184,18 +237,23 @@ In the scripts in this section, the term "catchments" is often used in place of 
   |   730254  |  0.296062992 |
   |   730258  |       0.25   |
   |   730259  |  0.029126214 |
-  |   730260  |  0.266112266 |
+  |   730260  |  0.266112266 
 
 
-4. **RB3_statsFileGenerator.R** - This is a simple script to generate custom `.RData` files of zonal statistics for both local and upstream variables. It reads in the individual `.csv` files and outputs a combined `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. It also outputs a separate file with a long format dataframe for uploading to the web system database.
+4. **RB3_statsFileGenerator.R** - Script that generates useable `.RData` files of basin characteristics values.
 
-  Open this script in R and set the `baseDirectory` variable to the path up to and including the "zonalStatistics"" folder and run the script. Specify the variables to include in `outputVariables`. There are 3 options for specifying the variables to output:
+  Open this script in R and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder and run the script. Specify the variables to include in `outputVariables`. There are 3 options for specifying the variables to output:
   1. "ALL" will include all of the variables present in the folder
-  2. NULL will include the variables from the `rasterList` object in the **RB_INPUTS.txt** file
-  3. Manually list the variables to output, but do not include the buffer specification(e.g. `c("forest", "agriculture")`)
+  2. NULL will include the variables from the `rasterList` object in the `RB_INPUTS.txt` file
+  3. Manually list the variables to output (e.g. `c("forest", "agriculture")`)
   
-This script also pulls factors from the `Covariate Data Status - High Res Delineation.csv` (a duplicate of the excel spreadsheet with the same name). The factors convert the zonal values to the values used in models and on the web system (e.g. fraction to percent).
+  The script does the following:
+    a. Reads the individual `.csv` files according to the `outputVariables` object. 
+    b. Converts each basin characteristic to the output units according to factors in the `Covariate Data Status - High Res Delineation.csv` file.
+    c. Outputs an `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\riparianBuffers\completedStats\zonalStatsRiparianBuffer_50ft_2015-04-10`).
+    d. Outputs an a long format dataframe for input into the web system database. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\riparianBuffers\completedStats\zonalStatsForDB_riparianBuffers50ft_2015-04-10`).
   
+
 #### Next Steps
 Next steps include the possibility of adding new variables, changing buffer distances, or creating contiguous buffers to avoid overlap (though other errors are likely to occur with this update).
 
