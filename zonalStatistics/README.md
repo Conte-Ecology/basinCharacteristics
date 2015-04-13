@@ -1,25 +1,26 @@
 Zonal Statistics
 ================
 
-This repo stores the necessary scripts and files to calculate basin characteristics for the layers created in the `basinCharacteristics` parent directory.
+This repo stores the necessary scripts and files to calculate basin characteristics for the layers created in the "basinCharacteristics" parent directory.
 
 ## Setup Info: 
 
-- The completed rasters from other sections serve as input to these scripts. These rasters reside in the `zonalStatistics/gisFiles/rasters` sub-folder.
-- The shapefile of the catchment polygons for which the statistics will be evaluated resides in the `zonalStatistics/gisFiles/vectors` sub-folder.
+- The completed rasters from other sections serve as input to these scripts. These rasters reside in the "zonalStatistics/gisFiles/rasters" sub-folder.
+- The shapefile of the catchment polygons for which the statistics will be evaluated resides in the "zonalStatistics/gisFiles/vectors" sub-folder.
 - These two folders must be created before running the scripts. All other folders are created within the scripts.
 - The scripts to run begin with numbers to signify the order in which they should be executed. Letters preceding the numbers indicate scripts for a specified version (e.g. "RB" indicates the script series for Riparian Buffer stats. A description of this process for each version exists in the next sections. Each time a new version is added, this README file should be updated.
 
 
 ## Current Versions:
 
-### Catchments for High Resolution Delineation:
+### Catchments for High Resolution Delineation
 
 #### Repo
-`basinCharacteristcs\zonalStatistics\version\NortheastHRD`
+"basinCharacteristcs\zonalStatistics\version\NortheastHRD"
 
 #### Description
 This section calculates the basin characteristics for the high resolultion delineation (HRD) catchments. For each catchment, 2 values are calculated:
+
 1. Local - The spatial average of the variable within the individual catchment polygon.
 2. Upstream - The spatial average of all of the local values calculated for all of the catchments in the upstream network. The spatial average is weighted buy indiviudal catchment area and is accurate to the downstream point of the specified catchment.
 
@@ -29,17 +30,17 @@ In addition to the values for each catchment, the percent of the catchment area 
 #### Steps to Run
 1. `HRD_INPUTS.txt` - This file is used to specify common user inputs that will be used across python and R scripts
 
-  Open this file in the `/scrpits` folder. Open the file and change the variables as necessary. Do not add extra lines or change the structure of this file other than changing the names.
- - "outputName" is the name that will be associated with this particular run of the tool (e.g. `NortheastHRD` for all High Resolution Catchments)
- - "catchmentsFileName" is the name of the catchments shapefile without extension (e.g. `NortheastHRD_AllCatchments`)
- - "zoneField" is the name of the field that is used to identify features (e.g. `FEATUREID`)
- - "statType" is the statistic to calculate (e.g. `MEAN`)
- - "discreteRasters" is list of the discrete, or categorical, data layers  to run such as land use (e.g. `forest`)
- - "continuousRasters" is list of the continuous data layers  to run such as climate or elevation data (e.g. `ann_tmax_c`)
+  Open this file in the `zonalStatistics/scripts` folder and change the variables as needed. Do not add extra lines or change the structure of this file other than changing the names.
+ - `outputName` is the name that will be associated with this particular run of the tool (e.g. "NortheastHRD" for all High Resolution Catchments)
+ - `catchmentsFileName` is the name of the catchments shapefile without extension (e.g. "NortheastHRD_AllCatchments")
+ - `zoneField` is the name of the field that is used to identify features (e.g. "FEATUREID")
+ - `statType` is the statistic to calculate (e.g. "MEAN")
+ - `discreteRasters` is list of the discrete, or categorical, data layers  to run such as land use (e.g. "forest")
+ - `continuousRasters` is list of the continuous data layers  to run such as climate or elevation data (e.g. "ann_tmax_c")
 
-2. `HRD1_zonalStatisticsProcessing.py` - This script calculates statistics on the raster dataset for each of the catchments in the polygon shapefile. The primary tool used is "Zonal Statistics" in ArcGIS. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics/versions/NortheastHRD/gisTables/forest_MEAN.dbf`). 
+2. `HRD1_zonalStatisticsProcessing.py` - This script calculates statistics on the raster dataset for each of the catchments in the polygon shapefile. The primary tool used is "Zonal Statistics" in ArcGIS. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the "gisTables" folder in the run-specific versions folder (e.g. `zonalStatistics/versions/NortheastHRD/gisTables/forest_MEAN.dbf`). 
 
-  Open this script and set the "baseDirectory" variable to the path up to and including the `zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
+  Open this script and set the `baseDirectory` variable to the path up to and including the "zonalStatistics" folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
     a. Reads user-specified inputs from Step 1
     b. Sets up the folder structure in the specified directory
     c. Reprojects & resamples the rasters to match the zone layer (Catchments)
