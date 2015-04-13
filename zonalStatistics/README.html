@@ -152,7 +152,7 @@ hr {
 <li>Two folders for spatial data must be created before running the scripts. All other folders are created within the scripts.
 
 <ol>
-<li>&ldquo;zonalStatistics\gisFiles\rasters&rdquo; holds the completed rasters from other sections which serve as input to these scripts. </li>
+<li><em>zonalStatistics\gisFiles\rasters</em> holds the completed rasters from other sections which serve as input to these scripts. </li>
 <li>&ldquo;zonalStatistics\gisFiles\vectors&rdquo; holds the shapefiles of the catchment polygons for which the statistics will be evaluated</li>
 </ol></li>
 <li>The scripts to run begin with numbers to signify the order in which they should be executed. Letters preceding the numbers indicate scripts for a specified version (e.g. &ldquo;RB&rdquo; indicates the script series for Riparian Buffer stats. A description of this process for each version exists in the next sections. Each time a new version is added, this README file should be updated.</li>
@@ -176,6 +176,24 @@ hr {
 </ol>
 
 <p>In addition to the values for each catchment, the percent of the catchment area with data is calculated for each catchment. This accounts for cases where there is missing raster data within the catchment boundary. This is determined by dividing the &ldquo;AREA&rdquo; column output by the Zonal Statistics tool by the area of the rasterized version of the catchments.</p>
+
+<h4>Required tools, packages, etc.</h4>
+
+<p><strong>ArcPy Tools</strong></p>
+
+<ul>
+<li>ArcGIS Spatial Analyst</li>
+</ul>
+
+<p><strong>R Packages</strong></p>
+
+<ul>
+<li><code>reshape2</code></li>
+<li><code>foreign</code></li>
+<li><code>tcltk</code></li>
+<li><code>dplyr</code></li>
+<li><code>lazyeval</code></li>
+</ul>
 
 <h4>Steps to Run</h4>
 
@@ -253,7 +271,7 @@ e. Adds -9999 values for zones that are not assigned any value</p>
 <p>If this script has not been run and the delineated catchments <code>.RData</code> file does not exist, then open this script in R and set the <code>baseDirectory</code> as in previous scripts. Run the script which outputs the file to the proper folder. If the delineated catchments file does exist in the proper location, the script will not run. If the file is created separately, ensure proper naming of the file and move it to the same &ldquo;versions&rdquo; directory (e.g. &ldquo;zonalStatistics\versions\NortheastHRD\NortheastHRD_delineatedCatchments.RData&rdquo;).</p></li>
 <li><p><strong>HRD3_calculateUpstreamStatistics.R</strong> - The primary function of this script is to use the output from the zonal statistics step with the <code>_delineatedCatchments</code> object to generate values for upstream statistics in each catchment. The variables listed in the <strong>HRD_INPUTS.txt</strong> file will be processed. For each individual catchment, the variable values for all catchments in the upstream network are averaged (weighted by area). For each catchment, the percent of the area with data is calculated to account for missing raster data within the catchments. The script outputs two <code>.csv</code> files, 1 upstream and 1 local, for each variable into the &ldquo;rTables&rdquo; directory (e.g. &ldquo;zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv&rdquo;). </p>
 
-<p>Open this script in R and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. </p>
+<p>Open this script in R and set the <code>baseDirectory</code> variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. </p>
 
 <p>Example output:</p>
 
@@ -303,6 +321,10 @@ e. Adds -9999 values for zones that are not assigned any value</p>
 <p>This script also pulls factors from the &ldquo;Covariate Data Status - High Res Delineation.csv&rdquo; (a duplicate of the excel spreadsheet with the same name). The factors convert the zonal values to the values used in models and on the web system (e.g. fraction to percent).</p></li>
 </ol>
 
+<h4>Next Steps</h4>
+
+<p>Next steps include the possibility of adding new variables.</p>
+
 <h3>Riparian Buffers for High Resolution Flowlines</h3>
 
 <h4>Repo</h4>
@@ -317,6 +339,25 @@ e. Adds -9999 values for zones that are not assigned any value</p>
 
 <p>In the scripts in this section, the term &ldquo;catchments&rdquo; is often used in place of &ldquo;buffers&rdquo;. This is simply for ease of use in making code interchangeable and not meant to cause confusion.</p>
 
+<h4>Required tools, packages, etc.</h4>
+
+<p><strong>ArcPy Tools</strong></p>
+
+<ul>
+<li>ArcGIS Spatial Analyst</li>
+<li>ArcGIS Spatial Analyst Supplemental tools, v1.3 - <a href="http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/">http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/</a></li>
+</ul>
+
+<p><strong>R Packages</strong></p>
+
+<ul>
+<li><code>reshape2</code></li>
+<li><code>foreign</code></li>
+<li><code>tcltk</code></li>
+<li><code>dplyr</code></li>
+<li><code>lazyeval</code></li>
+</ul>
+
 <h4>Steps to Run</h4>
 
 <ol>
@@ -326,17 +367,17 @@ e. Adds -9999 values for zones that are not assigned any value</p>
 
 <ul>
 <li><code>outputName</code> is the name that will be associated with this particular run of the tool (e.g. &ldquo;riparianBuffers&rdquo;)</li>
-<li><code>catchmentsFilePath</code> is the name of the catchments shapefile without extension (e.g. &ldquo;C:\KPONEIL\gis\riparianBuffers\NortheastHRD\overlappingBuffers.gdb\riparianBufferOverlap_ALL_200ft&rdquo;)</li>
+<li><code>catchmentsFilePath</code> is the name of the catchments shapefile without extension (e.g. &ldquo;C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft&rdquo;)</li>
 <li><code>bufferID</code> the name of the field that is used to identify the buffer distance and separate runs (e.g. &ldquo;200ft&rdquo;)</li>
 <li><code>zoneField</code> is the name of the field that is used to identify features (e.g. &ldquo;FEATUREID&rdquo;)</li>
 <li><code>statType</code> is the statistic to calculate (e.g. &ldquo;MEAN&rdquo;)</li>
 <li><code>rasterList</code> is list of the rasters to run (e.g. c(&ldquo;devel_hi&rdquo;, &ldquo;devel_low&rdquo;, &ldquo;devel_med&rdquo;, &ldquo;devel_opn&rdquo;, &ldquo;developed&rdquo;, &ldquo;forest&rdquo;, &ldquo;impervious&rdquo;, &ldquo;tree_canopy&rdquo;))</li>
-<li><code>hucFilePath</code> is the file path to the shapefile used to split the large buffer files into sections small enough to process (e.g. <code>&quot;C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs&quot;</code>)</li>
+<li><code>hucFilePath</code> is the file path to the shapefile used to split the large buffer files into sections small enough to process (e.g. &ldquo;C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs&rdquo;)</li>
 </ul></li>
-<li><p><code>rasterDirectory</code> is the path to the directory containing the rasters to run (e.g. <code>&quot;C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb&quot;</code>)</p></li>
-<li><p><code>RB1_zonalStatisticsProcessing.py</code> - This script calculates statistics on the raster dataset for each of the buffers in the polygon shapefile. The primary tool used is &ldquo;Zonal StatisticsAsTable2&rdquo; in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons. The tool is downloaded from here: <a href="http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007">http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007</a>. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as <code>.dbf</code> tables in the <code>gisTables</code> folder in the run-specific versions folder (e.g. <code>zonalStatistics/versions/riparianBuffers/gisTables/forest_MEAN.dbf</code>). The script also outputs the polygon areas as a <code>.dbf</code> file. </p>
+<li><p><code>rasterDirectory</code> is the path to the directory containing the rasters to run (e.g. &ldquo;C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb&rdquo;)</p></li>
+<li><p><strong>RB1_zonalStatisticsProcessing.py</strong> - This script calculates statistics on the raster dataset for each of the buffers in the polygon shapefile. The primary tool used is &ldquo;Zonal StatisticsAsTable2&rdquo; in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons.  Make sure that the zone field in the shapefile has been indexed to increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as <code>.dbf</code> tables in the &ldquo;gisTables&rdquo; folder in the run-specific versions folder (e.g. &ldquo;zonalStatistics/versions/riparianBuffers/gisTables/forest_MEAN.dbf&rdquo;). The script also outputs the polygon areas as a <code>.dbf</code> file. </p>
 
-<p>Open this script and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
+<p>Open this script and set the <code>baseDirectory</code> variable to the path up to and including the &ldquo;zonalStatistics&rdquo; folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
 a. Reads user-specified inputs from Step 1
 b. Sets up the folder structure in the specified directory
 c. Reprojects the zone and HUC polygons as needed
@@ -392,9 +433,9 @@ g. Calculates the areas for the buffer polygons in the shapefile</p>
 <td>0.16666667</td>
 </tr>
 </tbody></table></li>
-<li><p><code>RB2_calculateUpstreamStatistics.R</code> - The primary function of this script is to use the output from the zonal statistics step with the <code>_delineatedCatchments</code> object to generate values for upstream statistics in each catchment. The variables listed in the <code>RB_INPUTS.txt</code> file will be processed. For each individual buffer polygon, the variable values for all buffers in the upstream network are averaged (weighted by area). The script also converts the stats output from the zonal statistics step (<code>.dbf</code> tables) to <code>.csv</code> files for uniformity. The script outputs two <code>.csv</code> files, 1 upstream and 1 local, for each variable into the <code>rTables</code> directory (e.g. <code>zonalStatistics\versions\riparianBuffers\rTables\upstream_forest_200ft.csv</code>). </p>
+<li><p><strong>RB2_calculateUpstreamStatistics.R</strong> - The primary function of this script is to use the output from the zonal statistics step with the <code>_delineatedCatchments</code> object to generate values for upstream statistics in each catchment. The variables listed in the <strong>RB_INPUTS.txt</strong> file will be processed. For each individual buffer polygon, the variable values for all buffers in the upstream network are averaged (weighted by area). The script outputs two <code>.csv</code> files, 1 upstream and 1 local, for each variable into the &ldquo;rTables&rdquo; directory (e.g. <code>zonalStatistics\versions\riparianBuffers\rTables\upstream_forest_200ft.csv</code>). </p>
 
-<p>Open this script in R and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. </p>
+<p>Open this script in R and set the <code>baseDirectory</code> variable to the path up to and including the &ldquo;zonalStatistics&rdquo; folder and run the script. </p>
 
 <p>Example output:</p>
 
@@ -425,44 +466,64 @@ g. Calculates the areas for the buffer polygons in the shapefile</p>
 <td>0.266112266</td>
 </tr>
 </tbody></table></li>
-<li><p><code>RB3_statsFileGenerator.R</code> - This is a simple script to generate custom <code>.RData</code> files of zonal statistics for both local and upstream variables. It reads in the individual <code>.csv</code> files and outputs a combined <code>.RData</code> file with two dataframes: &ldquo;LocalStats&rdquo; and &ldquo;UpstreamStats&rdquo;. It also outputs a long format dataframe for input into the web system database.</p>
+<li><p><strong>RB3_statsFileGenerator.R</strong> - This is a simple script to generate custom <code>.RData</code> files of zonal statistics for both local and upstream variables. It reads in the individual <code>.csv</code> files and outputs a combined <code>.RData</code> file with two dataframes: <code>LocalStats</code> and <code>UpstreamStats</code>. It also outputs a separate file with a long format dataframe for uploading to the web system database.</p>
 
-<p>Open this script in R and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. Specify the variables to include in &ldquo;outputVariables&rdquo;. There are 3 options for specifying the variables to output:</p>
+<p>Open this script in R and set the <code>baseDirectory</code> variable to the path up to and including the &ldquo;zonalStatistics&rdquo;&ldquo; folder and run the script. Specify the variables to include in <code>outputVariables</code>. There are 3 options for specifying the variables to output:</p>
 
 <ol>
-<li>&ldquo;ALL&rdquo; will include all of the variables present in the folder</li>
-<li>NULL will include the variables from the &ldquo;rasterList&rdquo; object in the &ldquo;RB_INPUTS.txt&rdquo; file</li>
+<li>&quot;ALL&rdquo; will include all of the variables present in the folder</li>
+<li>NULL will include the variables from the <code>rasterList</code> object in the <strong>RB_INPUTS.txt</strong> file</li>
 <li>Manually list the variables to output (do not include the buffer specification)</li>
 </ol></li>
 </ol>
 
 <p>This script also pulls factors from the &ldquo;Covariate Data Status - High Res Delineation.csv&rdquo; (a duplicate of the excel spreadsheet with the same name). The factors convert the zonal values to the values used in models and on the web system (e.g. fraction to percent).</p>
 
+<h4>Next Steps</h4>
+
+<p>Next steps include the possibility of adding new variables, changing buffer distances, or creating contiguous buffers to avoid overlap (though other errors are likely to occur with this update).</p>
+
 <h3>Point Delineation for MassDOT Project:</h3>
 
 <h4>Repo</h4>
 
-<p><code>basinCharacteristcs\zonalStatistics\version\pointDelineation</code></p>
+<p>basinCharacteristcs\zonalStatistics\version\pointDelineation</p>
 
 <h4>Description</h4>
 
-<p>The scripts in this section are dependent on the raster processing completed in the HRD section (resampling and reprojecting each raster to match the catchments and each other). The scripts in this section point to the repo that contains the existing files. These steps are taken primarily to save time and data storage space. Development of stand-alone repos is possible.</p>
+<p>The scripts in this section are dependent on the raster processing completed in the HRD section (resampling and reprojecting each raster to match the catchments and each other). The scripts in this section point to the repo that contains the existing files. These steps are taken primarily to save time and data storage space.</p>
+
+<h4>Required tools, packages, etc.</h4>
+
+<p><strong>ArcPy Tools</strong></p>
+
+<ul>
+<li>ArcGIS Spatial Analyst</li>
+<li>ArcGIS Spatial Analyst Supplemental tools, v1.3 - <a href="http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/">http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/</a></li>
+</ul>
+
+<p><strong>R Packages</strong></p>
+
+<ul>
+<li><code>dplyr</code></li>
+<li><code>foreign</code></li>
+</ul>
 
 <h4>Steps to Run</h4>
 
 <ol>
-<li><p><code>PD1_zonalStatisticsProcessing.py</code> - This script calculates statistics on the raster dataset for each of delineated basins in the polygon shapefile. The primary tool used is &ldquo;Zonal StatisticsAsTable2&rdquo; in ArcGIS. This tool is modified from the original to be able to run zonal statistics on overlapping polygons. The tool is downloaded from here: <a href="http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007">http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007</a>. Make sure that the zone field in the shapefile has been indexed. This step will increase the tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as <code>.dbf</code> tables in the <code>gisTables</code> folder in the run-specific versions folder (e.g. <code>pointDelineation/gisTables/forest_MEAN.dbf</code>). The script also outputs the polygon areas as a <code>.dbf</code> file. </p>
+<li><p><strong>PD1_zonalStatisticsProcessing.py</strong> - This script calculates statistics on the raster dataset for each of delineated basins in the polygon shapefile. The primary tool used is &ldquo;Zonal StatisticsAsTable2&rdquo; in ArcGIS (modified to process overlapping polygons). Ensure that the zone field in the shapefile has been indexed improves tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as <code>.dbf</code> tables in the <code>gisTables</code> folder in the run-specific versions folder (e.g. &ldquo;pointDelineation\gisTables\forest_MEAN.dbf&rdquo;&ldquo;). The script also outputs the polygon areas as a <code>.dbf</code> file. </p>
 
-<p>Open this script and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.</p></li>
+<p>Open this script and set the <code>baseDirectory</code> variable to the path up to and including the &quot;zonalStatistics&rdquo; folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.</p></li>
 </ol>
 
 <ul>
-<li><code>outputName</code> is the name that will be associated with this particular run of the tool (e.g. <code>pointDelineation</code> for all High Resolution Catchments)</li>
-<li><code>catchmentsFilePath</code> is the name of the catchments shapefile without extension (e.g. <code>&quot;C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp</code>)</li>
-<li><code>zoneField</code> is the name of the field that is used to identify features (e.g. <code>DelinID</code>)</li>
-<li><code>rasterDirectory</code> is the path to the directory containing the rasters to run (e.g. <code>&quot;C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb&quot;</code>)</li>
-<li><code>rasterList</code> is list of the rasters to run (e.g. <code>[&quot;forest&quot;, &quot;agriculture&quot;, &quot;impervious&quot;, &quot;fwswetlands&quot;, &quot;fwsopenwater&quot;, &quot;slope_pcnt&quot;, &quot;elevation&quot;, &quot;surfcoarse&quot;, &quot;percent_sandy&quot;, &quot;drainageclass&quot;, &quot;hydrogroup_ab&quot;]</code>)</li>
-<li><p><code>statType</code> is the statistic to calculate (e.g. <code>MEAN</code>)</p>
+<li><code>outputName</code> is the name that will be associated with this particular run of the tool (e.g. &ldquo;pointDelineation&rdquo;)</li>
+<li><code>catchmentsFilePath</code> is the name of the catchments shapefile without extension (e.g. &ldquo;C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp&rdquo;)</li>
+<li><code>zoneField</code> is the name of the field that is used to identify features (e.g. &ldquo;DelinID&rdquo;)</li>
+<li><code>rasterDirectory</code> is the path to the directory containing the rasters to run (e.g. &ldquo;C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb&rdquo;)</li>
+<li><code>rasterList</code> is list of the rasters to run (e.g. [&ldquo;forest&rdquo;, &ldquo;agriculture&rdquo;, &ldquo;impervious&rdquo;, &ldquo;fwswetlands&rdquo;, &ldquo;fwsopenwater&rdquo;, &ldquo;slope_pcnt&rdquo;, &ldquo;elevation&rdquo;, &ldquo;surfcoarse&rdquo;, &ldquo;percent_sandy&rdquo;, &ldquo;drainageclass&rdquo;, &ldquo;hydrogroup_ab&rdquo;])</li>
+<li><p><code>statType</code> is the statistic to calculate (e.g. &ldquo;MEAN&rdquo;)</p>
 
 <p>This script does the following:
 a. Sets up the folder structure in the specified directory
@@ -520,19 +581,19 @@ d. Adds -9999 values for zones that are not assigned any value</p>
 </ul>
 
 <ol>
-<li><p><code>PD2_finalizeZonalStatistics.R</code> - This script pulls together the results from the ArcPy script, as well as TNC dams processing (see repo: <code>basinCharacteristics\tncDams</code>). It converts the input values to the desired output values and saves the results as an <code>.RData</code> file.</p>
+<li><p><strong>PD2_finalizeZonalStatistics.R</strong> - This script pulls together the results from the ArcPy script, as well as TNC dams processing (see repo: &ldquo;basinCharacteristics\tncDams&rdquo;). It converts the input values to the desired output values and saves the results as an <code>.RData</code> file.</p>
 
-<p>Open this script and set the &ldquo;baseDirectory&rdquo; variable to the path up to and including the <code>zonalStatistics</code> folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.</p></li>
+<p>Open this script and set the <code>baseDirectory</code> variable to the path up to and including the &ldquo;zonalStatistics&rdquo; folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.</p></li>
 </ol>
 
 <ul>
-<li><code>outputName</code> is the name that will be associated with this particular run of the tool (e.g. <code>pointDelineation</code>)</li>
-<li><code>catchmentsFilePath</code> is the name of the catchments shapefile without extension (e.g. <code>&quot;C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp</code>)</li>
-<li><code>zoneField</code> is the name of the field that is used to identify features (e.g. <code>DelinID</code>)</li>
-<li><code>rasterList</code> is list of the rasters to run (e.g. <code>c(&quot;forest&quot;, &quot;agriculture&quot;, &quot;impervious&quot;, &quot;fwswetlands&quot;, &quot;fwsopenwater&quot;, &quot;slope_pcnt&quot;, &quot;elevation&quot;, &quot;surfcoarse&quot;, &quot;percent_sandy&quot;, &quot;drainageclass&quot;, &quot;hydrogroup_ab&quot;)</code>)</li>
+<li><code>outputName</code> is the name that will be associated with this particular run of the tool (e.g. &ldquo;pointDelineation&rdquo;)</li>
+<li><code>catchmentsFilePath</code> is the name of the catchments shapefile without extension (e.g. &ldquo;C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp&rdquo;)</li>
+<li><code>zoneField</code> is the name of the field that is used to identify features (e.g. &ldquo;DelinID&rdquo;)</li>
+<li><code>rasterList</code> is list of the rasters to run (e.g. c(&ldquo;forest&rdquo;, &ldquo;agriculture&rdquo;, &ldquo;impervious&rdquo;, &ldquo;fwswetlands&rdquo;, &ldquo;fwsopenwater&rdquo;, &ldquo;slope_pcnt&rdquo;, &ldquo;elevation&rdquo;, &ldquo;surfcoarse&rdquo;, &ldquo;percent_sandy&rdquo;, &ldquo;drainageclass&rdquo;, &ldquo;hydrogroup_ab&rdquo;))</li>
 <li><code>conversionValues</code> are the values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the <code>rasterList</code>.</li>
-<li><code>statType</code> is the statistic to calculate (e.g. <code>MEAN</code>)</li>
-<li><p><code>damsFile</code> is the path to the directory containing the separately calculated TNC Dams count (e.g. <code>&quot;C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf&quot;</code>)</p>
+<li><code>statType</code> is the statistic to calculate (e.g. &ldquo;MEAN&rdquo;)</li>
+<li><p><code>damsFile</code> is the path to the directory containing the separately calculated TNC Dams count (e.g. &ldquo;C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf&rdquo;)</p>
 
 <p>This script does the following:
 a. Reads the ArcPy output tables for all specified basin characteristics

@@ -6,8 +6,8 @@ This repo stores the necessary scripts and files to calculate basin characterist
 ## Setup Info: 
 
 - Two folders for spatial data must be created before running the scripts. All other folders are created within the scripts.
-  1. "zonalStatistics\gisFiles\rasters" holds the completed rasters from other sections which serve as input to these scripts. 
-  2. "zonalStatistics\gisFiles\vectors" holds the shapefiles of the catchment polygons for which the statistics will be evaluated
+  1. *zonalStatistics\gisFiles\rasters* holds the completed rasters from other sections which serve as input to these scripts. 
+  2. *zonalStatistics\gisFiles\vectors* holds the shapefiles of the catchment polygons for which the statistics will be evaluated
 - The scripts to run begin with numbers to signify the order in which they should be executed. Letters preceding the numbers indicate scripts for a specified version (e.g. "RB" indicates the script series for Riparian Buffer stats. A description of this process for each version exists in the next sections. Each time a new version is added, this README file should be updated.
 
 
@@ -79,7 +79,7 @@ In addition to the values for each catchment, the percent of the catchment area 
 
 4. **HRD3_calculateUpstreamStatistics.R** - The primary function of this script is to use the output from the zonal statistics step with the `_delineatedCatchments` object to generate values for upstream statistics in each catchment. The variables listed in the **HRD_INPUTS.txt** file will be processed. For each individual catchment, the variable values for all catchments in the upstream network are averaged (weighted by area). For each catchment, the percent of the area with data is calculated to account for missing raster data within the catchments. The script outputs two `.csv` files, 1 upstream and 1 local, for each variable into the "rTables" directory (e.g. "zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv"). 
 
-  Open this script in R and set the "baseDirectory" variable to the path up to and including the `zonalStatistics` folder and run the script. 
+  Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. 
   
   Example output:
   
@@ -120,7 +120,7 @@ In the scripts in this section, the term "catchments" is often used in place of 
 
 **ArcPy Tools**
   - ArcGIS Spatial Analyst
-  - ArcGIS Spatial Analyst Supplemental tools, v1.3 - http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007
+  - ArcGIS Spatial Analyst Supplemental tools, v1.3 - http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/
 
 **R Packages**
   - `reshape2`
@@ -205,7 +205,7 @@ The scripts in this section are dependent on the raster processing completed in 
 
 **ArcPy Tools**
   - ArcGIS Spatial Analyst
-  - ArcGIS Spatial Analyst Supplemental tools, v1.3 - http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/#comment-7007
+  - ArcGIS Spatial Analyst Supplemental tools, v1.3 - http://blogs.esri.com/esri/arcgis/2013/11/26/new-spatial-analyst-supplemental-tools-v1-3/
 
 **R Packages**
   - `dplyr`
