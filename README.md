@@ -9,6 +9,11 @@ basinCharacteristics
 4. contact info
 
 
+other points
+
+- updating covariates documentation .csv file
+
+
 Contains the scripts, procedures and some of the ouputs for the basin characteristics generated in the models and maps. Currently the dataset is based on the NHDplus medium res delineation.
 
 ## fwsWetlands

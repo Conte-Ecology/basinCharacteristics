@@ -15,18 +15,16 @@ baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistic
 # ==============
 # Specify Inputs
 # ==============
-rasterList       <- c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab")
-conversionValues <- c(     100,           100,            1,           100,            100,            1,           1,          100,             100,               1,             100)
-
-tableFolder <- "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/versions/pointDelineation/gisTables"
-
-zoneField <- "DelinID"
-
-statType = "MEAN"
+outputName <- "pointDelineation"
 
 catchmentsFilePath <- "C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.dbf"
 
-outputName <- "pointDelineation"
+zoneField <- "DelinID"
+
+rasterList       <- c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab")
+conversionValues <- c(     100,           100,            1,           100,            100,            1,           1,          100,             100,               1,             100)
+
+statType = "MEAN"
 
 damsFile <- "C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"
 
@@ -47,7 +45,7 @@ finalDF <- shapeAreas
 for (j in seq_along(rasterList)){
   
   # File path to table
-  tableFilePath <- file.path(tableFolder, paste0(rasterList[j], ".dbf"))
+  tableFilePath <- file.path(paste0(baseDirectory, "/versions/pointDelineation/gisTables"), paste0(rasterList[j], ".dbf"))
   
   # Open table
   dbfTable <-read.dbf(tableFilePath)[,c(zoneField, statType, "AREA")]
