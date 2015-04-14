@@ -313,21 +313,19 @@ The scripts in this section are dependent on the raster processing completed in 
  
 2. **PD2_finalizeZonalStatistics.R** - Script to pull together the results from the ArcPy processing and TNC dams processing (see repo: `basinCharacteristics\tncDams`)
 
-
-It converts the input values to the desired output values and saves the results as an `.RData` file.
+  It converts the input values to the desired output values and saves the results as an `.RData` file.
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. The user inputs are again entered directly in the script file and not a separate input file:
 
- |    Object Name          |                        Description                                                    |      Example                   |
- |:-----------------------:| ------------------------------------------------------------------------------------- | ------------------------------- |
- | `outputName`            |  Name associated with this particular version                                         | `"pointDelineation"`            |
- | `catchmentsFilePath`    |  Name of the catchments shapefile (without extension)                                 | `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"` |
- | `zoneField`             |  Name of the field used to identify features ("Zone Field")                           | `"DelinID"`                  |
- | `statType`              |  Statistic to calculate                                                               | `"MEAN"`                       |
- | `rasterList`            |  List of the rasters to run                                                           | `c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater")`   |
- | `conversionValues`      |  List of values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the `rasterList` | `c(100, 100, 1, 100, 100)` |
- | `damsFile`              |  File path to the barrier count output file for this version                          | `"C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"` |  
-
+  |    Object Name          |                        Description                                                    |      Example                                                                                               |
+  |:-----------------------:| ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+  | `outputName`            |  Name associated with this particular version                                         | `"pointDelineation"`                                                                                       |
+  | `catchmentsFilePath`    |  Name of the catchments shapefile (without extension)                                 | `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"`     |
+  | `zoneField`             |  Name of the field used to identify features ("Zone Field")                           | `"DelinID"`                                                                                                |
+  | `statType`              |  Statistic to calculate                                                               | `"MEAN"`                                                                                                   |
+  | `rasterList`            |  List of the rasters to run                                                           | `c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater")`                                  |
+  | `conversionValues`      |  List of values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the `rasterList` | `c(100, 100, 1, 100, 100)`           |
+  | `damsFile`              |  File path to the barrier count output file for this version                          | `"C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"` |  
 
   Run the script in R. This script does the following:
     a. Reads the ArcPy output tables for all specified basin characteristics
