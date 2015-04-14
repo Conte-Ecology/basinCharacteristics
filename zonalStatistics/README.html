@@ -146,15 +146,16 @@ hr {
 
 <h2>Description</h2>
 
-<p>This repo stores the necessary scripts and files to calculate basin characteristics for the layers created in the <code>\basinCharacteristics</code> parent directory. Both ArcPy and R scripts are used in series to generate the final output statistics. The repo is set up to handle different versions of basin characteristics such as catchments or riparian buffers separately. Each version will have a series of scripts that must be run in the specified order. Scripts are named by letters indicating the series, a number indicating the order in the series, and the title of the script preceded by an underscore. For exmple, <code>HRD1_zonalStatisticsProcessing.py</code> is the first script in the High Resolution Delineation (HRD) series and it&#39;s main prupose is to run the &ldquo;Zonal Statistics&rdquo; tool in ArcPython. Each series is described below in depth in the &ldquo;Current Versions&rdquo; section. Each time a new version is added, this README file should be updated. </p>
+<p>This repo stores the necessary scripts and files to calculate basin characteristics for the layers created in the <code>\basinCharacteristics</code> parent directory. Both ArcPy and R scripts are used in series to generate the final output statistics. The repo is set up to handle different versions of basin characteristics such as catchments or riparian buffers separately. Each version will have a series of scripts that must be run in the specified order. Scripts are named by letters indicating the series, a number indicating the order in the series, and the title of the script preceded by an underscore. For exmple, <code>HRD1_zonalStatisticsProcessing.py</code> is the first script in the High Resolution Delineation (HRD) series and its main prupose is to process the raw layers and run them through the &ldquo;Zonal Statistics&rdquo; tool in ArcPython. Each series is described below in depth in the &ldquo;Current Versions&rdquo; section. Each time a new version is added, this README file should be updated. </p>
 
 <p>Prior to running any scripts, two folders for spatial data must be created:</p>
 
 <ol>
-<li><code>zonalStatistics\gisFiles\rasters</code> holds the the rasters to calculate stats for </li>
-<li><code>zonalStatistics\gisFiles\vectors</code> holds the polygon shapefiles to calculate stats over
-The rasters should be copied form the <code>\outputFolder</code> directories from other repos in the <code>\basinCharacteristics</code> parent directory. If this is the case, no pre-processing is necessary for these files. Each version will point to these files which must reside in these folders for the scripts to work properly. All other folders are created within the scripts.</li>
+<li><code>basinCharacteristics\zonalStatistics\gisFiles\rasters</code> holds the the rasters to calculate stats for </li>
+<li><code>basinCharacteristics\zonalStatistics\gisFiles\vectors</code> holds the polygon shapefiles to calculate stats over</li>
 </ol>
+
+<p>Each version will point to these directories for spatial data. The rasters should be copied from the <code>\outputFolder</code> directories from other repos in the <code>\basinCharacteristics</code> parent directory. If this is the case, no pre-processing is necessary for the spatial files.  All other folders are created within the scripts.</p>
 
 <h2>Current Versions:</h2>
 
@@ -166,11 +167,11 @@ The rasters should be copied form the <code>\outputFolder</code> directories fro
 
 <h4>Description</h4>
 
-<p>This section calculates the basin characteristics for the high resolultion delineation (HRD) catchments. For each catchment, 2 values are calculated:</p>
+<p>This section calculates the basin characteristics for the high resolultion delineation (HRD) catchments. Two values are calculated for each individual catchment:</p>
 
 <ol>
-<li>Local - The spatial average of the variable within the individual catchment polygon.</li>
-<li>Upstream - The spatial average of all of the local values calculated for all of the catchments in the upstream network. The spatial average is weighted buy indiviudal catchment area and is accurate to the downstream point of the specified catchment.</li>
+<li>Local - The spatial average of the variable within the individual catchment polygon</li>
+<li>Upstream - The spatial average of all of the local values calculated for all of the catchments in the upstream network including the specified catchment (weighted by indiviudal catchment area)</li>
 </ol>
 
 <p>In addition to the values for each catchment, the percent of the catchment area with data is calculated for each catchment. This accounts for cases where there is missing raster data within the catchment boundary. This is determined by dividing the &ldquo;AREA&rdquo; column output by the Zonal Statistics tool by the area of the rasterized version of the catchments.</p>
@@ -229,19 +230,20 @@ The rasters should be copied form the <code>\outputFolder</code> directories fro
 </tr>
 <tr>
 <td align="center"><code>discreteRasters</code></td>
-<td>List of the discrete data layers, such as land cover, to calculate the statistic for</td>
+<td>List of the discrete data layers (e.g. land cover) to calculate the statistic for</td>
 <td><code>c(&quot;forest&quot;, &quot;agriculture&quot;)</code></td>
 </tr>
 <tr>
 <td align="center"><code>continuousRasters</code></td>
-<td>List of the continuous data layers, such as climate, to calculate the statistic for</td>
+<td>List of the continuous data layers (e.g. climate) to calculate the statistic for</td>
 <td><code>c(&quot;ann_tmax_c&quot;, &quot;elevation&quot;)</code></td>
 </tr>
 </tbody></table></li>
 <li><p><strong>HRD1_zonalStatisticsProcessing.py</strong> - Script to calculate statistics on the specified raster(s) for each of the catchments in the polygon shapefile. </p>
 
-<p>Open this script and set the <code>baseDirectory</code> variable to the path up to and including the <code>\zonalStatistics</code> folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
-a. Reads user-specified inputs from Step 1
+<p>Open this script and set the <code>baseDirectory</code> variable to the path up to and including the <code>\zonalStatistics</code> folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:</p>
+
+<p>a. Reads user-specified inputs from Step 1
 b. Sets up the folder structure in the specified directory. This structure will be used by the rest of the scripts in the series.
 c. Projects &amp; resamples the rasters to match zone layer (Catchments). Consistency in spatial reference ensures proper calculate of stats.
 d. Rasterizes the zone polygon so it can be used to directly compare area in each catchment with or without raster data.
