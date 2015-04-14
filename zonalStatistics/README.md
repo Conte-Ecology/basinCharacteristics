@@ -57,12 +57,12 @@ In addition to the values for each catchment, the percent of the catchment area 
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
     1. Reads user-specified inputs from Step 1  
-    2. Sets up the folder structure in the specified directory. This structure will be used by the rest of the scripts in the series.  
-    3. Projects & resamples the rasters to match zone layer (Catchments). Consistency in spatial reference ensures proper calculate of stats.  
-    4. Rasterizes the zone polygon so it can be used to directly compare area in each catchment with or without raster data.  
-    5. Calculates the specified statistic (e.g. "MEAN") for each zone in the zone shapefile using the "Zonal Statistics" tool.  
-    6. Adds -9999 values for zones that are not assigned any value ensuring that all values from the input catchments file are account for.  
-    7. Outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`).   
+    2. Sets up the folder structure used by the rest of the scripts in the series  
+    3. Projects & resamples the rasters to match the zone layer (catchments) ensuing consistency of spatial references
+    4. Rasterizes the zone polygon so it can be used to directly compare area in each catchment with or without raster data
+    5. Calculates the specified statistic (e.g. "MEAN") for each zone in the zone shapefile using the "Zonal Statistics" tool
+    6. Adds -9999 values for zones that are not assigned any value ensuring that all values from the input catchments file are account for
+    7. Outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`)
     
   Example output:
 
@@ -78,24 +78,32 @@ In addition to the values for each catchment, the percent of the catchment area 
 
 3. **HRD2_delineateUpstreamCatchments.R** - Script that generates a list of the upstream catchments for each catchment in the shapefile
 
-  Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
-    a. Reads user-specified inputs from Step 1
-    b. Determines if catchments have already been delineated. If they exist in the proper directory, the script will not run.
-    c. Uses the catchment relationships built into the shapefile ("NextDownID" field) to generate a delineation of the network from each catchment.
-    d. Formats the result as a list of lists with each sublist named by the primary (most downstream) catchment (`delineatedCatchments$'730076'`).
-    e. Saves the output as an `.RData` file with the object named: `delineatedCatchments` in the `\versions` directory (e.g. `zonalStatistics\versions\NortheastHRD\NortheastHRD_delineatedCatchments.RData`).
+  Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in R. Allow script to run completely before moving on to the next script. This script does the following:
+    1. Reads user-specified inputs from Step 1
+    2. Determines if catchments have already been delineated and halts the script if the file already exists in the proper directory
+    3. Uses the catchment relationships built into the shapefile ("NextDownID" field) to generate a delineation of the network from each catchment
+    4. Formats the result as a list of lists with each sublist named by the primary (most downstream) catchment (`delineatedCatchments$'730076'`)
+    5. Saves the output as an `.RData` file with the object named: `delineatedCatchments` in the `\versions` directory (e.g. `zonalStatistics\versions\NortheastHRD\NortheastHRD_delineatedCatchments.RData`)
+
+  Example output:
+  `str(delineatedCatchments)
+  List of 373074
+    $ 730076 : int [1:7] 730076 730086 730080 730091 730087 730085 730095
+    $ 730077 : int 730077
+    $ 730086 : int [1:3] 730086 730085 730095
+    $ 730080 : int [1:3] 730080 730091 730087`
 
 
 4. **HRD3_calculateUpstreamStatistics.R** - Script that calculates the upstream average of all basin characteristics
 
   Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. This script does the following:
-    a. Reads user-specified inputs from Step 1.
-    b. Reads the two versions of the catchment areas (vector and raster). Vector is the actual area, while raster is used for determining the area containing raster data for each basin characteristic.
-    c. Reads the ArcPy output tables for each of the rasters specified in the `HRD_INPUTS.txt` file.
-    d. Converts all -9999 values to NA
-    e. Calculates the percent of the catchment area that has contributing raster data for each local catchment. This accounts for catchments where only a small portion of the raster is present and output stats are effectively NA.
-    f. Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area) as well as the percent of the area with data.
-    g. Outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv`). 
+    1. Reads user-specified inputs from Step 1.
+    2. Reads the two versions of the catchment areas (vector and raster). Vector is the actual area, while raster is used for determining the area containing raster data for each basin characteristic.
+    3. Reads the ArcPy output tables for each of the rasters specified in the `HRD_INPUTS.txt` file.
+    4. Converts all -9999 values to NA
+    5. Calculates the percent of the catchment area that has contributing raster data for each local catchment. This accounts for catchments where only a small portion of the raster is present and output stats are effectively NA.
+    6. Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area) as well as the percent of the area with data.
+    7. Outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv`). 
   
   Example output:
   
@@ -110,9 +118,9 @@ In addition to the values for each catchment, the percent of the catchment area 
 5. **HRD3a_calculateUpstreamStatistics (TNC Dams).R** - Script that calculates the upstream count of dams defined by TNC. This script is optional and depends on the TNC dams analysis.
 
   Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. Also set the path to the results table form the matching version of the barrier analysis repo (`barrierStatsFilePath <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_NortheastHRD.dbf'`). This script does the following:
-    a. Reads user-specified inputs from Step 1.
-    b. Uses the delineated catchments object to calculate the number of barriers of each type located upstream from each catchment.
-    c. Outputs two `.csv` files, 1 upstream and 1 local, for each barrier type into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_deg_barr_1.csv`). 
+    1. Reads user-specified inputs from Step 1.
+    2. Uses the delineated catchments object to calculate the number of barriers of each type located upstream from each catchment.
+    3. Outputs two `.csv` files, 1 upstream and 1 local, for each barrier type into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_deg_barr_1.csv`). 
   
   Example output:
   
@@ -133,10 +141,10 @@ In addition to the values for each catchment, the percent of the catchment area 
   3. Manually list the variables to output (e.g. `c("forest", "agriculture")`)
   
   The script does the following:
-    a. Reads the individual `.csv` files according to the `outputVariables` object. 
-    b. Converts each basin characteristic to the output units according to factors in the `Covariate Data Status - High Res Delineation.csv` file.
-    c. Outputs an `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
-    d. Outputs an a long format dataframe for input into the web system database. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
+    1. Reads the individual `.csv` files according to the `outputVariables` object. 
+    2. Converts each basin characteristic to the output units according to factors in the `Covariate Data Status - High Res Delineation.csv` file.
+    3. Outputs an `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
+    4. Outputs an a long format dataframe for input into the web system database. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
   
 #### Next Steps
 Next steps include the possibility of adding new variables.
