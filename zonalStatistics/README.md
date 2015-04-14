@@ -56,14 +56,13 @@ In addition to the values for each catchment, the percent of the catchment area 
 2. **HRD1_zonalStatisticsProcessing.py** - Script to calculate statistics on the specified raster(s) for each of the catchments in the polygon shapefile. 
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
-  
-    a. Reads user-specified inputs from Step 1  
-    b. Sets up the folder structure in the specified directory. This structure will be used by the rest of the scripts in the series.  
-    c. Projects & resamples the rasters to match zone layer (Catchments). Consistency in spatial reference ensures proper calculate of stats.  
-    d. Rasterizes the zone polygon so it can be used to directly compare area in each catchment with or without raster data.  
-    e. Calculates the specified statistic (e.g. "MEAN") for each zone in the zone shapefile using the "Zonal Statistics" tool.  
-    f. Adds -9999 values for zones that are not assigned any value ensuring that all values from the input catchments file are account for.  
-    g. Outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`).   
+    1. Reads user-specified inputs from Step 1  
+    2. Sets up the folder structure in the specified directory. This structure will be used by the rest of the scripts in the series.  
+    3. Projects & resamples the rasters to match zone layer (Catchments). Consistency in spatial reference ensures proper calculate of stats.  
+    4. Rasterizes the zone polygon so it can be used to directly compare area in each catchment with or without raster data.  
+    5. Calculates the specified statistic (e.g. "MEAN") for each zone in the zone shapefile using the "Zonal Statistics" tool.  
+    6. Adds -9999 values for zones that are not assigned any value ensuring that all values from the input catchments file are account for.  
+    7. Outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\NortheastHRD\gisTables\forest_MEAN.dbf`).   
     
   Example output:
 
