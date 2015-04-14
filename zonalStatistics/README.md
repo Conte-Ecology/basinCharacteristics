@@ -92,7 +92,8 @@ In addition to the values for each catchment, the percent of the catchment area 
       $ 730076 : int [1:7] 730076 730086 730080 730091 730087 730085 730095
       $ 730077 : int 730077
       $ 730086 : int [1:3] 730086 730085 730095
-      $ 730080 : int [1:3] 730080 730091 730087```
+      $ 730080 : int [1:3] 730080 730091 730087
+  ```
 
 
 4. **HRD3_calculateUpstreamStatistics.R** - Script that calculates the upstream average of all basin characteristics
