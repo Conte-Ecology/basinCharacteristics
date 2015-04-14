@@ -302,14 +302,14 @@ hr {
 </tbody></table></li>
 <li><p><strong>HRD2_delineateUpstreamCatchments.R</strong> - Script that generates a list of the upstream catchments for each catchment in the shapefile</p>
 
-<p>Open this script and set the <code>baseDirectory</code> variable to the path up to and including the <code>\zonalStatistics</code> folder. Run the script in R. Allow script to run completely before moving on to the next script. This script does the following:</p>
+<p>Open this script and set the <code>baseDirectory</code> variable to the path up to and including the <code>\zonalStatistics</code> folder. Run the script in R. It does the following:</p>
 
 <ol>
 <li>Reads user-specified inputs from Step 1</li>
 <li>Determines if catchments have already been delineated and halts the script if the file already exists in the proper directory</li>
 <li>Uses the catchment relationships built into the shapefile (&ldquo;NextDownID&rdquo; field) to generate a delineation of the network from each catchment</li>
 <li>Formats the result as a list of lists with each sublist named by the primary (most downstream) catchment (<code>delineatedCatchments$&#39;730076&#39;</code>)</li>
-<li>Saves the output as an <code>.RData</code> file with the object named: <code>delineatedCatchments</code> in the <code>\versions</code> directory (e.g. <code>zonalStatistics\versions\NortheastHRD\NortheastHRD_delineatedCatchments.RData</code>)</li>
+<li>Saves the output as an <code>.RData</code> file with the object named <code>delineatedCatchments</code> in the <code>\versions</code> directory (e.g. <code>zonalStatistics\versions\NortheastHRD\NortheastHRD_delineatedCatchments.RData</code>)</li>
 </ol>
 
 <p>Example output:</p>
@@ -323,12 +323,12 @@ List of 373074
 </code></pre></li>
 <li><p><strong>HRD3_calculateUpstreamStatistics.R</strong> - Script that calculates the upstream average of all basin characteristics</p>
 
-<p>Open this script in R and set the <code>baseDirectory</code> variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. This script does the following:</p>
+<p>Open this script in R and set the <code>baseDirectory</code> variable to the path up to and including the <code>zonalStatistics</code> folder and run the script in R. This script does the following:</p>
 
 <ol>
 <li>Reads user-specified inputs from Step 1.</li>
-<li>Reads the two versions of the catchment areas (vector and raster). Vector is the actual area, while raster is used for determining the area containing raster data for each basin characteristic.</li>
-<li>Reads the ArcPy output tables for each of the rasters specified in the <code>HRD_INPUTS.txt</code> file.</li>
+<li>Reads the two versions of the catchment areas (vector and raster). The vector area is the actual area, while raster area is used for determining the area containing raster data for each basin characteristic.</li>
+<li>Reads the ArcPy output <code>.dbf</code> tables for each of the rasters specified in the <code>HRD_INPUTS.txt</code> file.</li>
 <li>Converts all -9999 values to NA</li>
 <li>Calculates the percent of the catchment area that has contributing raster data for each local catchment. This accounts for catchments where only a small portion of the raster is present and output stats are effectively NA.</li>
 <li>Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area) as well as the percent of the area with data.</li>
@@ -372,7 +372,8 @@ List of 373074
 </tbody></table></li>
 <li><p><strong>HRD3a_calculateUpstreamStatistics (TNC Dams).R</strong> - Script that calculates the upstream count of dams defined by TNC. This script is optional and depends on the TNC dams analysis.</p>
 
-<p>Open this script in R and set the <code>baseDirectory</code> variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. Also set the path to the results table form the matching version of the barrier analysis repo (<code>barrierStatsFilePath &lt;- &#39;C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_NortheastHRD.dbf&#39;</code>). This script does the following:</p>
+<p>Open this script in R and set the <code>baseDirectory</code> variable to the path up to and including the <code>zonalStatistics</code> folder and run the script. 
+Set the path to the results table form the matching version of the barrier analysis repo (<code>barrierStatsFilePath &lt;- &#39;C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_NortheastHRD.dbf&#39;</code>). This script does the following:</p>
 
 <ol>
 <li>Reads user-specified inputs from Step 1.</li>
