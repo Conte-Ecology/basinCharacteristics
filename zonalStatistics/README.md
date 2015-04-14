@@ -14,7 +14,7 @@ Each version will point to these directories for spatial data. The rasters shoul
 
 ## Current Versions:
 
-### Catchments for High Resolution Delineation
+### **Catchments for High Resolution Delineation**
 
 #### Repo
 `basinCharacteristcs\zonalStatistics\version\NortheastHRD`
@@ -98,7 +98,7 @@ In addition to the values for each catchment, the percent of the catchment area 
 
 4. **HRD3_calculateUpstreamStatistics.R** - Script that calculates the upstream average of all basin characteristics
 
-  Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script in R. This script does the following:
+  Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. This script does the following:
     1. Reads user-specified inputs from Step 1.
     2. Reads the two versions of the catchment areas (vector and raster). The vector area is the actual area, while raster area is used for determining the area containing raster data for each basin characteristic.
     3. Reads the ArcPy output `.dbf` tables for each of the rasters specified in the `HRD_INPUTS.txt` file.
@@ -153,7 +153,7 @@ Next steps include the possibility of adding new variables or a new delineation 
 
 
 
-### Riparian Buffers for High Resolution Flowlines
+### **Riparian Buffers for High Resolution Flowlines**
 
 #### Repo
 `basinCharacteristcs\zonalStatistics\version\riparianBuffers`
@@ -207,12 +207,12 @@ Currently the scripts are set up to only work with one buffer polygon file at a 
     1. Reads user-specified inputs from Step 1
     2. Sets up the folder structure used by other scripts in this version
     3. Reprojects the zone and HUC polygons as needed to ensure spatial consistency
-    4. Calculates the mean value for each zone in the zone shapefile (broken up by section)
+    4. Calculates the mean value for each zone in the zone shapefile (sectioned by HUC6 into file sizes that will not crash Arc)
     5. Joins all of the sections and elminiates duplicate features
-    6. Adds -9999 values for zones that are not assigned any value
+    6. Adds -9999 values for zones that are not assigned any value to account for all buffers in original shapefile
     7. Calculates the areas for the buffer polygons in the shapefile
-    8. Outputs the specified spatial statistic for all of the buffers as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\riparianBuffers\gisTables\forest_50ft.dbf`). 
-    9. Outputs the polygon areas as a `.dbf` file. 
+    8. Outputs the specified spatial statistic for all of the buffers as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\riparianBuffers\gisTables\forest_50ft.dbf`)
+    9. Outputs the polygon areas as a `.dbf` file.
   
   Example output:
 
@@ -230,11 +230,11 @@ Currently the scripts are set up to only work with one buffer polygon file at a 
 3. **RB2_calculateUpstreamStatistics.R** - Script that calculates the upstream average of all basin characteristics
 
   Open this script in R and set the `baseDirectory` variable to the path up to and including the `zonalStatistics` folder and run the script. This script does the following:
-    1. Reads user-specified inputs from Step 1.
-    2. Reads the ArcPy output tables for each of the rasters specified in the `RB_INPUTS.txt` file.
+    1. Reads user-specified inputs from Step 1
+    2. Reads the ArcPy output tables for each of the rasters specified in the `RB_INPUTS.txt` file
     3. Converts all -9999 values to NA
-    4. Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area).
-    5. Outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\riparianBuffers\rTables\upstream_forest_50ft.csv`). 
+    4. Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area)
+    5. Outputs two `.csv` files named by `bufferID`, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\riparianBuffers\rTables\upstream_forest_50ft.csv`)
     
   Example output:
 
@@ -247,7 +247,7 @@ Currently the scripts are set up to only work with one buffer polygon file at a 
   |   730260  |  0.266112266 
 
 
-4. **RB3_statsFileGenerator.R** - Script that generates useable `.RData` files of basin characteristics values.
+4. **RB3_statsFileGenerator.R** - Script that generates useable `.RData` files of basin characteristics values
 
   Open this script in R and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder and run the script. Specify the variables to include in `outputVariables`. There are 3 options for specifying the variables to output:
   1. "ALL" will include all of the variables present in the folder
@@ -257,16 +257,16 @@ Currently the scripts are set up to only work with one buffer polygon file at a 
   The script does the following:
     1. Reads the individual `.csv` files according to the `outputVariables` object. 
     2. Converts each basin characteristic to the output units according to factors in the `Covariate Data Status - High Res Delineation.csv` file.
-    3. Outputs an `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\riparianBuffers\completedStats\zonalStatsRiparianBuffer_50ft_2015-04-10`).
-    4. Outputs an a long format dataframe for input into the web system database. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\riparianBuffers\completedStats\zonalStatsForDB_riparianBuffers50ft_2015-04-10`).
+    3. Outputs an `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. This file is names with the date it was run and output to the `\completedStats` folder (e.g. `\zonalStatistics\versions\riparianBuffers\completedStats\zonalStatsRiparianBuffer_50ft_2015-04-10.RData`).
+    4. Outputs an a long format dataframe for input into the web system database. This file is names with the date it was run and output to the `\completedStats` folder (e.g. `\zonalStatistics\versions\riparianBuffers\completedStats\zonalStatsForDB_riparianBuffers50ft_2015-04-10.RData`).
   
 
 #### Next Steps
-Next steps include the possibility of adding new variables, changing buffer distances, or creating contiguous buffers to avoid overlap (though other errors are likely to occur with this update).
+Next steps include the possibility of adding new variables, changing buffer distances, or creating contiguous buffers to avoid overlapping polygons (though other errors are likely to occur with this update).
 
 
 
-### Point Delineation for MassDOT Project
+### **Point Delineation for MassDOT Project**
 
 #### Repo
 `basinCharacteristcs\zonalStatistics\version\pointDelineation`
@@ -289,7 +289,7 @@ The scripts in this section are dependent on the raster processing completed in 
 
 #### Steps to Run
 
-1. **PD1_zonalStatisticsProcessing.py** - Script to calculate statistics on the specified raster(s) for each of the polygons in the buffer shapefile. 
+1. **PD1_zonalStatisticsProcessing.py** - Script to calculate statistics on the specified raster(s) for each of the polygons in the buffer shapefile
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file. Set these inputs:
   
@@ -322,8 +322,6 @@ The scripts in this section are dependent on the raster processing completed in 
  
 2. **PD2_finalizeZonalStatistics.R** - Script to pull together the results from the ArcPy processing and TNC dams processing (see repo: `basinCharacteristics\tncDams`)
 
-  It converts the input values to the desired output values and saves the results as an `.RData` file.
-
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. The user inputs are again entered directly in the script file and not a separate input file:
 
   |    Object Name          |                        Description                                                    |      Example                                                                                               |
@@ -344,4 +342,4 @@ The scripts in this section are dependent on the raster processing completed in 
 
 #### Next Steps
 
-It is possible to set this script up according to the structure of other versions, mainly by moving the user inputs to a separate text file accessed by all of the scripts.
+Next steps include the posssibility of adding new layers desired for the MassDOT Culvert Project. It is possible to set this script up according to the structure of other versions, mainly by moving the user inputs to a separate text file accessed by all of the scripts.
