@@ -21,10 +21,10 @@ catchmentsFilePath <- "C:/KPONEIL/delineation/northeast/pointDelineation/outputF
 
 zoneField <- "DelinID"
 
+statType = "MEAN"
+
 rasterList       <- c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab")
 conversionValues <- c(     100,           100,            1,           100,            100,            1,           1,          100,             100,               1,             100)
-
-statType = "MEAN"
 
 damsFile <- "C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"
 

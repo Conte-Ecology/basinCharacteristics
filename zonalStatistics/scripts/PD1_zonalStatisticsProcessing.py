@@ -21,14 +21,14 @@ catchmentsFilePath =  "C:/KPONEIL/delineation/northeast/pointDelineation/outputF
 # Field name defining the zones
 zoneField = "DelinID"
 
+# Stat to calculate
+statType = "MEAN"
+
 # Raster Directory
 rasterDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"
 
 # Raster names
 rasterList = ["forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab"] 
-
-# Stat to calculate
-statType = "MEAN"
 
 # =============
 # Install Tools

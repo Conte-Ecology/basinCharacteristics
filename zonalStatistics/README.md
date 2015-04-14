@@ -38,7 +38,6 @@ In addition to the values for each catchment, the percent of the catchment area 
   - `dplyr`
   - `lazyeval`
 
-
 #### Steps to Run
 1. **HRD_INPUTS.txt** - Text file used to specify common user inputs that will be used across all scripts in the series
 
@@ -95,7 +94,7 @@ In addition to the values for each catchment, the percent of the catchment area 
     b. Reads the two versions of the catchment areas (vector and raster). Vector is the actual area, while raster is used for determining the area containing raster data for each basin characteristic.
     c. Reads the ArcPy output tables for each of the rasters specified in the `HRD_INPUTS.txt` file.
     d. Converts all -9999 values to NA
-    e. Calculates the percent of the catchment area that has contributing raster data for each local catchment. This value shows how much data is missing from the catchment to help determine if the value is reliable or not.
+    e. Calculates the percent of the catchment area that has contributing raster data for each local catchment. This accounts for catchments where only a small portion of the raster is present and output stats are effectively NA.
     f. Uses the delineated catchments object to calculate the upstream average of each basin characteristic (weighted by area) as well as the percent of the area with data.
     g. Outputs two `.csv` files, 1 upstream and 1 local, for each variable into the `\rTables` directory (e.g. `zonalStatistics\versions\NortheastHRD\rTables\upstream_forest_MEAN.csv`). 
   
@@ -140,10 +139,11 @@ In addition to the values for each catchment, the percent of the catchment area 
     c. Outputs an `.RData` file with two dataframes: `LocalStats` and `UpstreamStats`. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
     d. Outputs an a long format dataframe for input into the web system database. This file is names with the date it was run and output to the `completedStats` folder (e.g. `\zonalStatistics\versions\NortheastHRD\completedStats\zonalStats2015-04-10.RData`).
   
-
 #### Next Steps
 Next steps include the possibility of adding new variables.
- 
+
+
+
 ### Riparian Buffers for High Resolution Flowlines
 
 #### Repo
@@ -159,8 +159,6 @@ This section calculates the basin characteristics for the riparian buffers based
 The scripts in this section are dependent on some elements of the overall HRD zonal statistics process, which should be completed first for all layers and ranges used in this section. First, the rasters are processed in the HRD section to be resampled and reprojected to match the catchments and each other. The scripts in this section rely on these previously processed rasters, pointing to the repo that contains the existing files. Second, the network delineation is identical to the HRD network. The `NortheastHRD_delineatedCatchments.RData` file from that section is referenced directly from this section. These steps are taken primarily to save time and data storage space. Development of stand-alone repos is possible if necessary.
 
 The calculation of basin characteristics for the riparian buffers is based on the overlapping polygons. The process does not account for the overlapping area of the polygons which essentially gets double counted during spatial averaging. This area amounts to a roughly 0.001 - 0.01 square kilometers, depending on buffer distance.
-
-In the scripts in this section, the term "catchments" is often used in place of "buffers". This is simply for ease of use in making code interchangeable and not meant to cause confusion.
 
 Currently the scripts are set up to only work with one buffer polygon file at a time.
 
@@ -194,7 +192,7 @@ Currently the scripts are set up to only work with one buffer polygon file at a 
  | `rasterDirectory`       |  File path to the directory containing the rasters to run  | `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"` |
 
  
-2. **RB1_zonalStatisticsProcessing.py** - - Script to calculate statistics on the specified raster(s) for each of the polygons in the buffer shapefile. 
+2. **RB1_zonalStatisticsProcessing.py** - Script to calculate statistics on the specified raster(s) for each of the polygons in the buffer shapefile. 
 
   Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
     a. Reads user-specified inputs from Step 1
@@ -257,12 +255,17 @@ Currently the scripts are set up to only work with one buffer polygon file at a 
 #### Next Steps
 Next steps include the possibility of adding new variables, changing buffer distances, or creating contiguous buffers to avoid overlap (though other errors are likely to occur with this update).
 
-### Point Delineation for MassDOT Project: 
+
+
+### Point Delineation for MassDOT Project
 
 #### Repo
 `basinCharacteristcs\zonalStatistics\version\pointDelineation`
 
 #### Description
+
+This version calculates the basin characteristics for the delineated basins for the culverts and flow gages used in the MassDOT Culvert Project. based on the high resolution delineation. For each basin, the spatial average of the basin characteristcs and the percent of the catchment area with data are calculated. This accounts for cases where there is missing raster data within the catchment boundary.
+
 The scripts in this section are dependent on the raster processing completed in the HRD section (resampling and reprojecting each raster to match the catchments and each other). The scripts in this section point to the repo that contains the existing files. These steps are taken primarily to save time and data storage space.
 
 #### Required tools, packages, etc.
@@ -277,24 +280,26 @@ The scripts in this section are dependent on the raster processing completed in 
 
 #### Steps to Run
 
-1. **PD1_zonalStatisticsProcessing.py** - This script calculates statistics on the raster dataset for each of delineated basins in the polygon shapefile. The primary tool used is "Zonal StatisticsAsTable2" in ArcGIS (modified to process overlapping polygons). Ensure that the zone field in the shapefile has been indexed improves tool performance. The script outputs the specified spatial statistic for all of the buffer polygons as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `pointDelineation\gisTables\forest_MEAN.dbf`). The script also outputs the polygon areas as a `.dbf` file. 
+1. **PD1_zonalStatisticsProcessing.py** - Script to calculate statistics on the specified raster(s) for each of the polygons in the buffer shapefile. 
 
-  Open this script and set the `baseDirectory` variable to the path up to and including the "zonalStatistics" folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.
+  Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file. Set these inputs:
   
-  - `outputName` is the name that will be associated with this particular run of the tool (e.g. `"pointDelineation"`)
-  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"`)
-  - `zoneField` is the name of the field that is used to identify features (e.g. `"DelinID"`)
-  - `rasterDirectory` is the path to the directory containing the rasters to run (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"`)
-  - `rasterList` is list of the rasters to run (e.g. `["forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab"]`)
-  - `statType` is the statistic to calculate (e.g. `"MEAN"`)
+ |    Object Name          |                        Description                                                    |      Example                   |
+ |:-----------------------:| ------------------------------------------------------------------------------------- |------------------------------- |
+ | `outputName`            |  Name associated with this particular version                                         | `"pointDelineation"`            |
+ | `catchmentsFilePath`    |  Name of the catchments shapefile (without extension) | `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"` |
+ | `zoneField`             |  Name of the field used to identify features ("Zone Field")                           | `"DelinID"`                  |
+ | `statType`              |  Statistic to calculate                                                               | `"MEAN"`                       |
+ | `rasterDirectory`       |  File path to the directory containing the rasters to run  | `"C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"` |  
+ | `rasterList`            |  List of the rasters to run | `["forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater"]`   |
 
-  This script does the following:
-  
+  Run the script in Arc Python. Allow script to run completely before moving on to the next script. This script does the following:
     a. Sets up the folder structure in the specified directory
     b. Reprojects the zone polygon as needed
     c. Calculates the mean value for each zone in the zone shapefile
     d. Adds -9999 values for zones that are not assigned any value
-
+    e. Outputs the specified spatial statistic for all of the catchments as `.dbf` tables in the `\gisTables` folder in the run-specific versions folder (e.g. `zonalStatistics\versions\pointDelineation\gisTables\forest_MEAN.dbf`)
+    
   Example output:
 
   | FEATUREID | COUNT  |    AREA    |    MEAN    |
@@ -306,23 +311,29 @@ The scripts in this section are dependent on the raster processing completed in 
   |   350891  |  83    | 132912.157 | 0.22891566 |
   |   350897  |   6    | 9608.108   | 0.16666667 | 
  
-2. **PD2_finalizeZonalStatistics.R** - This script pulls together the results from the ArcPy script, as well as TNC dams processing (see repo: `basinCharacteristics\tncDams`). It converts the input values to the desired output values and saves the results as an `.RData` file.
+2. **PD2_finalizeZonalStatistics.R** - Script to pull together the results from the ArcPy processing and TNC dams processing (see repo: `basinCharacteristics\tncDams`)
 
-  Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. Unlike other versions, the user inputs are entered directly in the script file and not a separate input file.
 
-  - `outputName` is the name that will be associated with this particular run of the tool (e.g. "pointDelineation")
-  - `catchmentsFilePath` is the name of the catchments shapefile without extension (e.g. `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"`)
-  - `zoneField` is the name of the field that is used to identify features (e.g. `"DelinID"`)
-  - `rasterList` is list of the rasters to run (e.g. `c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater", "slope_pcnt", "elevation", "surfcoarse", "percent_sandy", "drainageclass", "hydrogroup_ab")`)
-  - `conversionValues` are the values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the `rasterList`.
-  - `statType` is the statistic to calculate (e.g. `"MEAN"`)
-  - `damsFile` is the path to the directory containing the separately calculated TNC Dams count (e.g. `"C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"`)
+It converts the input values to the desired output values and saves the results as an `.RData` file.
 
-  This script does the following:
-  
+  Open this script and set the `baseDirectory` variable to the path up to and including the `\zonalStatistics` folder. The user inputs are again entered directly in the script file and not a separate input file:
+
+ |    Object Name          |                        Description                                                    |      Example                   |
+ |:-----------------------:| ------------------------------------------------------------------------------------- | ------------------------------- |
+ | `outputName`            |  Name associated with this particular version                                         | `"pointDelineation"`            |
+ | `catchmentsFilePath`    |  Name of the catchments shapefile (without extension)                                 | `"C:/KPONEIL/delineation/northeast/pointDelineation/outputFiles/delin_basins_deerfield_2_17_2015.shp"` |
+ | `zoneField`             |  Name of the field used to identify features ("Zone Field")                           | `"DelinID"`                  |
+ | `statType`              |  Statistic to calculate                                                               | `"MEAN"`                       |
+ | `rasterList`            |  List of the rasters to run                                                           | `c("forest", "agriculture", "impervious", "fwswetlands", "fwsopenwater")`   |
+ | `conversionValues`      |  List of values to multiply the raw input by to convert them to the desired output units. These values should match the order and count of the `rasterList` | `c(100, 100, 1, 100, 100)` |
+ | `damsFile`              |  File path to the barrier count output file for this version                          | `"C:/KPONEIL/GitHub/projects/basinCharacteristics/tncDams/outputTables/barrierStats_pointDelineation.dbf"` |  
+
+
+  Run the script in R. This script does the following:
     a. Reads the ArcPy output tables for all specified basin characteristics
     b. Changes all -9999 values to NA
     c. Converts values according to specified factors
+    d. Outputs a dataframe of all of the basin characteristics specified in `rasterList` (e.g. `versions\pointDelineation\completedStats\pointDelineationStats.RData`).
 
 #### Next Steps
 
