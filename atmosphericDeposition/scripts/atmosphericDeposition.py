@@ -2,23 +2,14 @@ import arcpy
 from arcpy.sa import *
 from arcpy import env
 
-# -----------------
-# Enter user inputs
-# -----------------
-
-# Define working directory
+# ==============
+# Specify inputs
+# ==============
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/atmosphericDeposition"
-
-# Define catchments file
 catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+sourceFolder       = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/deposition/nadp/spatial"
+version            = "NortheastHRD"
 
-# Define NLCD Impervious raster
-sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/deposition/nadp/spatial"
-
-# Create a version ID for saving
-version = "NortheastHRD"
-
-#      ***** DO NOT CHANGE SCRIPT BELOW THIS POINT ****
 
 # ---------------
 # Folder creation

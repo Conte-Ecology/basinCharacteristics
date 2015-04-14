@@ -13,24 +13,24 @@ This script produces categorical rasters of hydrologic soil group classification
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
 
-1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `sourceFolder` directory
+1. Download the data by state and unzip the sub-folder (e.g. `soils\gssurgo_g_ma.zip`) into the `sourceFolder` directory
 
-Open the script `soilsHydrologicGroup`
+2. Open the script `soilsHydrologicGroup.py`
 
-2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `soilsHydrologicGroup` folder (current parent working directory)
- - "states" is the list of state abbreviations included in the desired range
- - "sourceFolder" is the source folder of the wetlands datasets by state
- - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
- - "hydroGroups" is a list of lists describing the classifications to process. The first element in each sublist is the SQL where clause defining which hydrologic groups to select. The second element in the sublist is the name to assign to that selection.
+3. Change the values in the "Specify inputs" section of the script
+ - `baseDirectory` is the path to the `soilsHydrologicGroup` folder (current parent working directory)
+ - `states` is the list of state abbreviations included in the desired range
+ - `sourceFolder` is the source folder of the wetlands datasets by state
+ - `outputName` is the name that will be associated with this particular run of the tool (e.g. "Northeast")
+ - `hydroGroups` is a list of lists describing the classifications to process. The first element in each sublist is the SQL where clause defining which hydrologic groups to select. The second element in the sublist is the name to assign to that selection.
  
-3. Run the script in ArcPython. It does the following:
+4. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
    - Creates an empty raster of the entire specified range
    - Merges the necessary data tables in order to connect spatial data to necessary soil classification
    - Loops through the state polygons, creating state rasters of the surficial coarseness category
    - Mosaicks all of the state raster and the full range empty raster
-
+   - Saves the completed rasters to the `soilHydrologicGroup\gisFiles\Northeast\outputFiles` directory
 
 
 ## Output Rasters
@@ -59,4 +59,4 @@ Description: The layer represents the soil hydrolic group D where any combinatio
 ## Notes
 
 - The spatial range is determined by the list of states specified.
-- Different rasters may be created by editing the "hydroGroups" object in the script
+- Different rasters may be created by editing the `hydroGroups` object in the script

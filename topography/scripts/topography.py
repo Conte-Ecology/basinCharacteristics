@@ -2,18 +2,11 @@ import arcpy
 from arcpy.sa import *
 from arcpy import env
 
-# --------------
+# ==============
 # Specify inputs
-# --------------
-
-# Define working directory
+# ==============
 baseDirectory  = "C:/KPONEIL/GitHub/projects/basinCharacteristics/topography"
-
-# Define NLCD Impervious raster
-demFilePath = "F:/KPONEIL/SourceData/topography/umass/dem"
 demFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/topography/umass/dem"
-
-# Create a version ID for saving
 version = "NortheastHRD"
 
 

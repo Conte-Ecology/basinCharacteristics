@@ -2,21 +2,14 @@ import arcpy
 from arcpy.sa import *
 from arcpy import env
 
-# -----------------
-# Enter user inputs
-# -----------------
+# ==============
+# Specify inputs
+# ==============
 
-# Define working directory
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/prism"
-
-# Define catchments file
 catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
-
-# Define NLCD Impervious raster
-sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/climate/prism/spatial"
-
-# Create a version ID for saving
-version = "NortheastHRD"
+sourceFolder       = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/climate/prism/spatial"
+version            = "NortheastHRD"
 
 
 # ---------------

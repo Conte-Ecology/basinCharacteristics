@@ -1,7 +1,7 @@
 Impounded Area
 ==============
 
-This script produces a spatial dataset of on- and off- stream network water bodies, based on the USFWS National Wetlands Inventory and NHD high resolution flowlines that have been edited by the UMass Landscape Ecology lab. This product aims to represent impounded water bodies. The categorical rasters represent the presence or absence of water bodies (as classified) with a value of 1 or 0 respectively.
+This script produces a spatial dataset of both on-stream and off-stream network water bodies, based on the USFWS National Wetlands Inventory and NHD high resolution flowlines that have been edited by the UMass Landscape Ecology lab. This product aims to represent impounded water bodies. The categorical rasters represent the presence or absence of water bodies (as classified) with a value of 1 or 0 respectively.
 
 
 ## Data Sources
@@ -11,27 +11,28 @@ This script produces a spatial dataset of on- and off- stream network water bodi
 | Flowlines        | UMass Landscape Ecology Lab                            | http://www.umass.edu/landeco/research/dsl/products/dsl_products.html#settings |
 | State Boundaries | National Atlas of the United States                    | http://dds.cr.usgs.gov/pub/data/nationalatlas/statesp010g.shp_nt00938.tar.gz  |
 
-## Steps to Run:
+## Steps to Run
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
 
-1. Open the script `impoundedArea`
+1. Open the script `impoundedArea.py`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `impoundedArea` folder(current parent working directory) on GitHub
- - "states" is the list of state abbreviations that identify the layers to use from the FWS data
- - "stateNames" is the list of state names to match the FWS layers used. These names should match the names in the "STATE" column of the state boundaries shapefile.
- - "wetlandsFolder" is the source folder of the wetlands datasets by state
- - "flowlinesFile" is the source file of the flowlines vector data
- - "statesFile" is the filepath to the state boundary shapefile
- - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
+ - `baseDirectory` is the path to the `\impoundedArea` folder(current parent working directory) on GitHub
+ - `states` is the list of state abbreviations that identify the layers to use from the FWS data
+ - `stateNames` is the list of state names to match the FWS layers used. These names should match the names in the "STATE" column of the state boundaries shapefile.
+ - `wetlandsFolder` is the source folder of the wetlands datasets by state
+ - `flowlinesFile` is the source file of the flowlines vector data
+ - `statesFile` is the filepath to the state boundary shapefile
+ - `outputName` is the name that will be associated with this particular run of the tool (e.g. "Northeast")
 
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
    - Ensures constistency of projections
    - Creates an empty raster of the entire specified range based on the State Boundaries shapefile
    - Loops through the state polygons, intersecting them with the flowlines, and creating state rasters of the 4 categories described below
-   - Mosaicks all of the state raster and the full range empty raster
+   - Mosaicks all of the state rasters and the full range empty raster
+   - Saves the completed rasters to the `impoundedArea\gisFiles\Northeast\outputFiles` directory
 
 
 
@@ -61,7 +62,7 @@ Description: This layer represents the FWS wetlands defined as "all water bodies
 
 - The layers for Maryland (MD) and the District of Columbia (DC) overlap in the FWS data, but not in the state boundary layer. DC is not included in "states" (only MD is used). In the state boundaries layer, "District of Columbia" must be specified if including Maryland.
 
-## Possible Future Work
+## Next Steps
 - Classification definitions can be changed with relatively minimal effort. 
 - The data sources (wetlands and flowlines) can also be changed with a bit more work.
 

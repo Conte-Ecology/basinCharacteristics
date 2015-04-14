@@ -15,28 +15,21 @@ This repo is different than the other basin characteristics in that it requires 
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed.
 
-1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `sourceFolder`
-
-Open the script `tncDams`
+1. Open the script `tncDams.py`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `tncDams` folder (current parent working directory)
- - "polygonsFile" is the catchments to assign the dams to
- - "damsFile" is the shapefile depicting the location of the dams
- - "version" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
- - "zoneField" is the field name of the the catchments unique identifier
+ - `baseDirectory` is the path to the `\tncDams` folder (current parent working directory)
+ - `polygonsFile` is the catchments to assign the dams to
+ - `damsFile` is the shapefile depicting the location of the dams
+ - `version` is the name that will be associated with this particular run of the tool (e.g. "Northeast")
+ - `zoneField` is the field name of the the catchments unique identifier
 
 3. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
    - Removes dams not snapped to the flowlines
    - Spatially joins the catchments to the dams
    - Counts the number of dams in each catchment
-   
-   - Creates an empty raster of the entire specified range
-   - Merges the necessary data tables in order to connect spatial data to necessary soil classification
-   - Loops through the state polygons, creating state rasters of the surficial coarseness category
-   - Mosaicks all of the state raster and the full range empty raster
-
+   - Saves the completed tables to the `tncDams\outputTables` directory
 
 
 ## Output Table

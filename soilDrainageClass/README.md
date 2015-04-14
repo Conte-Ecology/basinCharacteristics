@@ -13,15 +13,15 @@ This script produces a spatial dataset of the soil drainage class of the soil ba
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be kept in the same format as it is downloaded.
 
-1. Download the data by state and unzip the `soils\gssurgo_g_[state abbreviation].zip` sub-folder into the `sourceFolder` directory
+1. Download the data by state and unzip the sub-folder (e.g. `soils\gssurgo_g_ma.zip`  into the `sourceFolder` directory
 
 2. Open the script `soilDrainageClass.py`
 
 3. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `soilDrainageClass` folder (current parent working directory)
- - "states" is the list of state abbreviations included in the desired range
- - "sourceFolder" is the source folder of the wetlands datasets by state
- - "outputName" is the name that will be associated with this particular run of the tool (e.g. "Northeast")
+ - `baseDirectory` is the path to the `\soilDrainageClass` folder (current parent working directory)
+ - `states` is the list of state abbreviations included in the desired range
+ - `sourceFolder` is the source folder of the wetlands datasets by state
+ - `outputName` is the name that will be associated with this particular run of the tool (e.g. "Northeast")
 
 4. Run the script in ArcPython. It does the following:
    - Sets up the folder structure in the specified directory
@@ -29,7 +29,8 @@ The folder structure is set up within the scripts. In general, the existing stru
    - Loops through the state polygons, creating state rasters of the drainage class
    - Converts the drainage class categories to numeric values according to the table in the next section
    - Mosaicks all of the state rasters to output a single raster
-
+   - Saves the completed rasters to the `soilDrainageClass\gisFiles\Northeast\outputFiles` directory
+   
 ## Reclassification Values
 
    |        Drainage Class       | Assigned Value |

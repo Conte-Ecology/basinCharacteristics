@@ -2,24 +2,15 @@ import arcpy
 from arcpy.sa import *
 from arcpy import env
 
-# -----------------
-# Enter user inputs
-# -----------------
+# ==============
+# Specify inputs
+# ==============
 
-# Define working directory
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdTreeCanopy"
-
-# Define catchments file
 catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
-
-# Define NLCD Impervious raster
-rasterFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_impervious_2011_edition_2014_10_10/nlcd_2006_impervious_2011_edition_2014_10_10.img"
-
-# Create a version ID for saving
-version = "NortheastHRD"
-
-# Define the states shapefile
-statesFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/political/states/States.shp"
+rasterFilePath     = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_impervious_2011_edition_2014_10_10/nlcd_2006_impervious_2011_edition_2014_10_10.img"
+version            = "NortheastHRD"
+statesFilePath     = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/political/states/States.shp"
 
 # ---------------
 # Folder creation

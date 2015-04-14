@@ -14,13 +14,13 @@ This script produces the categorical rasters for specified land use types based 
 
 The folder structure is set up within the scripts. In general, the existing structure in the repo should be followed. Raw data should be unzipped, but otherwise kept in the same format as it is downloaded.
 
-1. Open the script `nlcdLandCover`
+1. Open the script `nlcdLandCover.py`
 
 2. Change the values in the "Specify inputs" section of the script
- - "baseDirectory" is the path to the `nlcdLandCover` folder
- - "catchmentsFilePath" is the file path to the catchments polygons shapefile. (See "Notes" section")
- - "rasterFilePath" is the file path to the raw NLCD Land Use raster (.img format)
- - "reclassTable" is the file path to the table used to reclassify the raw raster into individual categorical rasters. (See current version in `scripts/` folder)
+ - `baseDirectory` is the path to the `\nlcdLandCover` folder
+ - `catchmentsFilePath` is the file path to the catchments polygons shapefile. (See "Notes" section)
+ - `rasterFilePath` is the file path to the raw NLCD Land Use raster (`.img` format)
+ - `reclassTable` is the file path to the table used to reclassify the raw raster into individual categorical rasters. (See current version in `\scripts` folder)
     1. A value of 1 means to include this class
     2. A value of 0 means to exclude this class
     3. A value of -9999 means this class will be converted to NA 
@@ -36,8 +36,8 @@ The folder structure is set up within the scripts. In general, the existing stru
 | Developed, High Intensity    |	24    |	0      | 1         | 0         |
 | Barren Land (Rock/Sand/Clay) |	31    |	0      | 0         | 0         |
 
- - "version" is the name that will be associated with this particular run of the tool (e.g. `NortheastHRD` for all High Resolution Catchments)
- - "keepFiles" specifies whether or not to keep the intermediate GIS files. Enter "NO" to delete or "YES" to keep.
+ - `version` is the name that will be associated with this particular run of the tool (e.g. "NortheastHRD" for all High Resolution Catchments)
+ - `keepFiles` specifies whether or not to keep the intermediate GIS files. Enter "NO" to delete or "YES" to keep.
  
  
  
@@ -45,7 +45,7 @@ The folder structure is set up within the scripts. In general, the existing stru
    - Sets up the folder structure in the specified directory
    - Generates the processing boundary from the specified shapefile and clips the source raster to this spatial range
    - Creates the individual categorical rasters based on the reclassification table
-
+   - Saves the completed rasters to the `nlcdLandCover\gisFiles\Northeast\outputFiles` directory
 
 ## Output Rasters
 
@@ -111,7 +111,7 @@ Description: This layer represents the NLCD land cover defined as land that is f
 
 ## Notes
 
-- Typically, the "catchmentsFilePath" variable specifies a shapefile of hydrologic catchments defining the range over which the "Zonal Statistics" tool will be applied. It is possible to enter another polygon shapefile, such as state or town boundaries, as this variable. The primary purpose of this file is to trim the original raster, which represents the continental US, to a manageable size.
+- Typically, the `catchmentsFilePath` variable specifies a shapefile of hydrologic catchments defining the range over which the "Zonal Statistics" tool will be applied. It is possible to enter another polygon shapefile, such as state or town boundaries, as this variable. The primary purpose of this file is to trim the original raster, which represents the continental US, to a manageable size.
 
-## Possible Future Work
+## Next Steps
 - Classification definitions can be changed by editing the "reclassTable" CSV file.
