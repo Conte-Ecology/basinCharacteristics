@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=9" >
+
+<title>basinCharacteristics</title>
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 12px;
+   margin: 8px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 { 
+   font-size:2.2em; 
+}
+
+h2 { 
+   font-size:1.8em; 
+}
+
+h3 { 
+   font-size:1.4em; 
+}
+
+h4 { 
+   font-size:1.0em; 
+}
+
+h5 { 
+   font-size:0.9em; 
+}
+
+h6 { 
+   font-size:0.8em; 
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre {	
+   margin-top: 0;
+   max-width: 95%;
+   border: 1px solid #ccc;
+   white-space: pre-wrap;
+}
+
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code.r, code.cpp {
+   background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * { 
+      background: transparent !important; 
+      color: black !important; 
+      filter:none !important; 
+      -ms-filter: none !important; 
+   }
+
+   body { 
+      font-size:12pt; 
+      max-width:100%; 
+   }
+       
+   a, a:visited { 
+      text-decoration: underline; 
+   }
+
+   hr { 
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote { 
+      padding-right: 1em; 
+      page-break-inside: avoid; 
+   }
+
+   tr, img { 
+      page-break-inside: avoid; 
+   }
+
+   img { 
+      max-width: 100% !important; 
+   }
+
+   @page :left { 
+      margin: 15mm 20mm 15mm 10mm; 
+   }
+     
+   @page :right { 
+      margin: 15mm 10mm 15mm 20mm; 
+   }
+
+   p, h2, h3 { 
+      orphans: 3; widows: 3; 
+   }
+
+   h2, h3 { 
+      page-break-after: avoid; 
+   }
+}
+
+</style>
+
+
+
+
+
+</head>
+
+<body>
+<h1>basinCharacteristics</h1>
+
+<h1>Description</h1>
+
+<p>This repo calculates statistics of spatial data within hydrologic catchment delineations in support of the models and web applications created by the Conte Ecology Group. A combination of ArcPy and R scripts are used to process spatial data and assign spatially averaged statistics to catchment polygons. Within each delineation, a unique catchment identifier is assigned values for basin characteristics such as land cover or geology variables.</p>
+
+<h1>Software Requirements</h1>
+
+<p>ArcGIS 10.2 with Spatial Analyst Toolbox<br/>
+R version 3.1.2<br/>
+Current R libraries:  </p>
+
+<ul>
+<li><code>reshape2</code></li>
+<li><code>foreign</code></li>
+<li><code>tcltk</code></li>
+<li><code>dplyr</code></li>
+<li><code>lazyeval</code></li>
+</ul>
+
+<p>Catchments shapefile - Existing polygons layers (e.g. NHDplus)  </p>
+
+<h1>Repository Structure</h1>
+
+<p>The sub-repo in this repository are grouped by general function. Each sub-folder contains stand-alone scripts and spatial data sources used to create layers for a user-defined spatial range. The layers created in each sub-repo are defined by the scripting process and not necessarily the data source or the layer definition. For example, multiple sub-repos exist that access the same source layers from SSURGO because the scripting process differs significantly enough to warrant separation. The exception to this setup is the <code>\zonalStatistics</code> sub-folder which is used to calculate the statistics for the user-defined catchments version. This sub-repo accepts the output layers from all of the others, as outlined in the &ldquo;Sample Workflow&rdquo; section.</p>
+
+<p>An up-to-date, descriptive list of the current sub-repos is maintained in the <code>Covariate Data Status - High Res Delineation.xls</code> file in this repository. This spreadsheet provides the metadata for the final layers and the spatial ranges for which they are being used. A duplicate <code>.csv</code> version of this file is currently maintained for the purpose of specifying and accessing the conversion factors for final output of basin characteristics.</p>
+
+<h1>Sample Workflow</h1>
+
+<p>The steps below outline an example workflow to create basin characteristics for surface water layers based on the the Fish &amp; Wildlife wetlands database. Basin characteristics are calculated for the Northeast High Resolution Delineation (HRD) of catchments.</p>
+
+<ol>
+<li><p>Navigate to the <code>\basinCharacteristics\fwsWetlands</code> repo. Follow the instructions in the repo&#39;s <code>README</code> file for downloading &amp; unzipping data, setting user inputs, and executing the code (<code>\scrpits\fwsWetlands.py</code>) in ArcPython. This information is unique to each sub-repo and is contained in the <code>README</code> files. Processed spatial data layers (ESRI GRID format) are output to <code>basinCharacteristics\fwsWetlands\gisFiles\Northeast\outputFiles</code>.</p></li>
+<li><p>Copy the output spatial layers from step 1 to the <code>\basinCharacteristics\zonalStatistics\gisFiles\rasters</code> directory.</p></li>
+<li><p>Repeat steps 1 and 2 for any spatial layers to be calculated for catchments shapefile.</p></li>
+<li><p>Copy the externally created catchments shapefile (<code>NortheastHRD_AllCatchments.shp</code>) to the <code>\basinCharacteristics\zonalStatistics\gisFiles\vectors</code> directory.</p></li>
+<li><p>Navigate to the <code>\basinCharacteristics\zonalStatistics</code> sub-repo. The <code>README</code> file in this repo contains specific information on running the spatial averaging scripts. </p></li>
+<li><p>Open the <code>\scripts</code> subfolder</p></li>
+<li><p>Specify the version-specific inputs in the <code>basinCharacteristics\zonalStatistics\scripts\HRD_INPUTS.txt</code> file.</p></li>
+<li><p>Run the <code>HRD1_zonalStatisticsProcessing.py</code> script in ArcPython. This script calculates the statistics for each spatial layer within the zones of the catchments shapefile.</p></li>
+<li><p>Run the <code>HRD2_delineateUpstreamCatchments.R</code> script in R, generating a list of upstream catchments for each individual catchment in the shapefile. This script only needs to be run once initially and is specific to the the catchments shapefile.</p></li>
+<li><p>Run the <code>HRD3_calculateUpstreamStatistics.R</code> script in R, calculating the upstream average of the spatial data variables for each catchment.</p></li>
+<li><p>Run the <code>HRD4_statsFileGenerator.R</code> script in R, formatting and converting basin characteristics for output.</p></li>
+</ol>
+
+<h1>Contact</h1>
+
+<p>Kyle O&#39;Neil
+<a href="mailto:koneil@usgs.gov">koneil@usgs.gov</a></p>
+
+</body>
+
+</html>
+
