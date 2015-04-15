@@ -7,16 +7,16 @@ This repo calculates statistics of spatial data within hydrologic catchment deli
 
 # Software Requirements
 
-ArcGIS 10.2 with Spatial Analyst Toolbox
-R version __________
-Current R libraries:
+ArcGIS 10.2 with Spatial Analyst Toolbox  
+R version 3.1.2  
+Current R libraries:  
   - `reshape2`
   - `foreign`
   - `tcltk`
   - `dplyr`
   - `lazyeval`
 
-Catchments shapefile - Existing polygons layers (e.g. NHDplus)
+Catchments shapefile - Existing polygons layers (e.g. NHDplus)  
 
 # Repository Structure
 
@@ -57,10 +57,6 @@ The steps below outline an example workflow to create basin characteristics for 
 
 
 
-# Contact
-
-Kyle O'Neil
-koneil@usgs.gov
 
 
 
@@ -124,4 +120,10 @@ Creates the raster layer indicating the surficial geology that is described as c
 
 ## zonalStatistics
 
-Calcuates spatial averages of the raster layers across a specified shapefile containing catchment polygons.
+Calcuates spatial averages of the raster layers across a specified shapefile containing catchment polygons.\
+
+
+# Contact
+
+Kyle O'Neil
+koneil@usgs.gov
