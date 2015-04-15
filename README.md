@@ -1,23 +1,99 @@
 basinCharacteristics
 ====================
 
+# Description
+
+This repo calculates statistics of spatial data within hydrologic catchment delineations in support of the models and web applications created by the Conte Ecology Group. A combination of ArcPy and R scripts are used to process spatial data and assign spatially averaged statistics to catchment polygons. Within each delineation, a unique catchment identifier is assigned values for basin characteristics such as land cover or geology variables.
+
+# Software Requirements
+
+ArcGIS 10.2 with Spatial Analyst Toolbox
+R version __________
+Current R libraries:
+  - `reshape2`
+  - `foreign`
+  - `tcltk`
+  - `dplyr`
+  - `lazyeval`
+
+Catchments shapefile - Existing polygons layers (e.g. NHDplus)
+
+# Repository Structure
+
+The sub-repo in this repository are grouped by general function. Each sub-folder contains stand-alone scripts and spatial data sources used to create layers for a user-defined spatial range. The layers created in each sub-repo are defined by the scripting process and not necessarily the data source or the layer definition. For example, multiple sub-repos exist that access the same source layers from SSURGO because the scripting process differs significantly enough to warrant separation. The exception to this setup is the `\zonalStatistics` sub-folder which is used to calculate the statistics for the user-defined catchments version. This sub-repo accepts the output layers from all of the others, as outlined in the "Sample Workflow" section.
+
+An up-to-date, descriptive list of the current sub-repos is maintained at the bottom of this page. The `Covariate Data Status - High Res Delineation.xls` file in this repository provides the metadata for the final layers and the spatial ranges for which they are being used. A duplicate `.csv` version of this file is currently maintained for the purpose of specifying and accessing the conversion factors for final output of basin characteristics.
+
+# Sample Workflow
+
+The steps below outline an example workflow to create basin characteristics for surface water layers based on the the Fish & Wildlife wetlands database. Basin characteristics are calculated for the Northeast High Resolution Delineation (HRD) of catchments.
+
+1. Navigate to the `\basinCharacteristics\fwsWetlands` repo. Follow the instructions in the repo's `README` file for downloading & unzipping data, setting user inputs, and executing the code (`\scrpits\fwsWetlands.py`) in ArcPython. This information is unique to each sub-repo and is contained in the `README` files. Processed spatial data layers (ESRI GRID format) are output to `basinCharacteristics\fwsWetlands\____________`.
+
+2. Copy the output spatial layers from step 1 to the `\basinCharacteristics\zonalStatistics\gisFiles\rasters` directory.
+
+3. Repeat steps 1 and 2 for any spatial layers to be calculated for catchments shapefile.
+
+4. Copy the externally created catchments shapefile (`NortheastHRD_AllCatchments.shp`) to the `\basinCharacteristics\zonalStatistics\gisFiles\vectors` directory.
+
+5. Navigate to the `\basinCharacteristics\zonalStatistics` sub-repo. The `README` file in this repo contains specific information on running the spatial averaging scripts. 
+
+6. Open the `\scripts` subfolder
+
+7. Specify the version-specific inputs in the `basinCharacteristics\zonalStatistics\scripts\HRD_INPUTS.txt` file.
+
+8. Run the `HRD1_zonalStatisticsProcessing.py` script in ArcPython. This script calculates the statistics for each spatial layer within the zones of the catchments shapefile.
+
+9. Run the `HRD2_delineateUpstreamCatchments.R` script in R, generating a list of upstream catchments for each individual catchment in the shapefile. This script only needs to be run once initially and is specific to the the catchments shapefile.
+
+10. Run the `HRD3_calculateUpstreamStatistics.R` script in R, calculating the upstream average of the spatial data variables for each catchment.
+
+11. Run the `HRD4_statsFileGenerator.R` script in R, formatting and converting basin characteristics for output.
+
+
+
+
+
+
+
+
+# Contact
+
+Kyle O'Neil
+koneil@usgs.gov
+
+
+
+
+## zonalStatistics
+
+
+
+
+
 # Outline notes
 
-1. What this project is and what it does
 2. small code example
-3. required libraries, functions, packages, etc. (installation)
-4. contact info
 
 
-other points
-
-- updating covariates documentation .csv file
 
 
-Contains the scripts, procedures and some of the ouputs for the basin characteristics generated in the models and maps. Currently the dataset is based on the NHDplus medium res delineation.
+
+
+# Current Sub-repositories
+
+## atmosphericDeposition
+Processes raster layers describing the atmospheric wet deposition of various compounds.
+
+Current output layers:
 
 ## fwsWetlands
 Creates the raster layers that describe the presence of wetlands.
+
+##hucs
+Maps huc boundaries to catchment polygons based on the catchment centroids.
+
+Current output hucs:
 
 ## impoundedArea
 Creates the raster layers that describe the presence of "impounded" waterbodies.
@@ -25,8 +101,26 @@ Creates the raster layers that describe the presence of "impounded" waterbodies.
 ## impoundments
 Calculates the distance, surface area, and contributing drainage area to each waterbody on the stream network.
 
+##nlcdImpervious
+
+##nlcdLandCover
+
+##nlcdTreeCanopy
+
+##percentSandy
+
+##prism
+
+##soilDrainageClass
+
+##soilHydrologicGroup
+
 ## surficialCoarseness
 Creates the raster layer indicating the surficial geology that is described as coarse.
+
+##tncDams
+
+##topography
 
 ## zonalStatistics
 
