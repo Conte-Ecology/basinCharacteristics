@@ -16,26 +16,26 @@ Current R libraries:
   - `tcltk`
   - `dplyr`
   - `lazyeval`
-
-Catchments shapefile - An existing shapefile of polygons representing hydrologic catchment basin (e.g. NHDplus). 
-
+  
 
 # Repository Structure
 
-The sub-repo in this repository are grouped by general function. Each sub-folder contains stand-alone scripts and spatial data sources used to create layers for a user-defined spatial range. The layers created in each sub-repo are defined by the scripting process and not necessarily the data source or the layer definition. For example, multiple sub-repos exist that access the same source layers from SSURGO because the scripting process differs significantly enough to warrant separation. The exception to this setup is the `\zonalStatistics` sub-folder which is used to calculate the statistics for the user-defined catchments version. This sub-repo accepts the output layers from all of the others, as outlined in the "Sample Workflow" section.
+The sub-repositories in `\basinCharacteristics` are grouped by general function. Each sub-folder contains stand-alone scripts and spatial data sources used to create layers for a user-defined spatial range. The layers created in each sub-repo are defined by the scripting process and not necessarily the data source or the layer definition. For example, multiple sub-repos exist that access the same source layers from SSURGO because the scripting process differs significantly enough to warrant separation. 
+
+The exception to this setup is the `\zonalStatistics` sub-folder which calculates the statistics for the user-defined version of the catchments shapefile. This sub-repo accepts the output layers from all of the others, as outlined in the "Sample Workflow" section. Upon initial setup of this repo, some folders must be created manually on the user's local machine. Navigate to the `\basinCharacteristics\zonalStatistics` repo and create a folder for spatial data: `\gisFiles`. In this directory create two folders: `\vectors` and `\rasters`. Adhering to this naming scheme is necessary for code to run properly.
 
 An up-to-date, descriptive list of the current sub-repos is maintained in the `Covariate Data Status - High Res Delineation.xls` file in this repository. This spreadsheet provides the metadata for the final layers and the spatial ranges for which they are being used. A duplicate `.csv` version of this file is currently maintained for the purpose of specifying and accessing the conversion factors for final output of basin characteristics.
 
 
 # Sample Workflow
 
-The steps below outline an example workflow to create basin characteristics for surface water layers based on the the Fish & Wildlife wetlands database. Basin characteristics are calculated for the Northeast High Resolution Delineation (HRD) of catchments.
+The steps below outline an example workflow to create basin characteristics for spatial data layers using the U.S. Fish & Wildlife National Wetlands Inventory surface water data as an example for the first couple of steps. Basin characteristics are calculated for the Northeast High Resolution Delineation (HRD) of catchments.
 
 1. Navigate to the `\basinCharacteristics\fwsWetlands` repo. Follow the instructions in the repo's `README` file for downloading & unzipping data, setting user inputs, and executing the code (`\scrpits\fwsWetlands.py`) in ArcPython. This information is unique to each sub-repo and is contained in the `README` files. Processed spatial data layers (ESRI GRID format) are output to `basinCharacteristics\fwsWetlands\gisFiles\Northeast\outputFiles`.
 
 2. Copy the output spatial layers from step 1 to the `\basinCharacteristics\zonalStatistics\gisFiles\rasters` directory.
 
-3. Repeat steps 1 and 2 for any spatial layers to be calculated for catchments shapefile.
+3. Repeat steps 1 and 2 for any other spatial layers outside of the `\fwsWetlands` repo to be calculated for catchments shapefile.
 
 4. Copy the externally created catchments shapefile (`NortheastHRD_AllCatchments.shp`) to the `\basinCharacteristics\zonalStatistics\gisFiles\vectors` directory.
 
@@ -54,7 +54,9 @@ The steps below outline an example workflow to create basin characteristics for 
 11. Run the `HRD4_statsFileGenerator.R` script in R, formatting and converting basin characteristics for output.
 
 
-# Contact
+# Contact Info
 
 Kyle O'Neil
 koneil@usgs.gov
+(413) 863-3829
+
