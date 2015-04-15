@@ -56,7 +56,7 @@ The steps below outline an example workflow to create basin characteristics for 
 
 # Contact Info
 
-Kyle O'Neil
-koneil@usgs.gov
-(413) 863-3829
+Kyle O'Neil  
+koneil@usgs.gov  
+(413) 863-3829  
 
