@@ -15,6 +15,11 @@ baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistic
 #   3) Manually list the variables to output
 outputVariables <- c("ALL")
 
+
+activateThreshold <- TRUE
+
+missingDataThreshold <- 80
+
 # ========================
 # Read user-defined inputs
 # ========================
@@ -60,7 +65,15 @@ for ( L in seq_along(localStatFiles) ){
   # Print status
   print(L)
   
+  # Read in CSV
   localTemp <- read.csv(file.path(rTablesDirectory, localStatFiles[L]) )
+  
+  # If the percent of the area with data does not meet the threshold, then convert to NA
+  if ( "percentAreaWithData" %in% names(localTemp) & activateThreshold ){
+    localTemp[which(localTemp$percentAreaWithData < missingDataThreshold), "MEAN"] <- NA
+    
+    localTemp <- select(localTemp, -percentAreaWithData)
+  }
   
   # Get file name
   A <- gsub("*local_", "", localStatFiles[L])
@@ -104,7 +117,18 @@ if ( all(outputVariables %in% "ALL" == TRUE) ){
 # Loop through files. Pull data and join together for output.
 for ( U in 1:length(upstreamStatFiles) ){
   
+  # Print status
+  print(U)
+  
+  # Read in CSV  
   upstreamTemp <- read.csv(file.path(rTablesDirectory, upstreamStatFiles[U]) )
+  
+  # If the percent of the area with data does not meet the threshold, then convert to NA
+  if ( "percentAreaWithData" %in% names(upstreamTemp) & activateThreshold ){
+    upstreamTemp[which(upstreamTemp$percentAreaWithData < missingDataThreshold), "MEAN"] <- NA
+    
+    upstreamTemp <- select(upstreamTemp, -percentAreaWithData)
+  }
   
   # Get file name
   A <- gsub("*upstream_", "", upstreamStatFiles[U])
@@ -133,18 +157,16 @@ for ( U in 1:length(upstreamStatFiles) ){
 }
 
 
-# Save output
-save(LocalStats, UpstreamStats, file = file.path(baseDirectory, "versions", outputName, "completedStats", paste0("zonalStats", Sys.Date(),".RData") ))
-
 
 # Format for Database
-# ===================
+# -------------------
 
 locLong <- melt(LocalStats,'FEATUREID')
 locLong$zone <- "local"
 
 upLong <- melt(UpstreamStats,'FEATUREID')
 upLong$zone <- "upstream"
+
 
 dbStats <- rbind(locLong, upLong)
 
