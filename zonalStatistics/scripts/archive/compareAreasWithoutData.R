@@ -20,7 +20,7 @@ baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistic
 # Load files
 # ==========
 
-source( file.path(baseDirectory, "scripts", "INPUTS.txt") )
+source( file.path(baseDirectory, "scripts", "HRD_INPUTS.txt") )
 
 rasterList <- c(discreteRasters, continuousRasters)
 
@@ -39,7 +39,8 @@ nlcd <- c("agriculture", "devel_hi", "devel_low", "devel_med", "devel_opn", "dev
 undev <- "undev_forest"
 fws <- c("alloffnet", "allonnet", "fwsopenwater", "fwswetlands", "openoffnet", "openonnet")    
 ssurgo <- "surfcoarse"
-nalcc <- "elev_nalcc"
+elevation <- "elevation"
+undevFor <- c("undev_forest")
 
 
 # =================================
@@ -63,21 +64,31 @@ for( j in 3:length(names(temp))){
 # Look at missing data histograms
 # ===============================
 
-VARS <- c("agriculture", "fwswetlands", "surfcoarse", "elev_nalcc")
+VARS <- c("agriculture", "fwswetlands", "surfcoarse", "elevation", "aug_prcp_mm", "undev_forest")
+#VARS <- "undev_forest"
 
 toHist <- allPcnts[,c(which(names(allPcnts) %in% VARS))]
-names(toHist) <- c('NLCD', 'FWS_Wetlands', 'SSURGO', 'NALCC_Elevation')
 
 toHist_melt <- melt(toHist)
+
+# Use this one
+# ------------
+trimHist <- ggplot(toHist_melt,aes(x=value)) + 
+  geom_histogram(binwidth = 0.5) + 
+  coord_cartesian(ylim = c(0, 50000)) +
+  xlab("Percent Area With Data") +
+  ylab("Number of Catchments") +
+  theme(text = element_text(size=20)) +
+  facet_wrap(~variable, nrow = 3)
+
+print(trimHist)
+ggsave("C:/KPONEIL/presentations/plt.png", width = 12, height = 9, dpi = 120)
 
 rawHist <- ggplot(toHist_melt,aes(x=value)) + 
   geom_histogram(binwidth = 0.5) + 
   facet_wrap(~variable)
 
-trimHist <- ggplot(toHist_melt,aes(x=value)) + 
-  geom_histogram(binwidth = 0.5) + 
-  coord_cartesian(ylim = c(0, 10000)) +
-  facet_wrap(~variable)
+
 
 trimHist2 <- ggplot(toHist_melt,aes(x=value)) + 
   geom_histogram(binwidth = 0.5) + 
@@ -93,7 +104,7 @@ trimHist2 <- ggplot(toHist_melt,aes(x=value)) +
 toMin <- allPcnts[,c(1, which(names(allPcnts) %in% VARS))]
 
 out <- group_by(toMin, FEATUREID) %>%
-  mutate(MIN = min(agriculture, fwswetlands, surfcoarse, elev_nalcc))%>%
+  mutate(MIN = min(agriculture, fwswetlands, surfcoarse, elevation))%>%
   ungroup()
 
 allMissing <- ggplot(out,aes(x=MIN)) + 
