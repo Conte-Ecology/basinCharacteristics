@@ -8,7 +8,9 @@ setwd('C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/versions/
 
 # 50 ft buffer
 # ------------
-load('zonalStatsForDB_riparianBuffers50ft_2015-04-10.RData')
+#load('zonalStatsForDB_riparianBuffers50ft_2015-04-10.RData')
+dbStats <- read.csv('zonalStatsForDB_riparianBuffers50ft_2015-04-29.csv')
+
 
 b50 <- mutate(dbStats, variable = sub("_50ft","",variable)) %>%
         filter(variable != "AreaSqKM") %>%
@@ -17,7 +19,8 @@ b50 <- mutate(dbStats, variable = sub("_50ft","",variable)) %>%
 
 # 200 ft buffer
 # ------------
-load('zonalStatsForDB_riparianBuffers200ft_2015-04-10.RData')
+#load('zonalStatsForDB_riparianBuffers200ft_2015-04-10.RData')
+dbStats <- read.csv('zonalStatsForDB_riparianBuffers200ft_2015-04-29.csv')
 
 b200 <- mutate(dbStats, variable = sub("_200ft","",variable)) %>%
           filter(variable != "AreaSqKM") %>%
@@ -25,7 +28,7 @@ b200 <- mutate(dbStats, variable = sub("_200ft","",variable)) %>%
           select ( - value)
 
 
-buffMaster <- left_join(b200, b50, by = c('FEATUREID', 'variable', 'zone'))
+buffMaster <- left_join(b200, b50, by = c('featureid', 'variable', 'zone'))
 
 
 save(buffMaster, file = "C:/KPONEIL/workspace/buffMasterFlex.RData")

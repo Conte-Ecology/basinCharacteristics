@@ -2,10 +2,10 @@
 outputName = "riparianBuffers"
 
 # Catchments file path
-catchmentsFilePath =  "C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_200ft"
+catchmentsFilePath =  "C:/KPONEIL/gis/riparianBuffers/NortheastHRD/overlappingBuffers.gdb/riparianBufferOverlap_ALL_50ft"
 
 # Buffer specific ID (should match the length)
-bufferID =  "200ft"
+bufferID =  "50ft"
 
 # Field name defining the zones
 zoneField = "FEATUREID"

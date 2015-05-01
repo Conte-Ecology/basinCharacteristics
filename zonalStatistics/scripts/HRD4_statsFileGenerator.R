@@ -156,8 +156,6 @@ for ( U in 1:length(upstreamStatFiles) ){
   if( U == 1) {UpstreamStats <- upstreamTemp} else(UpstreamStats <- left_join(UpstreamStats, upstreamTemp, by = zoneField) )
 }
 
-
-
 # Format for Database
 # -------------------
 
@@ -167,11 +165,20 @@ locLong$zone <- "local"
 upLong <- melt(UpstreamStats,'FEATUREID')
 upLong$zone <- "upstream"
 
-
 dbStats <- rbind(locLong, upLong)
 
-save(dbStats, file = file.path(baseDirectory, "versions", outputName, "completedStats", paste0("zonalStatsForDB_", Sys.Date(),".RData") ))
+#save(dbStats, file = file.path(baseDirectory, "versions", outputName, "completedStats", paste0("zonalStatsForDB_", Sys.Date(),".RData") ))
 
+
+names(dbStats) <- tolower(names(dbStats))
+
+# make sure columns are correctly named and ordered
+stopifnot(all(names(dbStats) == c('featureid', 'variable', 'value', 'zone')))
+
+
+write.csv(dbStats, 
+            file = file.path(baseDirectory, "versions", outputName, "completedStats", paste0("zonalStatsForDB_", Sys.Date(),".csv") ), 
+            row.names = FALSE)
 
 
 
