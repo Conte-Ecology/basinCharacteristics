@@ -15,7 +15,6 @@ baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistic
 #   3) Manually list the variables to output
 outputVariables <- c("ALL")
 
-
 activateThreshold <- TRUE
 
 missingDataThreshold <- 80
@@ -166,8 +165,6 @@ upLong <- melt(UpstreamStats,'FEATUREID')
 upLong$zone <- "upstream"
 
 dbStats <- rbind(locLong, upLong)
-
-#save(dbStats, file = file.path(baseDirectory, "versions", outputName, "completedStats", paste0("zonalStatsForDB_", Sys.Date(),".RData") ))
 
 
 names(dbStats) <- tolower(names(dbStats))

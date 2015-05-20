@@ -17,7 +17,7 @@ statType = "MEAN"
 rasterList = c("devel_hi", "devel_low", "devel_med", "devel_opn", "developed", "forest", "impervious", "tree_canopy")
 
 # HUC file used to split up processing
-hucFilePath = "C:/KPONEIL/gis/riparianBuffers/NortheastHRD/processingFiles.gdb/overlappingHucs"
+hucFilePath = "F:/KPONEIL/SourceData/WBD/WBDHU8_June2013.gdb/WBDHU8"
 
 # Directory where rasters are located
 rasterDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics/gisFiles/versions/NortheastHRD/projectedRasters.gdb"

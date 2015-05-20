@@ -34,7 +34,9 @@ depLocal <- read.csv(file.path(baseDirectory, "versions", outputName, "rTables",
 depLocalOut <- select(depLocal, -percentAreaWithData)%>%
                 left_join(select(indLocal, -MEAN), by = zoneField)
 
-write.csv(depLocalOut, file = file.path(baseDirectory, "versions", outputName, "rTables", paste0("local_undev_forest_", statType, ".csv")))
+write.csv(depLocalOut, 
+            file = file.path(baseDirectory, "versions", outputName, "rTables", paste0("local_undev_forest_", statType, ".csv")),
+            row.names = F)
 
 
 # Upstream Files
@@ -45,5 +47,7 @@ depUpstream <- read.csv(file.path(baseDirectory, "versions", outputName, "rTable
 depUpstreamOut <- select(depUpstream, -percentAreaWithData)%>%
                     left_join(select(indUpstream, -MEAN), by = zoneField)
 
-write.csv(depUpstreamOut, file = file.path(baseDirectory, "versions", outputName, "rTables", paste0("upstream_undev_forest_", statType, ".csv")))
+write.csv(depUpstreamOut, 
+            file = file.path(baseDirectory, "versions", outputName, "rTables", paste0("upstream_undev_forest_", statType, ".csv")),
+            row.names = F)
 
