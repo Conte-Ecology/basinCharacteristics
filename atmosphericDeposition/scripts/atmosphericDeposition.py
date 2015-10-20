@@ -6,9 +6,11 @@ from arcpy import env
 # Specify inputs
 # ==============
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/atmosphericDeposition"
-catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+#catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+catchmentsFilePath = "C:/KPONEIL/HRD/V2/products/hydrography.gdb/regionBoundary"
 sourceFolder       = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/deposition/nadp/spatial"
-version            = "NortheastHRD"
+#version            = "NortheastHRD"
+version            = "NHDHRDV2"
 
 
 # ---------------

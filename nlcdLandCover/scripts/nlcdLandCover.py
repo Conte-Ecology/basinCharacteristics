@@ -6,10 +6,10 @@ from arcpy import env
 # Specify inputs
 # ==============
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover"
-catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/NHDHRDV2/products/hydrography.gdb/regionBoundary"
 rasterFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_landcover_2011_edition_2014_03_31/nlcd_2006_landcover_2011_edition_2014_03_31.img"
 reclassTable = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdLandCover/scripts/reclassTable.csv"
-version = "NortheastHRD"
+version = "NHDHRDV2"
 keepFiles = "YES"
 
 

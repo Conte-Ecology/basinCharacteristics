@@ -11,12 +11,12 @@ library(foreign)
 # ======================
 baseDirectory <- 'C:/KPONEIL/GitHub/projects/basinCharacteristics/zonalStatistics'
 
+# Read user-defined inputs
+source( file.path(baseDirectory, "scripts", "HRDV2_INPUTS.txt") )
+
 # ============
 # Read in data
 # ============
-
-# Read user-defined inputs
-source( file.path(baseDirectory, "scripts", "HRD_INPUTS.txt") )
 
 # Define the output file
 outputFilePath <- file.path(baseDirectory, 'versions', outputName, paste0(outputName, '_delineatedCatchments.RData') )

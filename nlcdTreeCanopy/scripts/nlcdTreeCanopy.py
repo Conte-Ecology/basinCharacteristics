@@ -7,14 +7,15 @@ from arcpy import env
 # ==============
 
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdTreeCanopy"
-catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
-rasterFilePath     = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_impervious_2011_edition_2014_10_10/nlcd_2006_impervious_2011_edition_2014_10_10.img"
-version            = "NortheastHRD"
+catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/NHDHRDV2/products/hydrography.gdb/regionBoundary"
+rasterFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2011_USFS_tree_canopy_2011_edition_2014_03_31/cartographic_product/nlcd2011_usfs_treecanopy_cartographic_3-31-2014.img"
+version            = "NHDHRDV2"
 statesFilePath     = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/political/states/States.shp"
 
-# ---------------
-# Folder creation
-# ---------------
+
+# ===========
+# Folder prep
+# ===========
 
 # Create GIS files folder
 gisFilesDir = baseDirectory + "/gisFiles"
@@ -33,9 +34,9 @@ outputDir = versionDir + "/outputFiles"
 if not arcpy.Exists(outputDir): arcpy.CreateFolder_management(versionDir, "outputFiles")
 
 
-# ----------------
+# ================
 # Define functions
-# ----------------	
+# ================
 
 # Reproject a shapefile ("toBeProjected") to the same projection as another layer ("sourceProjection").
 def match_projection_shp(sourceProjection, toBeProjected, outputFilePath):
@@ -66,12 +67,10 @@ def match_projection_shp(sourceProjection, toBeProjected, outputFilePath):
 	return projectedObject
 
 
-# --------------------------
+# ==========================
 # Prepare the boundary layer
-# --------------------------
+# ==========================
 
-# Create boundary file
-# --------------------
 statesPrj = match_projection_shp(catchmentsFilePath, statesFilePath, working_db + "/states_catProj")
 
 arcpy.MakeFeatureLayer_management(statesPrj, "statesPrj_Lyr")
@@ -86,8 +85,10 @@ boundary = arcpy.Dissolve_management(selectStates,
 
 boundaryPrj = match_projection_shp(rasterFilePath, boundary, working_db + "/boundary_rastProj")
 
+
+# ===============================
 # Trim the raster to the boundary	
-# -------------------------------
+# ===============================
 arcpy.env.extent = rasterFilePath
 trimmedRaster = ExtractByMask(rasterFilePath, boundaryPrj)
 trimmedRaster.save(outputDir + "/tree_canopy")

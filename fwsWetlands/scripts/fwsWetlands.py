@@ -6,11 +6,11 @@ from arcpy.sa import *
 # Specify inputs
 # ==============
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/fwsWetlands"
-states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV"]
-stateNames = ["District of Columbia", "Massachusetts", "Connecticut", "Rhode Island", "Maine", "New Hampshire", "Vermont", "New York", "Delaware", "Maryland", "New Jersey", "Pennsylvania", "Virginia", "West Virginia"]
+states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "OH", "KY", "TN", "NC"]
+stateNames = ["District of Columbia", "Massachusetts", "Connecticut", "Rhode Island", "Maine", "New Hampshire", "Vermont", "New York", "Delaware", "Maryland", "New Jersey", "Pennsylvania", "Virginia", "West Virginia", "Ohio", "Kentucky", "Tennessee", "North Carolina"]
 wetlandsFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/fwsWetlands/rawData/"
 statesFile = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/political/states/States.shp"
-outputName = "Northeast"
+outputName = "NHDHRDV2"
 
 # ===========
 # Folder prep

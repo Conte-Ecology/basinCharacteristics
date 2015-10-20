@@ -5,9 +5,10 @@ import arcpy
 # ==============
 
 baseDirectory = "C:/KPONEIL/GitHub/projects/basinCharacteristics/surficialCoarseness"
-states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC"]
-sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nrcsSSURGO/spatial"
-outputName = "Northeast"
+states = ["MA", "CT", "RI", "ME", "NH", "VT", "NY", "DE", "MD", "NJ", "PA", "VA", "WV", "DC", "NC", "TN", "KY", "OH"]
+#sourceFolder = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nrcsSSURGO/spatial"
+sourceFolder = "F:/KPONEIL/SourceData/geology/SSURGO"
+outputName = "NHDHRDV2"
 
 
 # ===========

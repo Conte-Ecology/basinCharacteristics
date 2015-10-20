@@ -7,9 +7,11 @@ from arcpy import env
 # ==============
 
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/prism"
-catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
-sourceFolder       = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/climate/prism/spatial"
-version            = "NortheastHRD"
+#catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/NHDHRDV2/products/hydrography.gdb/regionBoundary"
+catchmentsFilePath = "C:/KPONEIL/HRD/V2/products/hydrography.gdb/regionBoundary"
+#sourceFolder       = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/climate/prism/spatial"
+sourceFolder       = "F:/KPONEIL/SourceData/climate/prism/spatial"
+version            = "NHDHRDV2"
 
 
 # ---------------

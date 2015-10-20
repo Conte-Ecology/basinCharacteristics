@@ -6,14 +6,14 @@ from arcpy import env
 # Specify inputs
 # ==============
 baseDirectory      = "C:/KPONEIL/GitHub/projects/basinCharacteristics/nlcdImpervious"
-catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/northeastHRD/NortheastHRD_AllCatchments.shp"
+catchmentsFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/streamStructure/NHDHRDV2/products/hydrography.gdb/regionBoundary"
 rasterFilePath     = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/land/nlcd/spatial/nlcd_2006_impervious_2011_edition_2014_10_10/nlcd_2006_impervious_2011_edition_2014_10_10.img"
-version            = "NortheastHRD"
+version            = "NHDHRDV2"
 
 
-# ---------------
+# ===============
 # Folder creation
-# ---------------
+# ===============
 
 # Create GIS files folder
 gisFilesDir = baseDirectory + "/gisFiles"
@@ -32,9 +32,9 @@ outputDir = versionDir + "/outputFiles"
 if not arcpy.Exists(outputDir): arcpy.CreateFolder_management(versionDir, "outputFiles")
 
 
-# --------------------------
+# ==========================
 # Prepare the boundary layer
-# --------------------------
+# ==========================
 
 # Create regional outline
 if not arcpy.Exists(geoDatabase + "/outline"):
@@ -63,9 +63,9 @@ if not arcpy.Exists(geoDatabase + "/boundaryProj"):
 											rasterFilePath)
 else: boundaryProj = geoDatabase + "/boundaryProj"
 
-# ------------------
+# ==================
 # Process the raster
-# ------------------
+# ==================
 
 # Trim the raster to the boundary	
 if not arcpy.Exists(geoDatabase + "/extractedRaster"):

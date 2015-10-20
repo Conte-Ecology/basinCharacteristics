@@ -6,8 +6,9 @@ from arcpy import env
 # Specify inputs
 # ==============
 baseDirectory  = "C:/KPONEIL/GitHub/projects/basinCharacteristics/topography"
-demFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/topography/umass/dem"
-version = "NortheastHRD"
+#demFilePath = "//IGSAGBEBWS-MJO7/projects/dataIn/environmental/topography/NHDHRDV2/dem"
+demFilePath = "F:/KPONEIL/SourceData/topography/NHDHRDV2/dem"
+version = "NHDHRDV2"
 
 
 # ---------------
